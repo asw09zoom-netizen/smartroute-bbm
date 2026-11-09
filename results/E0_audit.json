@@ -1,0 +1,18 @@
+{
+  "total_demand_kl": 60.78,
+  "dot_trend_projection_kl": 58.39,
+  "circuity_mean": 1.228945054945055,
+  "circuity_sd": 0.22931101454561964,
+  "circuity_min": 1.023,
+  "circuity_max": 2.823,
+  "circuity_depot_mean": 1.1543846153846156,
+  "triangle_violations_ordered": 150,
+  "triangle_worst": [
+    6.900000000000003,
+    "FT",
+    "S11",
+    "S7"
+  ],
+  "max_depot_dist_km": 36.6,
+  "spbu_beyond_30km": 6
+}

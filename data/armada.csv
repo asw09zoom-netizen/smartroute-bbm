@@ -1,0 +1,5 @@
+tipe,kapasitas_kl,kompartemen_kl,jumlah_unit,fc0_l_per_km,biaya_tetap_rp,produk_kompatibel,lebar_jalan_min_m,keterangan
+A,6,4+2,0,0.20,600000,Pertalite|Pertamax|Biosolar,3.5,ASUMSI ukuran kompartemen
+B,8,4+2+2,1,0.24,700000,Pertalite|Pertamax|Biosolar,4.0,armada eksisting capstone; ASUMSI ukuran kompartemen
+C,16,6+4+3+3,4,0.30,900000,Pertalite|Pertamax|Biosolar|Pertamax Turbo,6.0,armada eksisting capstone; ASUMSI ukuran kompartemen
+D,32,12+8+6+3+3,0,0.42,1400000,Pertalite|Pertamax|Biosolar|Pertamax Turbo|Pertamina Dex,7.0,mother tanker (skenario); ASUMSI ukuran kompartemen

@@ -1,0 +1,68 @@
+{
+  "breakdown": {
+    "n": 30,
+    "compute_s_mean": 0.7672402620315552,
+    "share_improved_fitness": 0.23333333333333334,
+    "fitness": {
+      "naive": 0.354129251050566,
+      "reopt": 0.347582712924696,
+      "p_wilcoxon": 0.00797940233269714
+    },
+    "late_min": {
+      "naive": 0.0,
+      "reopt": 0.0
+    },
+    "overtime_min": {
+      "naive": 0.0,
+      "reopt": 0.0
+    },
+    "dist_km": {
+      "naive": 198.96666666666667,
+      "reopt": 196.34,
+      "p_wilcoxon": 0.00877616296920843
+    },
+    "co2_kg": {
+      "naive": 185.68840949112501,
+      "reopt": 184.7498936371875,
+      "p_wilcoxon": 0.008877961307018026
+    },
+    "makespan_min": {
+      "naive": 590.3224999999999,
+      "reopt": 592.2524999999998,
+      "p_wilcoxon": 0.7499078714646028
+    }
+  },
+  "kemacetan": {
+    "n": 10,
+    "compute_s_mean": 0.28036320209503174,
+    "share_improved_fitness": 0.4,
+    "fitness": {
+      "naive": 0.2933288946195142,
+      "reopt": 0.29275050190645435,
+      "p_wilcoxon": 0.0625
+    },
+    "late_min": {
+      "naive": 0.0,
+      "reopt": 0.0
+    },
+    "overtime_min": {
+      "naive": 0.0,
+      "reopt": 0.0
+    },
+    "dist_km": {
+      "naive": 143.66,
+      "reopt": 144.37999999999997,
+      "p_wilcoxon": 1.0
+    },
+    "co2_kg": {
+      "naive": 144.64566763378272,
+      "reopt": 144.79750947985275,
+      "p_wilcoxon": 1.0
+    },
+    "makespan_min": {
+      "naive": 659.1299999999999,
+      "reopt": 652.5099999999999,
+      "p_wilcoxon": 0.0625
+    }
+  }
+}

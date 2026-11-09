@@ -1,0 +1,25 @@
+# Kalibrasi skala energi SA (experiments/calibrate_sa.py), seed 100-102. m = MC-MP-MT-VRP multi-produk FT Gelumbang (fitness), x = X-n101-k25 (jarak)
+x scale=1e+05 restart=0 GA-SA: SA improvement % over GA = [0.    0.094 0.   ] mean 0.031
+x scale=1e+05 restart=0 GA-SA-RL: SA improvement % over GA = [0.    0.422 0.   ] mean 0.141
+x scale=1e+05 restart=200 GA-SA: SA improvement % over GA = [0.869 2.071 1.161] mean 1.367
+x scale=1e+05 restart=200 GA-SA-RL: SA improvement % over GA = [0.716 0.992 0.391] mean 0.700
+x scale=1e+06 restart=0 GA-SA: SA improvement % over GA = [0.838 1.153 0.519] mean 0.837
+x scale=1e+06 restart=0 GA-SA-RL: SA improvement % over GA = [0.825 1.4   0.713] mean 0.979
+x scale=1e+06 restart=200 GA-SA: SA improvement % over GA = [0.549 0.992 1.161] mean 0.900
+x scale=1e+06 restart=200 GA-SA-RL: SA improvement % over GA = [0.368 0.907 0.569] mean 0.615
+x scale=1e+07 restart=0 GA-SA: SA improvement % over GA = [0.838 1.808 0.519] mean 1.055
+x scale=1e+07 restart=0 GA-SA-RL: SA improvement % over GA = [0.586 0.516 1.107] mean 0.736
+x scale=1e+07 restart=200 GA-SA: SA improvement % over GA = [0.549 0.992 0.686] mean 0.742
+x scale=1e+07 restart=200 GA-SA-RL: SA improvement % over GA = [0.586 1.049 0.662] mean 0.766
+m scale=1e+05 restart=0 GA-SA: SA improvement % over GA = [0. 0. 0.] mean 0.000
+m scale=1e+05 restart=0 GA-SA-RL: SA improvement % over GA = [0. 0. 0.] mean 0.000
+m scale=1e+05 restart=200 GA-SA: SA improvement % over GA = [0. 0. 0.] mean 0.000
+m scale=1e+05 restart=200 GA-SA-RL: SA improvement % over GA = [0. 0. 0.] mean 0.000
+m scale=1e+06 restart=0 GA-SA: SA improvement % over GA = [0. 0. 0.] mean 0.000
+m scale=1e+06 restart=0 GA-SA-RL: SA improvement % over GA = [0. 0. 0.] mean 0.000
+m scale=1e+06 restart=200 GA-SA: SA improvement % over GA = [0. 0. 0.] mean 0.000
+m scale=1e+06 restart=200 GA-SA-RL: SA improvement % over GA = [0. 0. 0.] mean 0.000
+m scale=1e+07 restart=0 GA-SA: SA improvement % over GA = [0. 0. 0.] mean 0.000
+m scale=1e+07 restart=0 GA-SA-RL: SA improvement % over GA = [0. 0. 0.] mean 0.000
+m scale=1e+07 restart=200 GA-SA: SA improvement % over GA = [0. 0. 0.] mean 0.000
+m scale=1e+07 restart=200 GA-SA-RL: SA improvement % over GA = [0. 0. 0.] mean 0.000

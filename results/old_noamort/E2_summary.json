@@ -1,0 +1,555 @@
+{
+  "agregat": {
+    "baseline": {
+      "fitness": 0.49517973916183755,
+      "dist_km": 279.40000000000003,
+      "cost_rp": 4102739.2980625,
+      "co2_kg": 264.34610990062504,
+      "time_min": 1069.9499999999998,
+      "trips": 5,
+      "trucks": 3,
+      "late_min": 0.0,
+      "overtime_min": 0.0,
+      "unassigned": 0,
+      "penalty": 0.0
+    },
+    "baseline_trips": [
+      {
+        "rute": "S2-S3-S4-S5",
+        "tipe": "C",
+        "unit": 1,
+        "ritase": 1,
+        "muatan_kl": 13.84,
+        "jarak_km": 76.3,
+        "co2_kg": 72.79,
+        "mulai_menit": 0.0,
+        "selesai_menit": 278.2,
+        "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+      },
+      {
+        "rute": "S11-S12-S13",
+        "tipe": "C",
+        "unit": 1,
+        "ritase": 2,
+        "muatan_kl": 13.38,
+        "jarak_km": 81.5,
+        "co2_kg": 78.64,
+        "mulai_menit": 278.2,
+        "selesai_menit": 545.8,
+        "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+      },
+      {
+        "rute": "S8-S9-S10",
+        "tipe": "C",
+        "unit": 2,
+        "ritase": 1,
+        "muatan_kl": 15.48,
+        "jarak_km": 59.0,
+        "co2_kg": 57.6,
+        "mulai_menit": 0.0,
+        "selesai_menit": 249.6,
+        "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+      },
+      {
+        "rute": "S6-S7",
+        "tipe": "C",
+        "unit": 2,
+        "ritase": 2,
+        "muatan_kl": 11.27,
+        "jarak_km": 44.8,
+        "co2_kg": 41.59,
+        "mulai_menit": 249.6,
+        "selesai_menit": 431.3,
+        "kompartemen": "['BBM', '-', 'BBM', 'BBM']"
+      },
+      {
+        "rute": "S1",
+        "tipe": "B",
+        "unit": 0,
+        "ritase": 1,
+        "muatan_kl": 6.81,
+        "jarak_km": 17.8,
+        "co2_kg": 13.72,
+        "mulai_menit": 0.0,
+        "selesai_menit": 92.8,
+        "kompartemen": "['BBM', 'BBM', 'BBM']"
+      }
+    ],
+    "ref": [
+      9105680.42225,
+      538.9882943025001,
+      1743.15
+    ],
+    "stats_fitness": {
+      "GA": {
+        "n": 30,
+        "mean": 0.48104021213720305,
+        "sd": 0.003945548473909142,
+        "min": 0.47870094721759476,
+        "max": 0.4874731906661255,
+        "median": 0.47870094721759476,
+        "runtime_mean": 1.840556788444519,
+        "improve_vs_baseline_pct": 2.855433271273916,
+        "t_one_sample": -19.628545828441293,
+        "p_one_sample": 1.3636073562137244e-18,
+        "wilcoxon": 0.0,
+        "p_wilcoxon": 2.3830894255925612e-07
+      },
+      "GA-SA": {
+        "n": 30,
+        "mean": 0.4787009472175948,
+        "sd": 5.646012854083702e-17,
+        "min": 0.47870094721759476,
+        "max": 0.47870094721759476,
+        "median": 0.47870094721759476,
+        "runtime_mean": 7.433786590894063,
+        "improve_vs_baseline_pct": 3.3278405073954445,
+        "t_one_sample": null,
+        "p_one_sample": null,
+        "note": "varian nol (semua replikasi identik)"
+      },
+      "GA-SA-RL": {
+        "n": 30,
+        "mean": 0.4787009472175948,
+        "sd": 5.646012854083702e-17,
+        "min": 0.47870094721759476,
+        "max": 0.47870094721759476,
+        "median": 0.47870094721759476,
+        "runtime_mean": 7.428844451904297,
+        "improve_vs_baseline_pct": 3.3278405073954445,
+        "t_one_sample": null,
+        "p_one_sample": null,
+        "note": "varian nol (semua replikasi identik)"
+      },
+      "anova": {
+        "F": 10.545454545454541,
+        "p": 7.929733964682916e-05
+      },
+      "kruskal": {
+        "H": 17.365853658536523,
+        "p": 0.00016945437705897915
+      },
+      "tukey": " Multiple Comparison of Means - Tukey HSD, FWER=0.05  \n======================================================\ngroup1  group2  meandiff p-adj   lower   upper  reject\n------------------------------------------------------\n    GA    GA-SA  -0.0023 0.0004 -0.0037 -0.0009   True\n    GA GA-SA-RL  -0.0023 0.0004 -0.0037 -0.0009   True\n GA-SA GA-SA-RL      0.0    1.0 -0.0014  0.0014  False\n------------------------------------------------------"
+    },
+    "means": {
+      "fitness": {
+        "GA": 0.48104021213720294,
+        "GA-SA": 0.47870094721759476,
+        "GA-SA-RL": 0.47870094721759476
+      },
+      "dist_km": {
+        "GA": 316.52666666666664,
+        "GA-SA": 332.5,
+        "GA-SA-RL": 332.5
+      },
+      "cost_rp": {
+        "GA": 3569036.2761125,
+        "GA-SA": 3390797.2950625,
+        "GA-SA-RL": 3390797.2950625
+      },
+      "co2_kg": {
+        "GA": 280.115001665125,
+        "GA-SA": 288.557229230625,
+        "GA-SA-RL": 288.557229230625
+      },
+      "time_min": {
+        "GA": 1125.6399999999999,
+        "GA-SA": 1149.6,
+        "GA-SA-RL": 1149.6
+      },
+      "trucks": {
+        "GA": 2.2666666666666666,
+        "GA-SA": 2.0,
+        "GA-SA-RL": 2.0
+      },
+      "trips": {
+        "GA": 5.733333333333333,
+        "GA-SA": 6.0,
+        "GA-SA-RL": 6.0
+      },
+      "late_min": {
+        "GA": 0.0,
+        "GA-SA": 0.0,
+        "GA-SA-RL": 0.0
+      },
+      "overtime_min": {
+        "GA": 0.0,
+        "GA-SA": 0.0,
+        "GA-SA-RL": 0.0
+      },
+      "unassigned": {
+        "GA": 0.0,
+        "GA-SA": 0.0,
+        "GA-SA-RL": 0.0
+      }
+    },
+    "best_ga_sa_rl": {
+      "fitness": 0.47870094721759476,
+      "dist_km": 332.5,
+      "cost_rp": 3390797.2950625,
+      "co2_kg": 288.557229230625,
+      "time_min": 1149.6,
+      "trips": 6,
+      "trucks": 2,
+      "late_min": 0.0,
+      "overtime_min": 0.0,
+      "unassigned": 0,
+      "penalty": 0.0
+    },
+    "best_trips": [
+      {
+        "rute": "S8-S11-S10",
+        "tipe": "C",
+        "unit": 1,
+        "ritase": 1,
+        "muatan_kl": 15.48,
+        "jarak_km": 63.6,
+        "co2_kg": 62.14,
+        "mulai_menit": 0.0,
+        "selesai_menit": 256.5,
+        "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+      },
+      {
+        "rute": "S9-S12-S13",
+        "tipe": "C",
+        "unit": 1,
+        "ritase": 2,
+        "muatan_kl": 13.38,
+        "jarak_km": 70.1,
+        "co2_kg": 66.66,
+        "mulai_menit": 256.5,
+        "selesai_menit": 507.0,
+        "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+      },
+      {
+        "rute": "S3-S4",
+        "tipe": "B",
+        "unit": 0,
+        "ritase": 1,
+        "muatan_kl": 6.92,
+        "jarak_km": 69.8,
+        "co2_kg": 53.62,
+        "mulai_menit": 0.0,
+        "selesai_menit": 186.6,
+        "kompartemen": "['BBM', 'BBM', 'BBM']"
+      },
+      {
+        "rute": "S2-S5",
+        "tipe": "B",
+        "unit": 0,
+        "ritase": 2,
+        "muatan_kl": 6.92,
+        "jarak_km": 66.4,
+        "co2_kg": 50.82,
+        "mulai_menit": 186.6,
+        "selesai_menit": 368.1,
+        "kompartemen": "['BBM', 'BBM', 'BBM']"
+      },
+      {
+        "rute": "S6-S7",
+        "tipe": "C",
+        "unit": 1,
+        "ritase": 3,
+        "muatan_kl": 11.27,
+        "jarak_km": 44.8,
+        "co2_kg": 41.59,
+        "mulai_menit": 507.0,
+        "selesai_menit": 688.7,
+        "kompartemen": "['BBM', '-', 'BBM', 'BBM']"
+      },
+      {
+        "rute": "S1",
+        "tipe": "B",
+        "unit": 0,
+        "ritase": 3,
+        "muatan_kl": 6.81,
+        "jarak_km": 17.8,
+        "co2_kg": 13.72,
+        "mulai_menit": 368.1,
+        "selesai_menit": 460.9,
+        "kompartemen": "['BBM', 'BBM', 'BBM']"
+      }
+    ],
+    "best_perm": [
+      2,
+      5,
+      9,
+      12,
+      13,
+      3,
+      4,
+      6,
+      7,
+      8,
+      11,
+      10,
+      1
+    ]
+  },
+  "multiproduk": {
+    "baseline": {
+      "fitness": 5.473159508923799,
+      "dist_km": 279.40000000000003,
+      "cost_rp": 3494344.70596875,
+      "co2_kg": 284.80465099968757,
+      "time_min": 1069.95,
+      "trips": 5,
+      "trucks": 2,
+      "late_min": 0.0,
+      "overtime_min": 0.0,
+      "unassigned": 1,
+      "penalty": 5.0
+    },
+    "baseline_trips": [
+      {
+        "rute": "S2-S3-S4-S5",
+        "tipe": "C",
+        "unit": 1,
+        "ritase": 1,
+        "muatan_kl": 13.84,
+        "jarak_km": 76.3,
+        "co2_kg": 72.79,
+        "mulai_menit": 0.0,
+        "selesai_menit": 278.2,
+        "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+      },
+      {
+        "rute": "S11-S12-S13",
+        "tipe": "C",
+        "unit": 1,
+        "ritase": 2,
+        "muatan_kl": 13.38,
+        "jarak_km": 81.5,
+        "co2_kg": 78.64,
+        "mulai_menit": 278.2,
+        "selesai_menit": 545.8,
+        "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+      },
+      {
+        "rute": "S8-S9-S10",
+        "tipe": "D",
+        "unit": -1,
+        "ritase": 0,
+        "muatan_kl": 15.48,
+        "jarak_km": 59.0,
+        "co2_kg": 75.6,
+        "mulai_menit": 0.0,
+        "selesai_menit": 249.6,
+        "kompartemen": "[]"
+      },
+      {
+        "rute": "S6-S7",
+        "tipe": "C",
+        "unit": 2,
+        "ritase": 1,
+        "muatan_kl": 11.27,
+        "jarak_km": 44.8,
+        "co2_kg": 41.59,
+        "mulai_menit": 0.0,
+        "selesai_menit": 181.7,
+        "kompartemen": "['Pertamax', 'Pertalite', 'Pertalite', 'Biosolar']"
+      },
+      {
+        "rute": "S1",
+        "tipe": "C",
+        "unit": 2,
+        "ritase": 2,
+        "muatan_kl": 6.81,
+        "jarak_km": 17.8,
+        "co2_kg": 16.18,
+        "mulai_menit": 181.7,
+        "selesai_menit": 274.5,
+        "kompartemen": "['Pertalite', '-', 'Biosolar', 'Pertamax']"
+      }
+    ],
+    "ref": [
+      9105680.42225,
+      538.9882943025001,
+      1743.15
+    ],
+    "stats_fitness": {
+      "GA": {
+        "n": 30,
+        "mean": 0.4590311285240708,
+        "sd": 0.0,
+        "min": 0.4590311285240708,
+        "max": 0.4590311285240708,
+        "median": 0.4590311285240708,
+        "runtime_mean": 1.7002909580866497,
+        "improve_vs_baseline_pct": 91.61305041858114,
+        "t_one_sample": null,
+        "p_one_sample": null,
+        "note": "varian nol (semua replikasi identik)"
+      },
+      "GA-SA": {
+        "n": 30,
+        "mean": 0.4590311285240708,
+        "sd": 0.0,
+        "min": 0.4590311285240708,
+        "max": 0.4590311285240708,
+        "median": 0.4590311285240708,
+        "runtime_mean": 7.32439169883728,
+        "improve_vs_baseline_pct": 91.61305041858114,
+        "t_one_sample": null,
+        "p_one_sample": null,
+        "note": "varian nol (semua replikasi identik)"
+      },
+      "GA-SA-RL": {
+        "n": 30,
+        "mean": 0.4590311285240708,
+        "sd": 0.0,
+        "min": 0.4590311285240708,
+        "max": 0.4590311285240708,
+        "median": 0.4590311285240708,
+        "runtime_mean": 7.155248665809632,
+        "improve_vs_baseline_pct": 91.61305041858114,
+        "t_one_sample": null,
+        "p_one_sample": null,
+        "note": "varian nol (semua replikasi identik)"
+      },
+      "anova": "tidak dapat dihitung: seluruh replikasi bernilai identik"
+    },
+    "means": {
+      "fitness": {
+        "GA": 0.4590311285240708,
+        "GA-SA": 0.4590311285240708,
+        "GA-SA-RL": 0.4590311285240708
+      },
+      "dist_km": {
+        "GA": 281.4,
+        "GA-SA": 281.4,
+        "GA-SA-RL": 281.4
+      },
+      "cost_rp": {
+        "GA": 3415671.3360937494,
+        "GA-SA": 3415671.3360937494,
+        "GA-SA-RL": 3415671.3360937494
+      },
+      "co2_kg": {
+        "GA": 266.5642650609375,
+        "GA-SA": 266.5642650609375,
+        "GA-SA-RL": 266.5642650609375
+      },
+      "time_min": {
+        "GA": 1072.95,
+        "GA-SA": 1072.95,
+        "GA-SA-RL": 1072.95
+      },
+      "trucks": {
+        "GA": 2.0,
+        "GA-SA": 2.0,
+        "GA-SA-RL": 2.0
+      },
+      "trips": {
+        "GA": 5.0,
+        "GA-SA": 5.0,
+        "GA-SA-RL": 5.0
+      },
+      "late_min": {
+        "GA": 0.0,
+        "GA-SA": 0.0,
+        "GA-SA-RL": 0.0
+      },
+      "overtime_min": {
+        "GA": 0.0,
+        "GA-SA": 0.0,
+        "GA-SA-RL": 0.0
+      },
+      "unassigned": {
+        "GA": 0.0,
+        "GA-SA": 0.0,
+        "GA-SA-RL": 0.0
+      }
+    },
+    "best_ga_sa_rl": {
+      "fitness": 0.4590311285240708,
+      "dist_km": 281.4,
+      "cost_rp": 3415671.33609375,
+      "co2_kg": 266.5642650609375,
+      "time_min": 1072.95,
+      "trips": 5,
+      "trucks": 2,
+      "late_min": 0.0,
+      "overtime_min": 0.0,
+      "unassigned": 0,
+      "penalty": 0.0
+    },
+    "best_trips": [
+      {
+        "rute": "S2-S3-S4-S5",
+        "tipe": "C",
+        "unit": 1,
+        "ritase": 1,
+        "muatan_kl": 13.84,
+        "jarak_km": 76.3,
+        "co2_kg": 72.79,
+        "mulai_menit": 0.0,
+        "selesai_menit": 278.2,
+        "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+      },
+      {
+        "rute": "S9-S12-S13",
+        "tipe": "C",
+        "unit": 1,
+        "ritase": 2,
+        "muatan_kl": 13.38,
+        "jarak_km": 70.1,
+        "co2_kg": 66.66,
+        "mulai_menit": 278.2,
+        "selesai_menit": 528.8,
+        "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+      },
+      {
+        "rute": "S7-S11-S8",
+        "tipe": "C",
+        "unit": 2,
+        "ritase": 1,
+        "muatan_kl": 13.38,
+        "jarak_km": 60.5,
+        "co2_kg": 57.81,
+        "mulai_menit": 0.0,
+        "selesai_menit": 236.1,
+        "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+      },
+      {
+        "rute": "S6-S10",
+        "tipe": "C",
+        "unit": 2,
+        "ritase": 2,
+        "muatan_kl": 13.37,
+        "jarak_km": 56.7,
+        "co2_kg": 53.13,
+        "mulai_menit": 236.1,
+        "selesai_menit": 451.4,
+        "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+      },
+      {
+        "rute": "S1",
+        "tipe": "C",
+        "unit": 2,
+        "ritase": 3,
+        "muatan_kl": 6.81,
+        "jarak_km": 17.8,
+        "co2_kg": 16.18,
+        "mulai_menit": 451.4,
+        "selesai_menit": 544.2,
+        "kompartemen": "['Pertalite', '-', 'Biosolar', 'Pertamax']"
+      }
+    ],
+    "best_perm": [
+      9,
+      12,
+      13,
+      1,
+      7,
+      11,
+      8,
+      2,
+      3,
+      4,
+      5,
+      6,
+      10
+    ]
+  }
+}
