@@ -7,8 +7,8 @@ primary,ya,I,3.5,7.0,arteri primer (ASUMSI kelas I)
 primary_link,ya,I,3.5,7.0,
 secondary,ya,II,3.5,6.0,kolektor / jalan provinsi (ASUMSI kelas II)
 secondary_link,ya,II,3.5,6.0,
-tertiary,ya,III,3.0,5.5,kolektor sekunder / jalan kabupaten (ASUMSI kelas III)
-tertiary_link,ya,III,3.0,5.5,
+tertiary,ya,II,3.0,6.0,kolektor / jalan kabupaten-kota (ASUMSI kelas II: UU 22/2009 Ps.19 membolehkan kelas II pada jalan kolektor & lokal)
+tertiary_link,ya,II,3.0,6.0,
 unclassified,ya,III,2.75,4.5,jalan lokal (ASUMSI kelas III)
 residential,ya,III,2.75,4.0,jalan lingkungan (ASUMSI kelas III)
 road,ya,III,2.75,4.0,jenis belum diketahui

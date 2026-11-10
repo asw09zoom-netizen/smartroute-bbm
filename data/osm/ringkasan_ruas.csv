@@ -1,5 +1,5 @@
-tipe,kelas_jalan_min,km_ruas_total,km_ruas_legal,km_ditolak_jenis_ruas,km_ditolak_larangan_akses,simpul_tak_terjangkau,snap_maks_m,km_ditolak_kelas_jalan,km_ditolak_lebar_jalan
-A,III,3417.5,2937.7,475.9,3.9,,53.0,,
-B,II,3417.5,338.3,475.9,3.9,S8;S10;S13,190.0,2591.4,8.0
-C,II,3417.5,338.3,475.9,3.9,S8;S10;S13,190.0,2591.4,8.0
-D,I,3417.5,338.3,475.9,3.9,S8;S10;S13,190.0,2591.4,8.0
+tipe,kelas_jalan_min,km_ruas_total,km_ruas_legal,km_ditolak_jenis_ruas,km_ditolak_larangan_akses,simpul_tak_terjangkau,snap_maks_m,km_ditolak_kelas_jalan
+A,III,3417.5,2937.7,475.9,3.9,,53.0,
+B,II,3417.5,924.2,475.9,3.9,,53.0,2013.5
+C,II,3417.5,924.2,475.9,3.9,,53.0,2013.5
+D,I,3417.5,346.3,475.9,3.9,S8;S10,190.0,2591.4

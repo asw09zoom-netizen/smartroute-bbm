@@ -482,6 +482,57 @@ def E7():
         pd.DataFrame(rows).to_csv(os.path.join(RES, f"E7_cvrplib{'_part' + part if part is not None else ''}.csv"), index=False)
 
 
+# ---------------------------------------------------------------------------
+def E8():
+    """Jaringan jalan nyata OSM dengan filter legalitas truk vs matriks capstone."""
+    from smartroute import roadnet
+    out = {}
+    cap = build_instance()
+    osm = build_instance(road="osm")
+    names = [v.name for v in osm.vtypes]
+    iu = np.triu_indices(cap.n + 1, 1)
+    comp = {}
+    for k, t in enumerate(names):
+        Dk = osm.Dk[k]
+        m = np.isfinite(Dk[iu])
+        a, b = cap.D[iu][m], Dk[iu][m]
+        reach = [osm.labels[i] for i in range(1, osm.n + 1)
+                 if np.isfinite(Dk[0, i]) and np.isfinite(Dk[i, 0])]
+        comp[t] = dict(pasangan=int(m.sum()), spbu_terjangkau=len(reach),
+                       spbu_tak_terjangkau=[l for l in osm.labels[1:] if l not in reach],
+                       rerata_selisih_km=float(np.mean(b - a)) if m.any() else None,
+                       rerata_selisih_abs_pct=float(np.mean(np.abs(b - a) / np.maximum(a, 1e-9)) * 100) if m.any() else None,
+                       korelasi=float(np.corrcoef(a, b)[0, 1]) if m.sum() > 2 else None)
+    out["matriks"] = comp
+    rs = os.path.join(ROOT, "data", "osm", "ringkasan_ruas.csv")
+    if os.path.exists(rs):
+        out["ringkasan_ruas"] = pd.read_csv(rs).to_dict(orient="records")
+    rows = []
+    for fleet_name, fleet in [("eksisting", None), ("diperluas", FLEET_OPT)]:
+        for mp in [False, True]:
+            key = f"{fleet_name}_{'multiproduk' if mp else 'agregat'}"
+            res = {}
+            for road in ["capstone", "osm"]:
+                inst = build_instance(multiproduct=mp, fleet=fleet, road=road)
+                ev = Evaluator(inst)
+                base = evaluate_routes(ev, BASELINE_ROUTES).summary()
+                best = None
+                for s in range(NREP):
+                    r = HybridGASARL(ev, HybridConfig(seed=s)).run()
+                    d = r.best.summary(); d.update(case=key, road=road, seed=s, runtime=r.runtime)
+                    rows.append(d)
+                    if best is None or r.best.fitness < best.fitness:
+                        best = r.best
+                res[road] = dict(baseline=base, best=best.summary(), best_trips=sol_rows(inst, best))
+            out[key] = res
+            print("E8", key, "done")
+    df = pd.DataFrame(rows)
+    df.to_csv(os.path.join(RES, "E8_runs_osm.csv"), index=False)
+    out["means"] = df.groupby(["case", "road"])[["fitness", "dist_km", "cost_rp", "co2_kg", "time_min", "trucks",
+                                                 "trips", "unassigned"]].mean().reset_index().to_dict(orient="records")
+    save_json("E8_summary.json", out)
+
+
 if __name__ == "__main__":
     todo = sys.argv[1:] or ["E0", "E1", "E2", "E3", "E4", "E5", "E6", "E7"]
     for e in todo:

@@ -19,7 +19,8 @@ data/osm_jalan.csv):
      maxweight, maxaxleload) tidak dilanggar;
   e. lebar badan jalan (tag ``width``, atau ``lanes`` x lebar lajur, atau nilai
      bawaan per jenis ruas) >= lebar jalan minimum operasional truk
-     (kolom ``lebar_jalan_min_m`` pada data/armada.csv);
+     (kolom ``lebar_jalan_min_m`` pada data/armada.csv, untuk jalan dua arah);
+     pada jalur satu arah cukup lebar truk + 1,0 m ruang bebas;
   f. arah satu jalur (``oneway``) dipatuhi.
 """
 from __future__ import annotations
@@ -44,6 +45,7 @@ GEOM_JSON = os.path.join(DATA_DIR, "rute_osm_geom.json.gz")
 EDGE_SUMMARY_CSV = os.path.join(DATA_DIR, "osm", "ringkasan_ruas.csv")
 
 KELAS_RANK = {"III": 1, "II": 2, "I": 3, "KHUSUS": 4}
+ONEWAY_CLEARANCE_M = 1.0   # ruang bebas samping (0,5 m kiri + 0,5 m kanan) pada jalur satu arah
 SNAP_MAX_KM = 0.25  # jarak maksimum titik FT/SPBU ke ruas legal terdekat (km)
 
 
@@ -126,7 +128,10 @@ def edge_allowed(tags: Dict[str, str], truck: Dict[str, str], truck_kelas: str,
         if x is not None and x > 0 and float(truck[col]) > x + 1e-9:
             return False, "rambu_" + tag
     w, _ = road_width(tags, jalan)
-    if w + 1e-9 < float(truck["lebar_jalan_min_m"]):
+    need = float(truck["lebar_jalan_min_m"])        # jalan dua arah: truk harus dapat berpapasan
+    if _oneway(tags) != 0:                          # jalur satu arah (mis. jalan raya terpisah median)
+        need = min(need, float(truck["lebar_kendaraan_m"]) + ONEWAY_CLEARANCE_M)
+    if w + 1e-9 < need:
         return False, "lebar_jalan"
     return True, "ok"
 
