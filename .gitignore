@@ -6,3 +6,4 @@ logs/
 .venv/
 results/old_scale1e5/
 docs/output/*.pdf
+results/old_noamort/
