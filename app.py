@@ -25,7 +25,7 @@ from smartroute.dynamic import breakdown_event
 from smartroute.hybrid import HybridConfig, HybridGASARL
 from smartroute.model import Evaluator, Params, evaluate_routes
 from smartroute.sheets import from_streamlit_secrets
-from smartroute import telegram_bot
+from smartroute import roadnet, telegram_bot
 
 st.set_page_config(page_title="SMARTROUTE-BBM", page_icon="⛽", layout="wide")
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -62,6 +62,11 @@ with st.sidebar:
     st.caption(f"Sumber data: **{data_src}**")
     st.divider()
     st.markdown("### Model")
+    road_opts = (["Jalan nyata OSM (legal truk)"] if roadnet.available() else []) + ["Matriks jarak capstone"]
+    road_choice = st.radio("Jaringan jalan", road_opts, index=0,
+                           help="Jalan nyata OSM: tiap tipe truk hanya boleh lewat ruas yang sesuai kelas jalan "
+                                "(UU 22/2009 Pasal 19), rambu batas, dan lebar jalan minimum truk.")
+    road_mode = "osm" if road_choice.startswith("Jalan nyata") else "capstone"
     multiproduct = st.toggle("Multi-produk (proporsi asumsi tb_produk)", value=True)
     single_trip = st.toggle("Satu ritase per truk (setara baseline)", value=False)
     st.markdown("**Armada tersedia (unit)**")
@@ -93,7 +98,7 @@ with st.sidebar:
 
 def make_instance():
     p = Params(w=(w1, w2, w3), single_trip=single_trip)
-    inst = build_instance(tables, multiproduct=multiproduct, fleet=fleet, params=p)
+    inst = build_instance(tables, multiproduct=multiproduct, fleet=fleet, params=p, road=road_mode)
     notes = []
     for s in scen:
         if s.startswith("1."):
@@ -138,9 +143,14 @@ def hhmm(inst, m):
 def route_map(inst, sol, title=""):
     fig = go.Figure()
     C = inst.coords
+    geom = roadnet.load_geometry() if inst.Dk is not None else {}
     for k, t in enumerate(sol.trips):
         idx = [0] + t.seq + [0]
-        fig.add_trace(go.Scattermap(lat=C[idx, 0], lon=C[idx, 1], mode="lines+markers",
+        lat, lon = C[idx, 0], C[idx, 1]
+        poly = roadnet.route_polyline(geom, inst.vtypes[t.vtype].name, [inst.labels[i] for i in idx]) if geom else None
+        if poly:
+            lat, lon = [p[0] for p in poly], [p[1] for p in poly]
+        fig.add_trace(go.Scattermap(lat=lat, lon=lon, mode="lines",
                                     line=dict(width=3, color=COLORS[k % len(COLORS)]),
                                     name=f"{inst.vtypes[t.vtype].name}-{t.truck} R{t.trip_no}: "
                                          + "-".join(inst.labels[i] for i in t.seq)))
@@ -177,7 +187,7 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(["📍 Data & Peta", "🧬 Optimasi GA-SA
                                         "📊 Hasil Penelitian", "📄 Laporan & Log"])
 
 with tab1:
-    inst0 = build_instance(tables, multiproduct=multiproduct, fleet=fleet)
+    inst0 = build_instance(tables, multiproduct=multiproduct, fleet=fleet, road=road_mode)
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("SPBU dilayani", inst0.n)
     c2.metric("Total permintaan", f"{inst0.total_demand().sum():.2f} KL/hari")
@@ -187,7 +197,11 @@ with tab1:
     with l:
         base_sol = evaluate_routes(Evaluator(inst0), BASELINE_ROUTES)
         st.plotly_chart(route_map(inst0, base_sol, "Baseline Saving Matrix (capstone)"), use_container_width=True)
-        st.caption("Garis rute digambar lurus antar-titik; jarak model memakai matriks jarak jalan capstone.")
+        if road_mode == "osm":
+            st.caption("Rute digambar mengikuti jalan OpenStreetMap yang legal untuk tipe truk ritase tsb. "
+                       "Jarak baseline dihitung ulang pada jaringan jalan legal-truk.")
+        else:
+            st.caption("Garis rute digambar lurus antar-titik; jarak model memakai matriks jarak jalan capstone.")
     with r:
         st.markdown("**tb_spbu**")
         st.dataframe(pd.DataFrame(tables["spbu"]), hide_index=True, height=300)
@@ -195,6 +209,28 @@ with tab1:
         st.dataframe(pd.DataFrame(tables["armada"]), hide_index=True)
         st.markdown("**tb_produk** (proporsi = asumsi skenario)")
         st.dataframe(pd.DataFrame(tables["produk"]), hide_index=True)
+    with st.expander("Aturan jalan untuk truk tangki (kelas jalan, rambu, lebar jalan)"):
+        st.markdown(
+            "Sebuah ruas OSM boleh dilalui truk tipe k bila: (a) jenis ruas termasuk jalan umum yang boleh "
+            "dilalui truk; (b) tidak ada larangan `access`/`hgv`; (c) **kelas jalan** ruas mengizinkan dimensi "
+            "dan MST truk (UU 22/2009 Pasal 19, PP 79/2013); (d) rambu batas OSM (`maxwidth`, `maxlength`, "
+            "`maxheight`, `maxweight`, `maxaxleload`) tidak dilanggar; (e) **lebar badan jalan** ≥ lebar jalan "
+            "minimum truk (kolom `lebar_jalan_min_m`); (f) arah satu jalur dipatuhi. Kelas & lebar bawaan per jenis "
+            "ruas adalah ASUMSI bila OSM tidak memuat tag `width`/`lanes` — dapat diubah di `data/osm_jalan.csv`.")
+        dd = os.path.join(ROOT, "data")
+        st.markdown("**Batas dimensi & MST per kelas jalan**")
+        st.dataframe(pd.read_csv(os.path.join(dd, "aturan_kelas_jalan.csv")), hide_index=True)
+        st.markdown("**Pemetaan jenis ruas OSM → kelas & lebar bawaan (asumsi)**")
+        st.dataframe(pd.read_csv(os.path.join(dd, "osm_jalan.csv")), hide_index=True)
+        rs = os.path.join(dd, "osm", "ringkasan_ruas.csv")
+        if os.path.exists(rs):
+            st.markdown("**Ringkasan ruas legal per tipe truk** (km ruas OSM di wilayah studi)")
+            st.dataframe(pd.read_csv(rs), hide_index=True)
+        if inst0.Dk is not None:
+            t_sel = st.selectbox("Matriks jarak jalan legal untuk tipe truk", [v.name for v in inst0.vtypes])
+            kk = [v.name for v in inst0.vtypes].index(t_sel)
+            st.dataframe(pd.DataFrame(np.round(inst0.Dk[kk], 1), index=inst0.labels, columns=inst0.labels))
+            st.caption("Kosong = tidak ada lintasan legal untuk tipe truk tsb. Data jalan © kontributor OpenStreetMap (ODbL).")
     with st.expander("Matriks jarak jalan (km) — tb_jarak"):
         J = tables["jarak"]
         st.dataframe(pd.DataFrame(J[1:], columns=J[0]), hide_index=True)

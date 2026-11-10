@@ -90,6 +90,7 @@ class Instance:
     access: Optional[np.ndarray] = None    # (n+1) x |K| bool, akses tipe truk
     quota: Optional[np.ndarray] = None     # (n+1) x |P| KL (nan = tanpa kuota)
     params: Params = field(default_factory=Params)
+    Dk: Optional[np.ndarray] = None        # |K| x (n+1) x (n+1) km jalan legal per tipe truk (NaN = tak ada lintasan)
 
     @property
     def n(self) -> int:
@@ -233,6 +234,13 @@ class Evaluator:
         self.K = len(inst.vtypes)
         self.prio = inst.priority if inst.priority is not None else np.full(self.n + 1, 50.0)
         self.access = inst.access if inst.access is not None else np.ones((self.n + 1, self.K), bool)
+        self.Dk = None
+        if inst.Dk is not None:
+            # jarak jalan legal per tipe truk; SPBU tanpa lintasan legal -> tidak boleh dilayani tipe itu
+            Dk = np.asarray(inst.Dk, dtype=float)
+            reach = np.isfinite(Dk[:, 0, :]) & np.isfinite(Dk[:, :, 0])  # K x (n+1)
+            self.access = self.access & reach.T
+            self.Dk = np.where(np.isfinite(Dk), Dk, 1e6)
         self.n_evals = 0
         self.default_avail = None   # waktu siap truk default (dipakai pada re-routing dinamis)
         # batas panjang segmen pada split (kapasitas terbesar)
@@ -247,7 +255,7 @@ class Evaluator:
         """dist, fuel(L), duration(min, kecepatan arus bebas), cost var (Rp)."""
         p = self.p
         vt = self.inst.vtypes[k]
-        D = self.D
+        D = self.D if self.Dk is None else self.Dk[k]
         load = float(sum(self.qtot[i] for i in seq))
         dist = 0.0
         fuel = 0.0
@@ -303,7 +311,7 @@ class Evaluator:
         for i in range(1, self.n + 1):
             best = None
             for k, vt in enumerate(self.inst.vtypes):
-                if vt.count <= 0 or self.qtot[i] > vt.capacity * p.cap_safety:
+                if vt.count <= 0 or self.qtot[i] > vt.capacity * p.cap_safety or not self.access[i, k]:
                     continue
                 dist, fuel, dur, cost = self._trip_static([i], k)
                 if best is None or cost < best[0]:
@@ -338,8 +346,12 @@ class Evaluator:
                 seg.append(c)
                 bt = self.best_type(seg)
                 if bt is None:
-                    if len(seg) == 1:  # permintaan tunggal tidak muat -> tetap paksa
-                        k = int(np.argmax([v.capacity for v in self.inst.vtypes]))
+                    if len(seg) == 1:  # permintaan tunggal tidak muat / tak terjangkau -> tetap paksa
+                        caps = [v.capacity if self.access[c, kk] else -1.0
+                                for kk, v in enumerate(self.inst.vtypes)]
+                        if max(caps) < 0:  # tak ada tipe yang punya lintasan legal
+                            caps = [v.capacity for v in self.inst.vtypes]
+                        k = int(np.argmax(caps))
                         cost = self.trip_weighted(seg, k) + self.p.pen_fleet
                         bt = (k, tuple(), cost)
                     else:
@@ -364,7 +376,7 @@ class Evaluator:
         """Simulasi time-dependent satu ritase mulai t0. -> end, arrivals, dist, fuel, late."""
         p = self.p
         vt = self.inst.vtypes[k]
-        D = self.D
+        D = self.D if self.Dk is None else self.Dk[k]
         load = float(sum(self.qtot[i] for i in seq))
         t = t0 + p.rack_wait + load * p.load_min_per_kl
         prev = 0
@@ -422,11 +434,11 @@ class Evaluator:
                 if u["n"] >= maxtrips:
                     continue
                 kk = u["k"]
+                if not all(self.access[i, kk] for i in seq):
+                    continue
                 if kk != k:
                     vols = self.q[seq].sum(axis=0)
                     if vols.sum() > self.inst.vtypes[kk].capacity * p.cap_safety + 1e-9:
-                        continue
-                    if not all(self.access[i, kk] for i in seq):
                         continue
                     if compartment_feasible(self.inst.vtypes[kk], vols, self.inst.products, p.cap_safety) is None:
                         continue

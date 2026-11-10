@@ -1,0 +1,5 @@
+kelas,lebar_maks_m,panjang_maks_m,tinggi_maks_m,mst_maks_ton,dasar_hukum
+III,2.1,9.0,3.5,8,UU 22/2009 Pasal 19 ayat (2) huruf c; PP 79/2013
+II,2.5,12.0,4.2,8,UU 22/2009 Pasal 19 ayat (2) huruf b; PP 79/2013
+I,2.5,18.0,4.2,10,UU 22/2009 Pasal 19 ayat (2) huruf a; PP 79/2013
+KHUSUS,99,99,4.2,99,UU 22/2009 Pasal 19 ayat (2) huruf d (lebar >2.5 m; panjang >18 m; MST >10 t)

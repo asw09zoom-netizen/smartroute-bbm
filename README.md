@@ -62,3 +62,17 @@ Tanpa secrets, aplikasi otomatis memakai CSV di folder `data/`.
 ## Sitasi
 
 Wardhana, A. S., Dewi, A. K., Hamdani, C. N., & Ardhiyanto, N. K. (2026). *SMARTROUTE-BBM: Web-based DSS for multi-trip multi-compartment fuel distribution with hybrid GA-SA-RL* (v1.0) [Perangkat lunak]. Politeknik Energi dan Mineral Akamigas.
+
+## Jaringan jalan nyata (OpenStreetMap, legal truk)
+
+Rute dapat dihitung pada jalan nyata OSM dengan filter legalitas per tipe truk:
+
+1. `tools/fetch_osm.py` mengunduh ruas jalan OSM sekitar FT Gelumbang (Overpass API) ke `data/osm/roads.json.gz`.
+2. `python -m smartroute.roadnet` menyaring ruas yang boleh dilalui tiap tipe truk lalu menghitung
+   `data/jarak_jalan_osm.csv` (jarak per tipe truk) dan `data/rute_osm_geom.json.gz` (geometri rute untuk peta).
+3. Workflow GitHub Actions `.github/workflows/roadnet.yml` menjalankan kedua langkah otomatis dan meng-commit hasilnya.
+
+Aturan: kelas jalan dan batas dimensi/MST (UU 22/2009 Pasal 19; `data/aturan_kelas_jalan.csv`), pemetaan jenis ruas OSM →
+kelas & lebar bawaan (ASUMSI; `data/osm_jalan.csv`), dimensi truk & lebar jalan minimum (ASUMSI; `data/armada.csv`),
+rambu `maxwidth/maxlength/maxheight/maxweight/maxaxleload`, larangan `access/hgv`, dan arah `oneway`.
+Di aplikasi, pilih **Jaringan jalan → Jalan nyata OSM (legal truk)**. Data jalan © kontributor OpenStreetMap (ODbL).

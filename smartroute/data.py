@@ -43,7 +43,10 @@ def matrix_from_rows(rows: List[List[str]]) -> np.ndarray:
 def build_instance(tables: Optional[Dict] = None, *, multiproduct: bool = False,
                    fleet: Optional[Dict[str, int]] = None, params: Optional[Params] = None,
                    tte_hours: Optional[np.ndarray] = None, demand_cv: Optional[np.ndarray] = None,
-                   demand_scale: Optional[np.ndarray] = None, name: str = "FT Gelumbang") -> Instance:
+                   demand_scale: Optional[np.ndarray] = None, name: str = "FT Gelumbang",
+                   road: str = "capstone") -> Instance:
+    """road: "capstone" = matriks jarak capstone (satu matriks untuk semua truk);
+    "osm" = jarak jalan nyata OSM yang legal untuk tiap tipe truk (data/jarak_jalan_osm.csv)."""
     t = tables or load_tables()
     spbu = t["spbu"]
     D = matrix_from_rows(t["jarak"])
@@ -78,7 +81,16 @@ def build_instance(tables: Optional[Dict] = None, *, multiproduct: bool = False,
     if demand_cv is None:
         demand_cv = np.full(n + 1, 0.10)
     prio = priorities(tte_hours, D[0], demand_cv)
-    return Instance(name, D, demand, products, vtypes, labels, coords, tw, prio, None, None, p)
+    Dk = None
+    if road == "osm":
+        from .roadnet import load_type_matrices
+        Dk = load_type_matrices(labels, [v.name for v in vtypes])
+        with np.errstate(all="ignore"):
+            Dosm = np.nanmin(Dk, axis=0)
+        D = np.where(np.isfinite(Dosm), Dosm, D)  # untuk heuristik/prioritas; evaluasi memakai Dk per tipe
+        prio = priorities(tte_hours, D[0], demand_cv)
+        name = name + " (jalan OSM)"
+    return Instance(name, D, demand, products, vtypes, labels, coords, tw, prio, None, None, p, Dk)
 
 
 # Baseline Saving Matrix capstone (Laporan Kemajuan Tabel 2.6), indeks SPBU 1..13

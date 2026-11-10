@@ -28,7 +28,8 @@ def subinstance(inst: Instance, customers: List[int]) -> Tuple[Instance, List[in
                   tw=None if inst.tw is None else inst.tw[idx],
                   priority=None if inst.priority is None else inst.priority[idx],
                   access=None if inst.access is None else inst.access[idx],
-                  quota=None if inst.quota is None else inst.quota[idx])
+                  quota=None if inst.quota is None else inst.quota[idx],
+                  Dk=None if inst.Dk is None else inst.Dk[:, idx][:, :, idx])
     return sub, idx
 
 
