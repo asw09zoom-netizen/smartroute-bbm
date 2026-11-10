@@ -436,7 +436,7 @@ class Evaluator:
                 kk = u["k"]
                 if not all(self.access[i, kk] for i in seq):
                     continue
-                if kk != k:
+                if kk != k or not ca:  # tipe lain, atau ritase paksaan (kompartemen belum terbukti layak)
                     vols = self.q[seq].sum(axis=0)
                     if vols.sum() > self.inst.vtypes[kk].capacity * p.cap_safety + 1e-9:
                         continue
@@ -532,8 +532,12 @@ def evaluate_routes(ev: Evaluator, routes: List[List[int]], vtypes: Optional[Lis
             ca = compartment_feasible(ev.inst.vtypes[k], vols, ev.inst.products, ev.p.cap_safety) or tuple()
         else:
             bt = ev.best_type(r)
-            if bt is None:
-                k = int(np.argmax([v.capacity for v in ev.inst.vtypes])); ca = tuple()
+            if bt is None:  # tidak ada tipe tersedia yang layak -> paksa tipe terbesar yang punya lintasan legal
+                caps = [v.capacity if all(ev.access[i, kk] for i in r) else -1.0
+                        for kk, v in enumerate(ev.inst.vtypes)]
+                if max(caps) < 0:
+                    caps = [v.capacity for v in ev.inst.vtypes]
+                k = int(np.argmax(caps)); ca = tuple()
             else:
                 k, ca, _ = bt
         raw.append((list(r), k, ca))
