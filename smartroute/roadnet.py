@@ -328,8 +328,10 @@ def save(out: Dict, data_dir: str = DATA_DIR):
             for i, a in enumerate(labels):
                 for j, b in enumerate(labels):
                     wr.writerow([t, a, b, "" if not np.isfinite(D[i, j]) else f"{D[i, j]:.3f}"])
-    with gzip.open(os.path.join(data_dir, os.path.basename(GEOM_JSON)), "wt", encoding="utf-8") as f:
-        json.dump(out["geom"], f, separators=(",", ":"))
+    raw = json.dumps(out["geom"], separators=(",", ":"), sort_keys=True).encode("utf-8")
+    with open(os.path.join(data_dir, os.path.basename(GEOM_JSON)), "wb") as fh:
+        with gzip.GzipFile(fileobj=fh, mode="wb", mtime=0, filename="") as f:  # deterministik
+            f.write(raw)
     os.makedirs(os.path.join(data_dir, "osm"), exist_ok=True)
     keys = []
     for s in out["summary"]:
