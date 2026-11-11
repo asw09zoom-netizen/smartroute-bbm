@@ -26,7 +26,8 @@ SP3 = "046/SP3/Penelitian/DIPA2026/PEM Akamigas"
 DIREKTUR = "Dr. Erdila Indriani, S.Si., M.T."
 REPO = "https://github.com/asw09zoom-netizen/smartroute-bbm"
 SHEET = "https://docs.google.com/spreadsheets/d/1CohYmRvhwtAD3y34z9DmqEYkp-sfHlJ1g_Zs4YWPRq4"
-VAR = ["GA", "GA-SA", "GA-SA-RL"]
+VAR = ["GA", "GA-SA", "GA-SA-ALNS", "GA-SA-RL"]
+OTHERS = ["GA", "GA-SA", "GA-SA-ALNS"]
 
 
 def J(name):
@@ -74,7 +75,7 @@ def load_results():
                 e3=C("E3_pareto.csv"), e3b=C("E3b_pareto.csv"), e3c=C("E3c_pareto.csv"), e3s=C("E3_sens_fixedcost.csv"),
                 e6=C("E6_montecarlo.csv"), e7=C("E7_cvrplib.csv"), e8=J("E8_summary.json"), e9=J("E9_summary.json"),
                 e10=J("E10_summary.json"), e10r=C("E10_scalability.csv"), app=J("APP_check.json"), e5r=C("E5_dynamic.csv"),
-                e1r=C("E1_runs.csv"))
+                e1r=C("E1_runs.csv"), e11=J("E11_summary.json"), e11r=C("E11_runs.csv"))
 
 
 def pareto_pts(df):
@@ -83,13 +84,13 @@ def pareto_pts(df):
 
 
 def e7_tests(e7):
-    """Uji Wilcoxon berpasangan satu sisi GA-SA-RL < GA dan < GA-SA pada instance yang memuat ketiga varian."""
+    """Uji Wilcoxon berpasangan satu sisi GA-SA-RL < GA dan < GA-SA pada instance yang memuat keempat varian."""
     from scipy import stats as ss
-    inst = [i for i in e7.instance.unique() if e7[e7.instance == i].variant.nunique() == 3]
+    inst = [i for i in e7.instance.unique() if e7[e7.instance == i].variant.nunique() == len(VAR)]
     d = e7[e7.instance.isin(inst)]
     out = dict(n_inst=len(inst))
     piv = d.groupby(["instance", "variant"]).gap_pct.mean().unstack()
-    for o in ["GA", "GA-SA"]:
+    for o in OTHERS:
         # utama: Wilcoxon atas rerata per instance (blok = instance)
         out[o] = float(ss.wilcoxon(piv["GA-SA-RL"], piv[o], alternative="less").pvalue)
         # pelengkap: Wilcoxon atas pasangan instance x seed

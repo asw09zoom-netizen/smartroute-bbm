@@ -22,7 +22,7 @@ def jt(x):
 def kw_text(st):
     k = st.get("kruskal")
     if not isinstance(k, dict) or k.get("p") is None or k["p"] != k["p"]:
-        return "Ketiga varian menghasilkan nilai yang identik pada setiap replikasi, sehingga uji antarvarian tidak dapat dihitung."
+        return "Keempat varian menghasilkan nilai yang identik pada setiap replikasi, sehingga uji antarvarian tidak dapat dihitung."
     sig = k["p"] < 0.05
     return (f"Uji Kruskal–Wallis memberi H = {f(k['H'], 2)} dengan p = {pv(k['p'])}; perbedaan antarvarian "
             f"{'signifikan' if sig else 'tidak signifikan'} pada α = 0,05.")
@@ -64,7 +64,7 @@ def aplikasi(W, cite, R):
     W.figure(FG("L04_app_optimasi.png"), "Menu Optimasi: KPI GA-SA-RL terhadap _Saving Matrix_ pada pengaturan bawaan", 14.0)
     W.figure(FG("L05_app_gantt.png"), "Menu Optimasi: Gantt multi-ritase dan rincian muatan kompartemen", 14.0)
     W.p("Menu Simulasi Pergerakan (Gambar 4.4 dan 4.5) menganimasikan truk ruas demi ruas mengikuti geometri jalan "
-        "legal dengan model kecepatan (24) dan waktu bongkar (25). Tampilan tiga dimensi memperlihatkan truk, muatan "
+        "legal dengan model kecepatan (26) dan waktu bongkar (27). Tampilan tiga dimensi memperlihatkan truk, muatan "
         "tersisa, dan status setiap SPBU pada jam simulasi; tampilan dua dimensi dipakai untuk membaca posisi truk "
         "terhadap jalan. Menu Data Simulasi (Gambar 4.6) menyajikan linimasa setiap truk serta jarak, waktu mengemudi, "
         "dan waktu bongkar hasil simulasi.")
@@ -141,7 +141,7 @@ def e1(W, cite, R):
     W.table(["Varian", "Rerata (km)", "SD", "Min.", "Maks.", "Waktu (s)", "Capai optimum"], stats_rows(st),
             "Hasil 30 replikasi pada setting capstone (E1)", widths=[2.6, 2.0, 1.4, 1.8, 1.8, 2.0, 2.4])
     allhit = all(st[v].get("hit_rate_opt", 0) == 1.0 for v in VAR)
-    W.p(("Ketiga varian mencapai optimum MILP pada seluruh replikasi. Karena variansnya nol, uji statistik terhadap "
+    W.p(("Keempat varian mencapai optimum MILP pada seluruh replikasi. Karena variansnya nol, uji statistik terhadap "
          "baseline tidak dapat dihitung; selisihnya bersifat pasti. Instance 13 SPBU ini terlalu kecil untuk membedakan "
          "varian, sehingga perbandingan varian dilakukan pada model lengkap (E2), CVRPLIB (E7), dan instance besar (E10)."
          if allhit else kw_text(st)))
@@ -456,7 +456,7 @@ def e6(W, cite, R):
         return
     W.hh("Ketahanan terhadap permintaan stokastik (E6)")
     W.p("E6 mengundi permintaan setiap SPBU dari distribusi normal dengan koefisien variasi 0,05–0,20 sebanyak 1000 kali "
-        "per sel, lalu menghitung _service level_ (26) rencana _Saving Matrix_, GA-SA-RL, dan GA-SA-RL _robust_ yang "
+        "per sel, lalu menghitung _service level_ (28) rencana _Saving Matrix_, GA-SA-RL, dan GA-SA-RL _robust_ yang "
         "kapasitas efektif truknya dibatasi 90% saat perencanaan.")
     sub = e[e.cv.isin([0.1, 0.2])]
     rows = [("Agregat" if r.produk == "agregat" else "Multi-produk", f(r.cv, 2), r.plan.replace("GA-SA-RL robust (90%)", "GA-SA-RL _robust_"),
@@ -485,7 +485,7 @@ def e9(W, cite, R):
     W.hh("Simulasi mikro pergerakan truk (E9)")
     dm = e["multiproduk"]["deterministic"]
     g, b = dm["GA-SA-RL"], dm["Saving Matrix"]
-    W.p("E9 menjalankan rencana _Saving Matrix_ dan GA-SA-RL kasus multi-produk pada simulasi mikro (24)–(25). Simulasi "
+    W.p("E9 menjalankan rencana _Saving Matrix_ dan GA-SA-RL kasus multi-produk pada simulasi mikro (26)–(27). Simulasi "
         "deterministik (tanpa unsur acak) dipakai untuk membandingkan simulasi dengan model. Rencana GA-SA-RL selesai "
         f"pada menit ke-{f(g['t_end'], 1)} sejak 06.00 (pukul {jam_txt(g['t_end'])}), sedangkan model memperkirakan menit "
         f"ke-{f(g['model_end'], 1)}. Selisih waktu tiba di SPBU terhadap rencana rata-rata {f(g['arr_dev_mean'], 1)} menit "
@@ -536,9 +536,11 @@ def e7(W, cite, R):
             note="Gap GA-SA-RL ditulis sebagai rerata ± simpangan baku 10 replikasi.")
     t7 = e7_tests(e)
     W.p(f"Pada {len(g)} instance (n = {int(g.n.min())}–{int(g.n.max())}), GA-SA-RL mencapai rerata gap {f(g.gap.mean(), 2)}% "
-        f"(rentang {f(g.gap.min(), 2)}–{f(g.gap.max(), 2)}%), dibanding Clarke–Wright {f(g.cw.mean(), 2)}%. Implementasi "
-        "algoritma dengan demikian bekerja benar pada CVRP murni, tetapi masih jauh dari algoritma terbaik seperti "
-        f"HGS-CVRP {cite('vidal2022')} yang umumnya mencapai gap di bawah 0,5%.")
+        f"(rentang {f(g.gap.min(), 2)}–{f(g.gap.max(), 2)}%), dibanding Clarke–Wright {f(g.cw.mean(), 2)}%. Versi awal "
+        "algoritma (lima operator, 200 generasi GA dan 5000 iterasi SA) pada instance yang sama mencapai 6,47%, sehingga "
+        "operator granular dan _ruin-and-recreate_ serta pembagian anggaran yang baru menurunkan gap kira-kira separuhnya. "
+        f"Hasil ini tetap di atas algoritma khusus CVRP seperti HGS-CVRP {cite('vidal2022')} yang umumnya mencapai gap di "
+        "bawah 0,5%; GA-SA-RL dirancang untuk model multi-kompartemen dan multi-ritase, bukan untuk CVRP murni.")
     rows = [(v, f(t7["mean"][v], 2)) for v in VAR if v in t7["mean"]]
     W.table(["Varian", "Rerata gap (%)"], rows, f"Uji ablasi pada {t7['n_inst']} instance CVRPLIB (10 replikasi per varian)",
             widths=[4.0, 4.0])
@@ -546,53 +548,88 @@ def e7(W, cite, R):
            ", ".join(f"{v} {f(t7['mean'][v], 2)}%" for v in VAR if v in t7["mean"]) + ".")
     if t7.get("friedman"):
         txt += f" Uji Friedman atas rerata per instance: χ² = {f(t7['friedman'][0], 2)}, p = {pv(t7['friedman'][1])}."
-    txt += (f" Uji Wilcoxon satu sisi atas rerata per instance memberi GA-SA-RL < GA dengan p = {pv(t7['GA'])} dan "
-            f"GA-SA-RL < GA-SA dengan p = {pv(t7['GA-SA'])}. Dengan {t7['n_inst']} instance, p terkecil yang mungkin "
-            f"dicapai uji ini adalah 0,031, sehingga hasil pertama berada tepat pada batas tersebut. Uji yang sama pada "
-            f"{t7['n_pairs']} pasangan instance × _seed_ memberi p = {pv(t7['GA_run'])} dan {pv(t7['GA-SA_run'])}.")
+    txt += (f" Uji Wilcoxon satu sisi atas rerata per instance memberi GA-SA-RL < GA dengan p = {pv(t7['GA'])}, "
+            f"GA-SA-RL < GA-SA dengan p = {pv(t7['GA-SA'])}, dan GA-SA-RL < GA-SA-ALNS dengan p = {pv(t7['GA-SA-ALNS'])}. "
+            f"Dengan {t7['n_inst']} instance, p terkecil yang mungkin dicapai uji ini adalah 0,031, sehingga hasil pertama "
+            f"berada tepat pada batas tersebut. Uji yang sama pada {t7['n_pairs']} pasangan instance × _seed_ memberi "
+            f"p = {pv(t7['GA_run'])}, {pv(t7['GA-SA_run'])}, dan {pv(t7['GA-SA-ALNS_run'])}. Fase SA menurunkan gap lebih "
+            "dari separuh, sedangkan ketiga cara memilih operator memberi hasil yang praktis sama.")
     W.p(txt)
     W.figure(FG("L18_cvrplib.png"), "Gap terhadap BKS pada CVRPLIB set X", 14.0)
 
 
 def e10(W, cite, R):
-    e, df = R["e10"], R["e10r"]
+    e, df = R["e11"], R["e11r"]
     if not e or df is None:
         return
-    W.hh("Skalabilitas pada instance besar (E10)")
-    W.p("Untuk menguji kompleksitas yang lebih tinggi daripada 13 SPBU, dibangkitkan instance sintetis 25, 50, dan 100 "
-        "SPBU di jaringan jalan yang sama. Lokasi SPBU diambil dari simpul jalan legal truk C dengan jarak minimal 1 km "
-        "satu sama lain dan dari FT; permintaan diambil ulang (_bootstrap_) dari 13 permintaan nyata dan dibagi tiga "
-        "produk. Armada disesuaikan dengan ukuran (B = ⌈n/13⌉, C = ⌈4n/13⌉), dan jarak dihitung per tipe truk dengan "
-        "Dijkstra pada graf legal. Pembanding adalah Clarke–Wright (satu kali) serta GA dan GA-SA-RL masing-masing "
-        "10 _seed_.")
+    W.hh("Uji pembanding pada instance sulit (E10)")
+    I = {int(x["n"]): x for x in e["instances"]}
+    ns = sorted(I)
+    W.p("Instance capstone terlalu kecil untuk membedakan metode: pada E1 dan E2 keempat varian memberi solusi yang "
+        "sama. E10 karena itu memakai instance yang lebih besar dan lebih ketat di jaringan jalan yang sama. Lokasi "
+        f"{', '.join(map(str, ns[:-1]))}, dan {ns[-1]} SPBU diambil dari simpul jalan legal truk C dengan jarak minimal "
+        "1 km satu sama lain dan dari FT. Permintaan diambil ulang (_bootstrap_) dari 13 permintaan nyata dan dibagi tiga "
+        "produk. Armada dibuat padat: jumlah unit C dihitung dari total permintaan dibagi kapasitas tiga ritase pada "
+        "tingkat isi 75%, ditambah unit B untuk jalan sempit dan unit D yang aksesnya paling terbatas. Sebanyak 40% "
+        "SPBU memiliki jendela waktu 3 jam pada jam acak, dan setiap keberangkatan menunggu 15 menit di _loading rack_. "
+        "Instance uji dibangkitkan dengan _seed_ yang berbeda dari instance kalibrasi.")
     rows = []
+    for n in ns:
+        x = I[n]
+        rows.append((n, f(x["total_kl"], 1), ", ".join(f"{k} {v}" for k, v in x["units"].items()),
+                     f(x["tw_frac"] * 100, 0) + "%", f(x["rack_wait"], 0)))
+    W.table(["n", "Permintaan (KL)", "Armada (unit)", "SPBU berjendela waktu", "Antrean rack (menit)"], rows,
+            "Karakteristik instance uji E10", widths=[1.2, 2.8, 3.6, 3.4, 3.0])
     T = {int(x["n"]): x for x in e["tests"]}
-    for n in sorted(df.n.unique()):
-        d = df[df.n == n]
-        cw = d[d.variant == "Clarke-Wright"].iloc[0]
-        ga = d[d.variant == "GA"]; hy = d[d.variant == "GA-SA-RL"]
-        rows.append((int(n), f(cw.fitness, 3) + (f" ({int(cw.unassigned)})" if cw.unassigned else ""),
-                     f"{f(ga.fitness.mean(), 3)} ± {f(ga.fitness.std(), 3)}", f"{f(hy.fitness.mean(), 3)} ± {f(hy.fitness.std(), 3)}",
-                     f(hy.dist_km.mean(), 0), pv(T[int(n)]["p_vs_ga"]), f(T[int(n)]["cliffs_delta"], 2)))
-    W.table(["n", "Fitness CW (tak layak)", "Fitness GA", "Fitness GA-SA-RL", "Jarak GA-SA-RL (km)", "p vs GA", "Cliff's δ"],
-            rows, "Hasil uji skalabilitas pada instance sintetis (E10, 10 _seed_)", widths=[1.0, 2.6, 2.3, 2.5, 2.2, 1.6, 1.8],
-            note="Fitness ditulis rerata ± simpangan baku. Angka dalam kurung pada kolom CW adalah jumlah ritase tak layak. "
-                 "p dari uji Mann–Whitney U satu sisi (GA-SA-RL < GA).")
+    tab = {(int(r["n"]), r["variant"]): r for r in e["table"]}
+    rows = []
+    for n in ns:
+        cw, ort = tab[(n, "Clarke-Wright")], tab[(n, "OR-Tools")]
+        row = [n, f(cw["fit_mean"], 1) + (f" ({int(cw['unassigned'])})" if cw["unassigned"] else ""), f(ort["fit_mean"], 3)]
+        for v in VAR:
+            r = tab[(n, v)]
+            row.append(f"{f(r['fit_mean'], 3)} ± {f(r['fit_sd'], 3)}")
+        rows.append(tuple(row))
+    W.table(["n", "CW", "OR-Tools", "GA", "GA-SA", "GA-SA-ALNS", "GA-SA-RL"], rows,
+            "Fitness pada instance sulit (E10)", widths=[0.9, 1.6, 1.6, 2.5, 2.5, 2.5, 2.4], font=9,
+            note="Fitness lebih kecil lebih baik; varian ditulis rerata ± simpangan baku 10 _seed_. Angka dalam kurung "
+                 "pada kolom CW adalah jumlah ritase tak terlayani. OR-Tools diberi batas waktu sama dengan median waktu "
+                 "GA-SA-RL (145, 351, dan 899 detik).")
+    rows = []
+    for n in ns:
+        for v in ["Clarke-Wright", "OR-Tools", "GA-SA-RL"]:
+            r = tab[(n, v)]
+            rows.append((n if v == "Clarke-Wright" else "", v, f(r["dist"], 0), f(r["cost"] / 1e6, 2), f(r["trucks"], 0),
+                         f(r["late"], 0), f(r["over"], 0), f(r["unassigned"], 0)))
+    W.table(["n", "Metode", "Jarak (km)", "Biaya (juta Rp)", "Truk", "Terlambat (mnt)", "Lembur (mnt)", "Tak terlayani"],
+            rows, "Komponen solusi pada instance sulit (E10, rerata untuk GA-SA-RL)",
+            widths=[0.9, 2.6, 1.8, 2.1, 1.2, 2.0, 1.8, 1.6])
     tt = []
-    for n in sorted(T):
+    for n in ns:
         x = T[n]
-        d = df[df.n == n]
-        hy = d[d.variant == "GA-SA-RL"]; ga = d[d.variant == "GA"]
-        tt.append(f"n = {n}: GA-SA-RL {'lebih baik' if x['p_vs_ga'] < 0.05 else 'tidak berbeda nyata'} dari GA "
-                  f"(p = {pv(x['p_vs_ga'])}, δ = {f(x['cliffs_delta'], 2)}), waktu rata-rata {f(hy.runtime.mean(), 0)} s "
-                  f"berbanding {f(ga.runtime.mean(), 0)} s")
-    W.p("Hasil per ukuran: " + "; ".join(tt) + ". Kedua algoritma menghasilkan rencana tanpa ritase tak layak pada "
-        "semua ukuran, dengan waktu komputasi paling lama sekitar 4,2 menit untuk 100 SPBU. Rerata fitness GA-SA-RL selalu sedikit "
-        "lebih kecil, tetapi selisihnya di bawah 0,5% dan besar efeknya tergolong dapat diabaikan sampai sedang, sehingga keunggulan atas GA "
-        "tidak dapat diklaim. Clarke–Wright menempuh jarak lebih pendek karena tidak memeriksa kompartemen dan akses per "
-        "tipe; sebagian ritasenya tidak dapat dimuat sehingga fitness-nya sangat besar.")
+        tt.append(f"pada {n} SPBU GA-SA-RL {'lebih baik' if x['p_vs_OR-Tools'] < 0.05 else 'tidak berbeda nyata'} dari "
+                  f"OR-Tools (selisih fitness {f(x['impr_vs_OR-Tools'], 1)}%, Wilcoxon p = {pv(x['p_vs_OR-Tools'])})")
+    W.p("Terhadap pembanding eksternal, " + "; ".join(tt) + f". Rincian Tabel {W.chapter}.{W.tab} menunjukkan dari mana "
+        "selisih itu datang. OR-Tools menempuh jarak lebih pendek dan biayanya lebih rendah, dan pada 100 dan 200 SPBU "
+        "memakai lebih sedikit truk, "
+        "tetapi rencananya lebih banyak melanggar jendela waktu dan batas shift. Model OR-Tools tidak memuat waktu muat "
+        "yang bergantung pada volume ritase dan menganggap waktu tempuh tetap, sehingga jadwal yang tampak layak di "
+        "dalam OR-Tools menjadi terlambat saat dinilai dengan model lengkap. Pada 50 SPBU, ketika kendala waktu masih "
+        "longgar, keduanya setara. Clarke–Wright menempuh jarak terpendek, tetapi tidak memeriksa jendela waktu dan "
+        "multi-ritase sehingga meninggalkan ritase tak terlayani dan lembur ribuan menit.")
+    tt = []
+    for n in ns:
+        x = T[n]
+        tt.append(f"n = {n}: p = {pv(x['p_vs_GA-SA'])} dan {pv(x['p_vs_GA-SA-ALNS'])} terhadap GA-SA dan GA-SA-ALNS "
+                  f"(δ = {f(x['delta_vs_GA-SA'], 2)} dan {f(x['delta_vs_GA-SA-ALNS'], 2)}), Kruskal–Wallis ketiganya "
+                  f"p = {pv(x['kruskal_sa'])}")
+    W.p(f"Di dalam keluarga hibrida, semua varian dengan fase SA jauh lebih baik dari GA saja (Mann–Whitney p ≤ "
+        f"{pv(max(T[n]['p_vs_GA'] for n in ns))}, δ ≥ {f(min(T[n]['delta_vs_GA'] for n in ns), 2)}). Cara memilih "
+        "operator tidak membuat perbedaan yang nyata: " + "; ".join(tt) + ". Simpangan baku yang besar pada 100 dan 200 "
+        "SPBU berasal dari beberapa _seed_ yang belum berhasil menghapus keterlambatan; fitness rata-rata dengan demikian "
+        "dipengaruhi penalti, bukan jarak.")
     if os.path.exists(FG("L19_skalabilitas.png")):
-        W.figure(FG("L19_skalabilitas.png"), "Fitness dan waktu komputasi terhadap jumlah SPBU", 14.0)
+        W.figure(FG("L19_skalabilitas.png"), "Fitness per metode dan waktu komputasi pada instance sulit (E10)", 14.0)
 
 
 # ===========================================================================
@@ -620,7 +657,8 @@ def pembahasan(W, cite, R):
     W.p("**Skalabilitas dan kontribusi komponen (rumusan masalah 4).** " + ablation_text(R, cite))
     W.p("**Aplikasi (rumusan masalah 5).** Keluaran aplikasi sama dengan skrip eksperimen pada pengaturan yang sama "
         "(Tabel 4.1). Skenario E4, kejadian dinamis E5, dan simulasi pergerakan E9 dapat dijalankan langsung dari "
-        "antarmuka; eksperimen yang memerlukan ribuan ulangan (E3, E6, E7, E8, E10) dijalankan dengan skrip, dan "
+        "antarmuka, termasuk perbandingan dengan OR-Tools pada waktu komputasi yang sama; eksperimen yang memerlukan "
+        "ribuan ulangan (E3, E6, E7, E8, E10) dijalankan dengan skrip, dan "
         "grafik serta tabel hasilnya ditampilkan di menu Hasil Penelitian. "
         "Animasi simulasi membantu pengguna "
         "membaca rencana: posisi truk, sisa muatan, dan antrean di SPBU terlihat pada jam yang dipilih. Evaluasi "
@@ -636,7 +674,10 @@ def pembahasan(W, cite, R):
         "Validitas konstruk bergantung pada model konsumsi bahan bakar dan waktu yang masih memakai parameter asumsi; "
         "simulasi mikro (E9) dipakai untuk memeriksa kepekaan rencana terhadap asumsi waktu; pada simulasi deterministik "
         "selisih waktu tiba model dan simulasi tidak lebih dari 15 menit. Validitas eksternal terbatas karena kasus nyata hanya satu FT; instance "
-        "sintetis E10 dan CVRPLIB dipakai untuk memperluasnya, tetapi belum menggantikan data dari wilayah lain.")
+        "sintetis E10 dan CVRPLIB dipakai untuk memperluasnya, tetapi belum menggantikan data dari wilayah lain. "
+        "Pembanding OR-Tools dimodelkan dengan relaksasi (kapasitas efektif kompartemen, waktu muat dibebankan per "
+        "SPBU); hasilnya mungkin membaik dengan pemodelan yang lebih rinci, sehingga keunggulan pada E10 berlaku untuk "
+        "model OR-Tools yang dijelaskan pada subbab 3.3.4.")
     W.p("**Keterbatasan.** Proporsi produk, ukuran kompartemen, dimensi truk, konsumsi bahan bakar, biaya tetap, dan "
         "profil kemacetan masih asumsi. Kelas jalan sebagian besar diturunkan dari jenis ruas OSM karena hanya sedikit "
         "ruas yang memiliki tag lebar atau jumlah lajur, sehingga legalitas rute perlu dicocokkan dengan SK penetapan "
@@ -672,27 +713,31 @@ def robust_text(R):
 
 def ablation_text(R, cite):
     t = []
-    e10 = R["e10"]
-    if e10:
-        sig = [x for x in e10["tests"] if x["p_vs_ga"] < 0.05]
-        if len(sig) == len(e10["tests"]):
-            t.append("Pada instance sintetis 25–100 SPBU, GA-SA-RL lebih baik dari GA pada semua ukuran dengan efek besar "
-                     f"(δ {f(min(x['cliffs_delta'] for x in e10['tests']), 2)}–{f(max(x['cliffs_delta'] for x in e10['tests']), 2)}).")
-        else:
-            t.append(f"Pada instance sintetis 25–100 SPBU, GA-SA-RL tidak berbeda nyata dari GA pada "
-                     + ("ketiga ukuran" if not sig else f"{len(e10['tests']) - len(sig)} dari {len(e10['tests'])} ukuran") + " (δ "
-                     f"{f(min(x['cliffs_delta'] for x in e10['tests']), 2)}–{f(max(x['cliffs_delta'] for x in e10['tests']), 2)}), "
-                     "walaupun keduanya tetap menghasilkan rencana layak dalam waktu paling lama sekitar 4,2 menit.")
+    e = R["e11"]
+    if e:
+        T = {int(x["n"]): x for x in e["tests"]}
+        ns = sorted(T)
+        win = [n for n in ns if T[n]["p_vs_OR-Tools"] < 0.05]
+        tab = {(int(r["n"]), r["variant"]): r for r in e["table"]}
+        ext = [(tab[(n, "GA-SA-RL")]["dist"] / tab[(n, "OR-Tools")]["dist"] - 1) * 100 for n in ns]
+        t.append(f"Pada instance sulit {ns[0]}–{ns[-1]} SPBU, GA-SA-RL lebih baik dari OR-Tools pada "
+                 + ", ".join(f"{n} SPBU ({f(T[n]['impr_vs_OR-Tools'], 0)}%)" for n in win)
+                 + (f" dan setara pada {', '.join(str(n) for n in ns if n not in win)} SPBU" if len(win) < len(ns) else "")
+                 + ". Keunggulan itu berasal dari kepatuhan terhadap jendela waktu dan batas shift; dari sisi jarak dan "
+                 "biaya, OR-Tools tetap lebih hemat. Bagi operator, angka ini berarti rencana GA-SA-RL lebih sedikit "
+                 f"menimbulkan keterlambatan dan lembur, dengan tambahan jarak {f(min(ext), 1)}–{f(max(ext), 1)}%.")
     if R["e7"] is not None and len(R["e7"]):
         t7 = e7_tests(R["e7"])
-        t.append(f"Pada CVRPLIB, hibrida lebih baik dari GA saja (p = {pv(t7['GA'])}). Pemilihan operator dengan "
-                 f"_Q-learning_ {'lebih baik' if t7['GA-SA'] < 0.05 else 'tidak lebih baik secara statistik'} daripada "
-                 f"pemilihan acak (p = {pv(t7['GA-SA'])}).")
-        if t7["GA-SA"] >= 0.05:
-            t.append("Keunggulan hibrida dengan demikian berasal dari fase SA, bukan dari RL. Hasil ini sejalan dengan "
-                     f"catatan tinjauan bahwa manfaat pemilih operator adaptif sering kecil bila operatornya sedikit dan "
-                     f"seimbang {cite('voigt2024', 'jaouhari2026')}. Klaim bahwa RL memperbaiki kualitas solusi tidak "
-                     "didukung data penelitian ini.")
+        t.append(f"Pada CVRPLIB, hibrida lebih baik dari GA saja (p = {pv(t7['GA'])}), dan gap rata-rata turun dari 6,47% "
+                 "pada versi awal menjadi sekitar 3%.")
+        if min(t7["GA-SA"], t7["GA-SA-ALNS"]) >= 0.05:
+            t.append(f"Pemilihan operator dengan _Q-learning_ tidak lebih baik dari pemilihan acak (p = {pv(t7['GA-SA'])}) "
+                     f"maupun bobot adaptif ALNS (p = {pv(t7['GA-SA-ALNS'])}), dan hasil yang sama terlihat pada instance "
+                     "sulit. Keunggulan metode dengan demikian berasal dari fase SA dengan operator granular dan "
+                     "_ruin-and-recreate_, bukan dari RL. Temuan ini sejalan dengan catatan tinjauan bahwa manfaat "
+                     f"pemilih operator adaptif sering kecil bila operatornya seimbang {cite('voigt2024', 'jaouhari2026')}. "
+                     "Klaim bahwa RL memperbaiki kualitas solusi tidak didukung data penelitian ini, sehingga RL lebih "
+                     "tepat diposisikan sebagai komponen yang dapat diganti tanpa kehilangan kualitas.")
     return " ".join(t)
 
 
@@ -746,19 +791,27 @@ def bab5(W, cite, R):
                      f"lokal menjadi {int(rd['unassigned'])} karena S10 tidak dapat dijangkau D, sehingga kasus ini "
                      "memerlukan pengiriman terpisah. Antrean _loading rack_ yang padat menaikkan kebutuhan truk lebih "
                      "besar daripada perubahan rute.")
-    e10 = R["e10"]
-    if e10:
-        items.append("Pada instance sintetis 25, 50, dan 100 SPBU, GA dan GA-SA-RL sama-sama menghasilkan rencana layak "
-                     "dalam waktu paling lama sekitar 4,2 menit; selisih fitness keduanya di bawah 0,5% dan tidak "
-                     "signifikan (Mann–Whitney p ≥ " + f(min(x["p_vs_ga"] for x in e10["tests"]), 3) + ").")
+    e11 = R["e11"]
+    if e11:
+        T = {int(x["n"]): x for x in e11["tests"]}
+        ns = sorted(T)
+        win = [n for n in ns if T[n]["p_vs_OR-Tools"] < 0.05]
+        items.append(f"Pada instance sulit {', '.join(map(str, ns))} SPBU dengan armada padat, jendela waktu, dan antrean "
+                     "_loading rack_, GA-SA-RL lebih baik dari OR-Tools pada "
+                     + " dan ".join(f"{n} SPBU (fitness {f(T[n]['impr_vs_OR-Tools'], 0)}% lebih kecil)" for n in win)
+                     + (f" serta setara pada {', '.join(str(n) for n in ns if n not in win)} SPBU" if len(win) < len(ns) else "")
+                     + ", dan jauh lebih baik dari Clarke–Wright dan GA saja. OR-Tools tetap menghasilkan jarak dan biaya "
+                     "lebih rendah, tetapi dengan keterlambatan dan lembur yang lebih besar.")
     if R["e7"] is not None and len(R["e7"]):
         t7 = e7_tests(R["e7"])
-        items.append(f"Hibrida GA-SA-RL lebih baik dari GA saja pada CVRPLIB (p = {pv(t7['GA'])})"
-                     + (" dan pada instance sintetis sampai 100 SPBU" if R["e10"] and all(x["p_vs_ga"] < 0.05 for x in R["e10"]["tests"]) else "")
-                     + f", tetapi pemilihan operator dengan _Q-learning_ belum terbukti lebih baik dari pemilihan acak "
-                     f"(p = {pv(t7['GA-SA'])}).")
+        g = R["e7"][R["e7"].variant == "GA-SA-RL"].groupby("instance").gap_pct.mean()
+        items.append(f"Pada CVRPLIB, rerata gap GA-SA-RL {f(g.mean(), 2)}% (versi awal 6,47%) dan hibrida lebih baik dari "
+                     f"GA saja (p = {pv(t7['GA'])}). Pemilihan operator dengan _Q-learning_ tidak lebih baik dari pemilihan "
+                     f"acak (p = {pv(t7['GA-SA'])}) maupun ALNS (p = {pv(t7['GA-SA-ALNS'])}); kualitas solusi berasal dari "
+                     "fase SA dan operator granular serta _ruin-and-recreate_.")
     items.append("Aplikasi SMARTROUTE-BBM dengan basis data Google Sheets, simulasi pergerakan dua dan tiga dimensi, dan "
-                 "re-routing dinamis telah selesai dan dipublikasikan sebagai repositori terbuka.")
+                 "re-routing dinamis, serta pembanding OR-Tools di menu Optimasi, telah selesai dan dipublikasikan sebagai "
+                 "repositori terbuka.")
     W.bullets(items, numbered=True)
     W.h("Saran")
     W.bullets([
@@ -767,18 +820,23 @@ def bab5(W, cite, R):
         "Mencocokkan kelas dan lebar jalan pada rute terpilih dengan SK penetapan kelas jalan dan survei lapangan.",
         "Menambahkan pengiriman terpisah dan armada sewa agar lonjakan permintaan lokal dapat dilayani tanpa penalti.",
         "Melakukan uji kegunaan aplikasi bersama operator distribusi.",
-        "Mengganti pemilih operator tabular dengan kebijakan yang dilatih lintas instance, lalu membandingkannya dengan "
-        "pemilih adaptif lain seperti _roulette_ ALNS dan UCB pada anggaran evaluasi yang sama.",
+        "Memperbaiki penjadwalan agar keterlambatan pada instance besar hilang, misalnya dengan operator yang sadar "
+        "jendela waktu, dan menguji pemilih operator yang dilatih lintas instance terhadap ALNS pada anggaran yang sama.",
+        "Memodelkan waktu muat per ritase dan kompartemen secara eksplisit pada OR-Tools agar perbandingan dengan "
+        "pemecah komersial atau sumber terbuka lain lebih ketat.",
     ], numbered=True)
 
 
 # ===========================================================================
 def lampiran(W, R):
     W.appendix("Lampiran 1. Parameter algoritma dan asumsi model")
-    rows = [("Populasi / generasi GA", "100 / 200"), ("p~c~ / p~m~ / turnamen / elit", "0,85 / 0,10 (×3 bila keragaman < 5%) / 5 / 2"),
+    rows = [("Populasi / generasi GA", "100 / 50"), ("p~c~ / p~m~ / turnamen / elit", "0,85 / 0,10 (×3 bila keragaman < 5%) / 5 / 2"),
             ("Inisialisasi", "60% serakah (tetangga terdekat + gangguan), 40% acak"),
-            ("SA: T~0~ / α / iterasi / T~min~", "1000 / 0,995 / 5000 / 0,01"), ("Skala energi SA", "E = 10^6^ F/F~GA~"),
-            ("_Q-learning_: η / γ / ε", "0,1 / 0,9 / 0,1 → 0,02"), ("Keadaan / aksi RL", "15 keadaan / 5 operator"),
+            ("SA: T~0~ / α / iterasi / T~min~", "1000 / 0,99942 / 20.000 / 0,01"), ("Skala energi SA", "E = 10^6^ F/F~GA~"),
+            ("Operator SA", "5 acak, 2 granular (k = 8), 2 _ruin-and-recreate_ (2 sampai 15% SPBU)"),
+            ("_Q-learning_: η / γ / ε", "0,1 / 0,5 / 0,15"), ("Keadaan / aksi RL", "9 keadaan / 9 operator"),
+            ("ALNS: λ / segmen / skor", "0,1 / 100 iterasi / (1; 0,4; 0; −0,02)"),
+            ("OR-Tools", "GLS, batas waktu = median waktu GA-SA-RL"),
             ("Bobot (w~1~, w~2~, w~3~)", "(0,5; 0,3; 0,2)"), ("Harga solar / pemeliharaan", "Rp12.000/L / Rp1.500/km (asumsi)"),
             ("Faktor emisi", "2,68 kg CO~2~/L"), ("β / α~1~ / v~0~", "0,3 / 10^−4^ / 65 km/jam"),
             ("v~max~ model / shift / ritase maks.", "40 km/jam / 06.00–18.00 / 3"),
@@ -795,7 +853,8 @@ def lampiran(W, R):
     W.bullets([f"Repositori kode: {REPO}", f"Basis data Google Sheets: {SHEET}",
                "Menjalankan lokal: pip install -r requirements.txt, lalu streamlit run app.py",
                "Mengulang eksperimen: python -m experiments.run_all; python -m experiments.run_extra E9; "
-               "python -m experiments.run_extra E10 25 50 100; python -m experiments.app_check",
+               "python -m experiments.run_e11 run; python -m experiments.run_e11 ortools; python -m experiments.run_e11 summary; "
+               "python -m experiments.app_check",
                "Membuat gambar dan laporan: python -m experiments.figures_report; python -m docs.build_laporan",
                "Memasang daring: Streamlit Community Cloud, pilih repositori smartroute-bbm dan berkas app.py"], left=True)
     W.appendix("Lampiran 3. Rute terbaik GA-SA-RL pada jalan legal-truk")

@@ -27,8 +27,9 @@ plt.rcParams.update({"font.size": 9, "figure.dpi": 220, "savefig.dpi": 220, "sav
                      "font.family": "serif", "font.serif": ["Liberation Serif", "Times New Roman", "DejaVu Serif"],
                      "mathtext.fontset": "stix", "axes.titlesize": 9, "legend.fontsize": 7.5,
                      "axes.spines.top": False, "axes.spines.right": False})
-C3 = {"GA": "#8c8c8c", "GA-SA": "#1f77b4", "GA-SA-RL": "#c0392b"}
-ORDER = ["GA", "GA-SA", "GA-SA-RL"]
+C3 = {"GA": "#8c8c8c", "GA-SA": "#1f77b4", "GA-SA-ALNS": "#2e8b57", "GA-SA-RL": "#c0392b"}
+ORDER = ["GA", "GA-SA", "GA-SA-ALNS", "GA-SA-RL"]
+TICKS = ["GA", "GA-SA", "GA-SA-\nALNS", "GA-SA-\nRL"]
 
 
 def J(name):
@@ -109,7 +110,7 @@ def fig_e1():
     if df is None or s is None:
         return
     fig, ax = plt.subplots(1, 2, figsize=(W, 2.9), gridspec_kw=dict(width_ratios=[1, 1.25]))
-    ax[0].boxplot([df[df.variant == v].dist for v in ORDER], tick_labels=ORDER, widths=0.5)
+    ax[0].boxplot([df[df.variant == v].dist for v in ORDER], tick_labels=TICKS, widths=0.5)
     ax[0].axhline(s["baseline_capstone"], color="#e67e22", ls="--", lw=1, label="Saving Matrix")
     ax[0].axhline(s["milp_opt"], color="#27ae60", ls=":", lw=1.2, label="Optimum MILP")
     ax[0].set_ylabel("Total jarak (km)"); ax[0].set_title("(a) 30 replikasi per varian"); ax[0].legend(loc="center right")
@@ -133,7 +134,7 @@ def fig_e2():
         df = C(f"E2_runs_{key}.csv")
         for a, col, lab in zip(axes[r], ["fitness", "cost_rp", "co2_kg"], ["Fitness", "Biaya (juta Rp/hari)", "CO$_2$ (kg/hari)"]):
             sc = 1e6 if col == "cost_rp" else 1
-            a.boxplot([df[df.variant == v][col] / sc for v in ORDER], tick_labels=["GA", "GA-SA", "GA-SA-\nRL"], widths=0.5)
+            a.boxplot([df[df.variant == v][col] / sc for v in ORDER], tick_labels=TICKS, widths=0.5)
             b = s[key]["baseline"]
             if b["unassigned"] == 0 or col != "fitness":
                 a.axhline(b[col] / sc, color="#e67e22", ls="--", lw=1)
@@ -315,43 +316,53 @@ def fig_e7():
     df = C("E7_cvrplib.csv")
     if df is None:
         return
-    d = df[df.variant == "GA-SA-RL"].groupby("instance").agg(gap=("gap_pct", "mean"), sd=("gap_pct", "std"),
-                                                              cw=("cw_gap_pct", "first"), n=("n", "first")).sort_values("n")
-    fig, ax = plt.subplots(figsize=(W, 2.6))
-    x = np.arange(len(d))
-    ax.bar(x - 0.2, d.cw, 0.4, label="Clarke-Wright", color="#f5b041")
-    ax.bar(x + 0.2, d.gap, 0.4, yerr=d.sd, label="GA-SA-RL (rerata ± SD, 30 replikasi)", color="#c0392b",
-           error_kw=dict(lw=0.7, capsize=2))
-    ax.set_xticks(x); ax.set_xticklabels(d.index, rotation=30, fontsize=7); ax.set_ylabel("Gap terhadap BKS (%)")
-    ax.legend(fontsize=7)
+    ok = df.groupby("instance").variant.nunique()
+    df = df[df.instance.isin(ok[ok == len(ORDER)].index)]
+    g = df.groupby(["instance", "variant"]).gap_pct.agg(["mean", "std"]).unstack()
+    meta = df.groupby("instance").agg(cw=("cw_gap_pct", "first"), n=("n", "first")).sort_values("n")
+    fig, ax = plt.subplots(figsize=(W, 2.7))
+    x = np.arange(len(meta)); w = 0.16
+    ax.bar(x - 2 * w, meta.cw, w, label="Clarke-Wright", color="#f5b041")
+    for k, v in enumerate(ORDER):
+        ax.bar(x + (k - 1) * w, g["mean"][v].reindex(meta.index), w, yerr=g["std"][v].reindex(meta.index),
+               label=v, color=C3[v], error_kw=dict(lw=0.6, capsize=1.5))
+    ax.set_xticks(x); ax.set_xticklabels(meta.index, rotation=30, fontsize=7); ax.set_ylabel("Gap terhadap BKS (%)")
+    ax.legend(fontsize=6.5, ncol=5, loc="upper left")
+    ax.set_ylim(0, max(meta.cw.max(), g["mean"].max().max()) * 1.25)
     fig.tight_layout()
     save(fig, "L18_cvrplib.png")
 
 
 def fig_e10():
-    df = C("E10_scalability.csv")
+    df = C("E11_runs.csv")
     if df is None:
         return
-    fig, ax = plt.subplots(1, 2, figsize=(W, 2.7))
     ns = sorted(df.n.unique())
-    pos = np.arange(len(ns))
-    for k, (v, c) in enumerate([("GA", "#8c8c8c"), ("GA-SA-RL", "#c0392b")]):
-        data, rt = [], []
-        for n in ns:
-            best = df[(df.n == n) & (df.variant.isin(["GA", "GA-SA-RL"]))].fitness.min()
-            g = df[(df.n == n) & (df.variant == v)]
-            data.append((g.fitness / best - 1) * 100); rt.append(g.runtime.mean())
-        bp = ax[0].boxplot(data, positions=pos + (k - 0.5) * 0.32, widths=0.28, patch_artist=True)
+    fig, ax = plt.subplots(1, 3, figsize=(W, 2.8), gridspec_kw=dict(width_ratios=[1.5, 1, 1]))
+    pos = np.arange(len(ns)); w = 0.18
+    for k, v in enumerate(ORDER):
+        data = [df[(df.n == n) & (df.variant == v)].fitness for n in ns]
+        bp = ax[0].boxplot(data, positions=pos + (k - 1.5) * w, widths=w * 0.85, patch_artist=True,
+                           flierprops=dict(ms=2))
         for b in bp["boxes"]:
-            b.set_facecolor(c); b.set_alpha(0.6)
-        ax[1].plot(ns, rt, marker="os"[k], color=c, ms=4, lw=1, label=v)
-        ax[0].plot([], [], color=c, lw=6, alpha=0.6, label=v)
-    ax[0].set_xticks(pos); ax[0].set_xticklabels([str(n) for n in ns])
-    ax[0].set_xlabel("Jumlah SPBU"); ax[0].set_ylabel("Selisih dari fitness terbaik (%)"); ax[0].set_title("(a) Kualitas solusi, 10 seed")
-    ax[0].legend(fontsize=6.5)
-    ax[1].set_xlabel("Jumlah SPBU"); ax[1].set_ylabel("Waktu komputasi rerata (detik)"); ax[1].set_title("(b) Waktu komputasi")
-    ax[1].set_xticks(ns); ax[1].legend(fontsize=6.5)
-    fig.tight_layout()
+            b.set_facecolor(C3[v]); b.set_alpha(0.7)
+        ax[0].plot([], [], color=C3[v], lw=6, alpha=0.7, label=v)
+    for v, m, c in [("Clarke-Wright", "v", "#e67e22"), ("OR-Tools", "D", "#6a3d9a")]:
+        y = [df[(df.n == n) & (df.variant == v)].fitness.mean() for n in ns]
+        ax[0].scatter(pos, y, marker=m, color=c, s=18, zorder=5, label=v)
+    ax[0].set_yscale("log"); ax[0].set_xticks(pos); ax[0].set_xticklabels([str(n) for n in ns])
+    ax[0].set_xlabel("Jumlah SPBU"); ax[0].set_ylabel("Fitness (skala log)"); ax[0].set_title("(a) Fitness, 10 seed")
+    h, l = ax[0].get_legend_handles_labels()
+    fig.legend(h, l, loc="lower center", ncol=6, fontsize=6.5, frameon=False, bbox_to_anchor=(0.5, -0.06))
+    meth = ["Clarke-Wright", "OR-Tools", "GA-SA-RL"]; cols = ["#e67e22", "#6a3d9a", "#c0392b"]
+    for j, (col, lab, t) in enumerate([("late_min", "Keterlambatan (menit)", "(b) Terlambat"),
+                                       ("overtime_min", "Lembur (menit)", "(c) Lembur")]):
+        for k, (v, c) in enumerate(zip(meth, cols)):
+            y = [df[(df.n == n) & (df.variant == v)][col].mean() for n in ns]
+            ax[j + 1].bar(pos + (k - 1) * 0.26, y, 0.26, color=c, label=v)
+        ax[j + 1].set_xticks(pos); ax[j + 1].set_xticklabels([str(n) for n in ns])
+        ax[j + 1].set_xlabel("Jumlah SPBU"); ax[j + 1].set_ylabel(lab); ax[j + 1].set_title(t)
+    fig.tight_layout(rect=(0, 0.06, 1, 1))
     save(fig, "L19_skalabilitas.png")
 
 

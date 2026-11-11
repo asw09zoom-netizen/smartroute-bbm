@@ -16,13 +16,14 @@ def abstract_text(R, lang):
     imp = (e1["baseline_capstone"] - e1["milp_opt"]) / e1["baseline_capstone"] * 100
     s, b = app["script"], app["baseline"]
     t7 = e7_tests(R["e7"]) if R["e7"] is not None else None
-    sc = (e10 or {}).get("tests", [])
+    e11 = R.get("e11")
+    sc = {int(x["n"]): x for x in (e11 or {}).get("tests", [])}
     if lang == "id":
         p1 = ("Rute distribusi BBM yang disusun hanya dari total volume sering tidak dapat dijalankan, karena truk "
               "tangki bersekat (kompartemen), produk lebih dari satu, dan satu truk dapat kembali memuat dua atau tiga "
               "kali dalam satu shift. Penelitian ini merumuskan _Multi-Trip Multi-Compartment Vehicle Routing Problem_ "
               "multi-produk (MC-MP-MT-VRP) untuk distribusi dari FT Gelumbang ke 13 SPBU (60,78 KL/hari), lalu "
-              "menyelesaikannya dengan algoritma hibrida _Genetic Algorithm_–_Simulated Annealing_ yang operatornya "
+              "menyelesaikannya dengan algoritma hibrida _Genetic Algorithm_–_Simulated Annealing_ yang sembilan operatornya "
               "dipilih oleh agen _Q-learning_ (GA-SA-RL). Jarak dihitung pada jaringan jalan OpenStreetMap yang disaring "
               "per tipe truk menurut kelas jalan UU 22/2009, rambu batas, lebar jalan, dan arah satu jalur. Model, "
               "algoritma, simulasi mikro pergerakan truk, dan re-routing dinamis dikemas dalam aplikasi web "
@@ -38,17 +39,19 @@ def abstract_text(R, lang):
             p2 += (f"Simulasi mikro 300 replikasi per tingkat ketidakpastian menunjukkan rencana tersebut selesai "
                    f"rata-rata pukul {jam_txt(g['t_end_mean'])} (persentil ke-95 pukul {jam_txt(g['t_end_p95'])}) pada "
                    f"CV kecepatan 0,3 tanpa lembur. ")
-        if t7:
-            p2 += (f"Pada uji ablasi {t7['n_inst']} instance CVRPLIB, hibrida lebih baik dari GA saja (Wilcoxon p = {pv(t7['GA'])}), tetapi "
-                   f"pemilihan operator dengan _Q-learning_ belum terbukti lebih baik dari pemilihan acak "
-                   f"(p = {pv(t7['GA-SA'])}). ")
         if sc:
-            ns = ", ".join(str(int(x["n"])) for x in sc)
-            sig = all(x["p_vs_ga"] < 0.05 for x in sc)
-            p2 += (f"Uji skalabilitas pada instance sintetis {ns} SPBU di jaringan jalan yang sama "
-                   + ("menunjukkan GA-SA-RL lebih baik dari GA pada semua ukuran. " if sig else
-                      "menghasilkan rencana layak pada semua ukuran, tetapi selisih fitness GA-SA-RL dan GA di bawah "
-                      "0,5% dan tidak signifikan. "))
+            ns = sorted(sc)
+            win = [n for n in ns if sc[n]["p_vs_OR-Tools"] < 0.05]
+            p2 += (f"Pada instance sulit {', '.join(map(str, ns))} SPBU dengan armada padat, jendela waktu, dan antrean "
+                   "_loading rack_, GA-SA-RL memberi fitness lebih kecil dari Google OR-Tools pada waktu komputasi yang sama "
+                   "untuk " + " dan ".join(f"{n} SPBU ({f(sc[n]['impr_vs_OR-Tools'], 0)}%)" for n in win)
+                   + (f", setara pada {', '.join(str(n) for n in ns if n not in win)} SPBU" if len(win) < len(ns) else "")
+                   + ", karena keterlambatan dan lemburnya lebih kecil; OR-Tools tetap lebih pendek dalam jarak. ")
+        if t7:
+            p2 += (f"Pada CVRPLIB, rerata gap terhadap solusi terbaik dikenal {f(R['e7'][R['e7'].variant == 'GA-SA-RL'].groupby('instance').gap_pct.mean().mean(), 2)}% "
+                   f"(Clarke–Wright 6,87%). Uji ablasi menunjukkan kualitas solusi berasal dari fase SA dengan operator "
+                   f"granular dan _ruin-and-recreate_; pemilihan operator dengan _Q-learning_ tidak lebih baik dari pemilihan "
+                   f"acak (p = {pv(t7['GA-SA'])}) maupun ALNS (p = {pv(t7['GA-SA-ALNS'])}). ")
         p2 += "Proporsi produk, ukuran kompartemen, dan dimensi truk masih asumsi sehingga perlu dikalibrasi dengan data operator."
         kw = ("distribusi BBM; _multi-compartment vehicle routing_; _multi-trip_; algoritma hibrida; _Q-learning_; "
               "jaringan jalan legal-truk; sistem pendukung keputusan")
@@ -57,7 +60,7 @@ def abstract_text(R, lang):
           "separate compartments, several products are carried, and one truck may reload two or three times per shift. "
           "This study formulates a multi-product Multi-Trip Multi-Compartment Vehicle Routing Problem (MC-MP-MT-VRP) "
           "for deliveries from the Gelumbang fuel terminal to 13 petrol stations (60.78 kL/day) and solves it with a "
-          "hybrid genetic algorithm and simulated annealing whose neighbourhood operators are chosen by a Q-learning "
+          "hybrid genetic algorithm and simulated annealing whose nine neighbourhood operators are chosen by a Q-learning "
           "agent (GA-SA-RL). Distances come from an OpenStreetMap network filtered per truck type by Indonesian road "
           "class rules (Law 22/2009), signed limits, road width and one-way restrictions. The model, the algorithm, a "
           "truck-movement micro-simulation and dynamic re-routing are packaged in SMARTROUTE-BBM, a Streamlit web "
@@ -72,16 +75,20 @@ def abstract_text(R, lang):
         p2 += (f"A micro-simulation with 300 replications per uncertainty level shows the plan finishing on average at "
                f"{jam_txt(g['t_end_mean']).replace('.', ':')} (95th percentile {jam_txt(g['t_end_p95']).replace('.', ':')}) "
                "under a speed CV of 0.3, with no overtime. ")
-    if t7:
-        p2 += (f"In an ablation on {t7['n_inst']} CVRPLIB instances the hybrid beat the GA alone (Wilcoxon p = {t7['GA']:.3f}), but Q-learning "
-               f"operator selection did not beat random selection (p = {t7['GA-SA']:.3f}). ")
     if sc:
-        ns = ", ".join(str(int(x["n"])) for x in sc)
-        sig = all(x["p_vs_ga"] < 0.05 for x in sc)
-        p2 += (f"Scalability tests on synthetic instances with {ns} stations on the same network "
-               + ("show GA-SA-RL ahead of the GA at every size. " if sig else
-                  "yield feasible plans at every size, but GA-SA-RL and the GA differ by less than 0.5% in fitness, "
-                  "which is not significant. "))
+        ns = sorted(sc)
+        win = [n for n in ns if sc[n]["p_vs_OR-Tools"] < 0.05]
+        p2 += (f"On hard instances with {', '.join(map(str, ns))} stations, a tight fleet, time windows and loading-rack "
+               "queues, GA-SA-RL obtained a lower fitness than Google OR-Tools under the same time limit for "
+               + " and ".join(f"{n} stations ({sc[n]['impr_vs_OR-Tools']:.0f}%)" for n in win)
+               + (f" and tied at {', '.join(str(n) for n in ns if n not in win)} stations" if len(win) < len(ns) else "")
+               + ", because its plans were less late and needed less overtime; OR-Tools still produced shorter routes. ")
+    if t7:
+        g7 = R["e7"][R["e7"].variant == "GA-SA-RL"].groupby("instance").gap_pct.mean().mean()
+        p2 += (f"On CVRPLIB the mean gap to the best known solutions was {g7:.2f}% (Clarke-Wright 6.87%). The ablation "
+               "shows that solution quality comes from the SA phase with granular and ruin-and-recreate moves; Q-learning "
+               f"operator selection did not beat random selection (p = {t7['GA-SA']:.3f}) or ALNS roulette weights "
+               f"(p = {t7['GA-SA-ALNS']:.3f}). ")
     p2 += "Product shares, compartment sizes and truck dimensions are still assumptions and need calibration with operator data."
     kw = ("fuel distribution; multi-compartment vehicle routing; multi-trip; hybrid metaheuristic; Q-learning; "
           "truck-legal road network; decision support system")
@@ -132,7 +139,8 @@ def bab1(W, cite, R):
         "Matrix_, _Nearest Neighbour_, dan optimum eksak MILP?",
         "Bagaimana kinerja rencana ketika kecepatan, waktu bongkar, dan permintaan bersifat acak, serta ketika terjadi "
         "kerusakan truk atau kemacetan mendadak?",
-        "Bagaimana kinerja algoritma ketika jumlah SPBU bertambah hingga 100 dan pada instance benchmark CVRPLIB?",
+        "Bagaimana kinerja algoritma dibanding pemecah rute Google OR-Tools ketika jumlah SPBU bertambah hingga 200 dengan "
+        "armada padat dan jendela waktu, dan pada instance benchmark CVRPLIB?",
         "Apakah aplikasi web yang dibangun memberi keluaran yang sama dengan skrip eksperimen dan dapat dipakai untuk "
         "simulasi skenario _what-if_?",
     ], numbered=True)
@@ -141,7 +149,7 @@ def bab1(W, cite, R):
         "Menyusun formulasi MC-MP-MT-VRP dan jaringan jalan legal-truk untuk distribusi FT Gelumbang.",
         "Mengimplementasikan Hybrid GA-SA-RL dan membandingkannya dengan heuristik klasik, MILP, dan varian ablasi.",
         "Menguji ketahanan rencana dengan simulasi Monte Carlo, simulasi mikro pergerakan truk, dan re-routing dinamis.",
-        "Menguji skalabilitas pada instance sintetis 25, 50, dan 100 SPBU serta pada CVRPLIB set X.",
+        "Menguji metode pada instance sulit 50, 100, dan 200 SPBU terhadap Google OR-Tools serta pada CVRPLIB set X.",
         "Membangun aplikasi web SMARTROUTE-BBM berkode terbuka dan memverifikasi keluarannya terhadap skrip eksperimen.",
     ], numbered=True)
     W.h("Batasan Masalah")
@@ -162,9 +170,10 @@ def bab1(W, cite, R):
         "Formulasi MC-MP-MT-VRP yang menggabungkan kompartemen, multi-produk, multi-ritase, armada heterogen, dan "
         "legalitas jalan per tipe truk menurut UU 22/2009, dengan matriks jarak asimetris yang berbeda untuk setiap tipe.",
         "Dekoder _Split_ armada heterogen dengan pemeriksaan kompartemen eksak dan amortisasi biaya tetap truk, dipadukan "
-        "dengan GA, SA, dan pemilih operator _Q-learning_, beserta uji ablasi yang memisahkan kontribusi setiap komponen.",
-        "Validasi berlapis: optimum MILP, CVRPLIB, instance sintetis sampai 100 SPBU, Monte Carlo permintaan, dan simulasi "
-        "mikro pergerakan truk pada geometri jalan nyata.",
+        "dengan GA dan SA yang memakai operator granular dan _ruin-and-recreate_, beserta uji ablasi yang membandingkan "
+        "pemilihan operator acak, ALNS, dan _Q-learning_ pada anggaran yang sama.",
+        "Validasi berlapis: optimum MILP, CVRPLIB, pembanding Google OR-Tools pada instance sulit sampai 200 SPBU, Monte "
+        "Carlo permintaan, dan simulasi mikro pergerakan truk pada geometri jalan nyata.",
         "Aplikasi web berkode terbuka yang keluarannya identik dengan skrip eksperimen, sehingga hasil dapat diperiksa dan "
         "diulang oleh pihak lain.",
     ], numbered=True)
@@ -453,28 +462,59 @@ def bab3(W, cite, R):
     W.figure(os.path.join(FIGL, "L01_arsitektur.png"), "Arsitektur SMARTROUTE-BBM dan alur Hybrid GA-SA-RL", 14.0)
     W.p("**Fase GA.** Populasi 100 individu; 60% dibangkitkan serakah dari tetangga terdekat dengan gangguan acak dan "
         "40% acak. Seleksi turnamen berukuran 5, _order crossover_ dengan p~c~ = 0,85, mutasi inversi/tukar/pindah dengan "
-        "p~m~ = 0,10 yang dinaikkan tiga kali lipat bila keragaman populasi di bawah 5%, elitisme 2 individu, dan 200 "
-        "generasi.")
-    W.p("**Fase SA.** SA dimulai dari solusi terbaik GA dengan T~0~ = 1000, laju pendinginan α = 0,995, batas bawah "
-        "temperatur 0,01, dan 5000 iterasi. Energi dinormalisasi terhadap fitness terbaik GA, dan solusi tetangga "
-        "diterima dengan peluang Metropolis (19):", keep_next=True)
-    W.eqn(r"E=10^{6}\,\frac{F}{F_{\mathrm{GA}}},\qquad P(\text{terima})=\begin{cases}1, & \Delta E\le 0\\ \exp\left(-\Delta E/T\right), & \Delta E>0\end{cases},\qquad T_{t+1}=\alpha\,T_t")
-    W.p("Dengan skala ini, solusi yang 0,1% lebih buruk diterima dengan peluang e^−1^ ≈ 0,37 pada awal SA. Skala "
-        "dikalibrasi pada instance X-n101-k25 dengan _seed_ 100–102 yang terpisah dari _seed_ eksperimen; pada skala "
-        "10^5^ SA berubah menjadi jalan acak (results/calibration_sa.txt).", indent=False)
-    W.p("**Komponen RL.** Pada setiap iterasi SA, agen _Q-learning_ memilih satu dari lima operator ketetanggaan: "
-        "2-opt, relokasi, tukar, or-opt, dan tukar segmen. Keadaan s menggabungkan tingkat stagnasi (jumlah iterasi tanpa "
-        "solusi terbaik baru: < 50, 50–199, ≥ 200) dan operator terakhir, sehingga terdapat 3 × 5 = 15 keadaan. Aksi "
-        "dipilih secara ε-_greedy_ (20), nilai Q diperbarui dengan (21), dan imbalan mengikuti (22).", keep_next=True)
-    W.eqn(r"a_t=\begin{cases}\arg\max_{a}Q(s_t,a), & \text{peluang } 1-\varepsilon_t\\ \text{acak}, & \text{peluang } \varepsilon_t\end{cases},\qquad \varepsilon_t=\max\left(0{,}02;\ 0{,}1\left(1-\frac{t}{T_{\mathrm{SA}}}\right)\right)")
+        "p~m~ = 0,10 yang dinaikkan tiga kali lipat bila keragaman populasi di bawah 5%, elitisme 2 individu, dan 50 "
+        "generasi. GA dibuat pendek karena fungsinya menyediakan titik awal yang beragam; sebagian besar anggaran "
+        "evaluasi diberikan kepada SA.")
+    W.p("**Fase SA.** SA dimulai dari solusi terbaik GA dengan T~0~ = 1000, batas bawah temperatur T~min~ = 0,01, dan "
+        "T~SA~ = 20.000 iterasi. Laju pendinginan dipilih agar temperatur tepat mencapai T~min~ pada iterasi terakhir. "
+        "Energi dinormalisasi terhadap fitness terbaik GA, dan solusi tetangga diterima dengan peluang Metropolis (19):",
+        keep_next=True)
+    W.eqn(r"E=10^{6}\,\frac{F}{F_{\mathrm{GA}}},\qquad P(\text{terima})=\begin{cases}1, & \Delta E\le 0\\ \exp\left(-\Delta E/T\right), & \Delta E>0\end{cases},\qquad T_{t+1}=\alpha\,T_t,\quad \alpha=\left(\frac{T_{\min}}{T_0}\right)^{1/T_{\mathrm{SA}}}")
+    W.p("Dengan skala ini, solusi yang 0,1% lebih buruk diterima dengan peluang e^−1^ ≈ 0,37 pada awal SA, dan α = "
+        "0,99942. Skala energi dikalibrasi pada instance X-n101-k25 dengan _seed_ 100–102 yang terpisah dari _seed_ "
+        "eksperimen (results/calibration_sa.txt). Pembagian anggaran 50 generasi GA dan 20.000 iterasi SA dipilih dari "
+        "uji rintisan pada instance kalibrasi 50 SPBU yang berbeda dari instance uji E10. Pada uji rintisan itu, "
+        "pembagian lama (200 generasi dan 5000 iterasi) dengan jumlah evaluasi hampir sama memberi fitness sekitar dua "
+        "kali lebih buruk.", indent=False)
+    W.p("**Operator ketetanggaan.** SA memakai sembilan operator pada permutasi. Lima operator acak: 2-opt, relokasi, "
+        "tukar, or-opt, dan tukar segmen. Dua operator granular {0} membatasi gerakan pada k = 8 SPBU terdekat: relokasi "
+        "SPBU i ke samping salah satu tetangganya, dan pembalikan segmen agar i bersebelahan dengan tetangga itu. Dua "
+        "operator _ruin-and-recreate_ {1} menghapus r SPBU, r acak antara 2 dan 15% jumlah SPBU, lalu menyisipkannya "
+        "kembali satu per satu pada posisi dengan tambahan jarak terkecil (20). Penghapusan dilakukan pada klaster "
+        "(r SPBU terdekat dari satu SPBU acak) atau secara acak.".format(cite('toth2003'), cite('schrimpf2000')),
+        keep_next=True)
+    W.eqn(r"\ell^{*}=\arg\min_{0\le \ell\le |\pi|}\left(d_{\pi_\ell,i}+d_{i,\pi_{\ell+1}}-d_{\pi_\ell,\pi_{\ell+1}}\right),\qquad \pi_0=\pi_{|\pi|+1}=0")
+    W.p("**Komponen RL.** Pada setiap iterasi SA, agen _Q-learning_ memilih satu dari sembilan operator. Keadaan s "
+        "menggabungkan tingkat stagnasi (jumlah iterasi tanpa solusi terbaik baru: < 50, 50–299, ≥ 300) dan tahap "
+        "pencarian (sepertiga awal, tengah, akhir), sehingga terdapat 3 × 3 = 9 keadaan. Aksi dipilih secara "
+        "ε-_greedy_ (21), nilai Q diperbarui dengan (22), dan imbalan memakai skor bertingkat (23).", keep_next=True)
+    W.eqn(r"a_t=\begin{cases}\arg\max_{a}Q(s_t,a), & \text{peluang } 1-\varepsilon\\ \text{acak}, & \text{peluang } \varepsilon\end{cases},\qquad \varepsilon=0{,}15")
     W.eqn(r"Q(s_t,a_t)\leftarrow Q(s_t,a_t)+\eta\left[r_t+\gamma\max_{a'}Q(s_{t+1},a')-Q(s_t,a_t)\right]")
-    W.eqn(r"r_t=\begin{cases}-0{,}05, & \text{ditolak}\\ 10^{6}\left(F_{\mathrm{kini}}-F_{\mathrm{baru}}\right)/F_{\mathrm{GA}}, & \text{diterima, membaik}\\ 0, & \text{diterima, tidak membaik}\end{cases}\ +\ I_t")
-    W.p("dengan I~t~ = 1 bila iterasi t menemukan solusi terbaik baru dan 0 bila tidak, η = 0,1, γ = 0,9, dan T~SA~ = 5000. Uji ablasi membandingkan tiga varian dengan anggaran evaluasi "
-        "setara: GA saja (mendapat generasi tambahan sebanding dengan iterasi SA), GA-SA (operator dipilih acak seragam), "
-        "dan GA-SA-RL.", indent=False)
+    W.eqn(r"r_t=\begin{cases}1, & \text{solusi terbaik baru}\\ 0{,}4, & \text{diterima dan membaik}\\ 0, & \text{diterima, tidak membaik}\\ -0{,}02, & \text{ditolak}\end{cases}")
+    W.p("dengan η = 0,1 dan γ = 0,5. Versi awal penelitian ini memakai imbalan sebanding dengan besar perbaikan dan γ = "
+        "0,9; pada uji rintisan agen itu terkunci pada satu operator (2-opt dipilih pada 87% iterasi). Skor bertingkat "
+        "pada (23) meniru skor σ pada ALNS sehingga besar imbalan tidak bergantung pada skala fitness.", indent=False)
+    W.p(f"**Pembanding pemilihan operator.** Untuk menguji apakah RL memberi nilai tambah, dua cara pemilihan lain "
+        "memakai operator, skema SA, dan anggaran yang sama. GA-SA memilih operator secara acak seragam. GA-SA-ALNS "
+        f"memakai bobot adaptif roda roulet {cite('ropke2006')}: operator a dipilih dengan peluang ρ~a~/Σρ, dan setiap "
+        "100 iterasi bobot diperbarui dengan (24).", keep_next=True)
+    W.eqn(r"\rho_a\leftarrow (1-\lambda)\,\rho_a+\lambda\,\frac{\Sigma_a}{u_a},\qquad \lambda=0{,}1,\quad \rho_a\ge 0{,}01")
+    W.p("dengan Σ~a~ jumlah skor (23) yang diperoleh operator a dan u~a~ jumlah pemakaiannya dalam segmen tersebut. GA "
+        "saja mendapat generasi tambahan sebanding dengan iterasi SA sehingga keempat varian memakai jumlah evaluasi "
+        "yang hampir sama, sekitar 25.000.", indent=False)
+    W.p(f"**Pembanding OR-Tools.** Pembanding eksternal memakai pemecah rute Google OR-Tools {cite('ortools')} dengan "
+        "_Guided Local Search_. OR-Tools tidak memiliki kendala kompartemen-produk dan multi-ritase bawaan, sehingga "
+        "model disusun sebagai berikut. Setiap unit truk digandakan menjadi tiga kendaraan virtual (satu per ritase), "
+        "dan ritase ke-j baru boleh berangkat setelah ritase ke-(j−1) unit yang sama kembali. Kapasitas tiap kendaraan "
+        "adalah muatan agregat terbesar yang masih layak kompartemen untuk bauran produk instance. Jarak memakai "
+        "jaringan legal per tipe truk, SPBU yang tidak terjangkau dilarang untuk tipe itu, jendela waktu dipasang "
+        "sebagai batas bawah keras dan batas atas lunak, dan antrean _loading rack_ ditambahkan pada setiap "
+        "keberangkatan. Batas waktu OR-Tools sama dengan median waktu GA-SA-RL pada ukuran yang sama. Rute OR-Tools "
+        "kemudian dinilai ulang oleh evaluator yang sama, dengan penugasan unit dan urutan ritase dari OR-Tools, "
+        "sehingga semua metode dibandingkan dengan fungsi objektif yang sama.")
     W.p(f"Skor prioritas π~i~ dihitung dengan inferensi fuzzy Mamdani {cite('mamdani1975')} dari tiga masukan: sisa "
         "waktu sampai stok habis (TTE), jarak dari FT, dan koefisien variasi permintaan. Keluaran ditegaskan dengan "
-        "metode pusat massa (23).", keep_next=True)
+        "metode pusat massa (25).", keep_next=True)
     W.eqn(r"\pi_i=\frac{\int z\,\mu_{\mathrm{out}}(z)\,dz}{\int\mu_{\mathrm{out}}(z)\,dz},\qquad z\in[0,100]")
     # ---- dinamis
     W.hh("Re-routing dinamis")
@@ -507,8 +547,8 @@ def bab3(W, cite, R):
         "jaringan untuk melihat pengaruh legalitas jalan secara langsung.")
     rows = [
         ("E0", "Audit data: sirkuitas jarak, ketidaksamaan segitiga, radius layanan", "–"),
-        ("E1", "Validasi setting capstone (CVRP 16 KL): baseline, NN, CW, MILP, 3 varian", "30 replikasi"),
-        ("E2", "Model lengkap, armada eksisting, kasus agregat dan multi-produk, 3 varian", "30 replikasi"),
+        ("E1", "Validasi setting capstone (CVRP 16 KL): baseline, NN, CW, MILP, 4 varian", "30 replikasi"),
+        ("E2", "Model lengkap, armada eksisting, kasus agregat dan multi-produk, 4 varian", "30 replikasi"),
         ("E3", "Sapuan bobot w langkah 0,1 → Pareto biaya–emisi; sensitivitas biaya tetap", "2 _seed_ × 66 bobot"),
         ("E4", "Sepuluh kategori skenario _what-if_ dan perbaikan armadanya", "5 _seed_"),
         ("E5", "Re-routing dinamis: kerusakan truk, kemacetan mendadak, tenggat ketat", "30 + 12 kasus"),
@@ -516,7 +556,7 @@ def bab3(W, cite, R):
         ("E7", f"CVRPLIB set X, n = 100–142 {cite('uchoa2017')}", "10 instance"),
         ("E8", "Jalan legal-truk OSM vs matriks capstone, armada eksisting dan diperluas", "30 replikasi"),
         ("E9", "Simulasi mikro: CV kecepatan 0,1–0,3, CV bongkar 0,15, dengan dan tanpa jendela waktu", "300 replikasi"),
-        ("E10", "Skalabilitas: instance sintetis 25, 50, 100 SPBU pada jaringan OSM", "10 _seed_"),
+        ("E10", "Instance sulit 50, 100, 200 SPBU (armada padat, jendela waktu, antrean rack): CW, OR-Tools, 4 varian", "10 _seed_"),
     ]
     W.table(["Kode", "Eksperimen", "Ulangan"], rows, "Rancangan eksperimen", widths=[1.4, 9.6, 3.0],
             align=["c", "l", "c"])
@@ -531,5 +571,5 @@ def bab3(W, cite, R):
         f"dari dua varian memakai Kruskal–Wallis atau Friedman {cite('derrac2011')} dengan α = 0,05. Besar efek pada E10 dinyatakan dengan Cliff's δ:",
         indent=False, keep_next=True)
     W.eqn(r"\delta=\frac{1}{n_a n_b}\sum_{i=1}^{n_a}\sum_{j=1}^{n_b}\mathrm{sgn}\left(b_j-a_i\right)")
-    W.p("dengan a~i~ fitness GA-SA-RL dan b~j~ fitness GA. Nilai δ > 0 berarti GA-SA-RL cenderung lebih kecil (lebih "
-        "baik); |δ| ≥ 0,474 tergolong efek besar.", indent=False)
+    W.p("dengan a~i~ fitness GA-SA-RL dan b~j~ fitness varian pembanding. Nilai δ > 0 berarti GA-SA-RL cenderung "
+        "lebih kecil (lebih baik); |δ| < 0,147 dapat diabaikan dan |δ| ≥ 0,474 tergolong efek besar.", indent=False)

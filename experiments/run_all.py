@@ -195,7 +195,7 @@ def E2():
 # ---------------------------------------------------------------------------
 def E3b():
     """Seperti E3 tetapi dengan opsi armada diperluas (A, B, C, D tersedia) -> trade-off pemilihan armada."""
-    E3(fleet=FLEET_OPT, suffix="b", sens=False)
+    E3(fleet=FLEET_OPT, suffix="b", sens=False, road="capstone")
 
 
 FLEET_OPT = dict(A=2, B=2, C=4, D=1)

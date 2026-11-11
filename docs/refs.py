@@ -6,6 +6,10 @@ alamat berkas. Entri klasik memakai DOI penerbit.
 """
 
 REFS = {
+    'ropke2006': 'S. Ropke and D. Pisinger, "An adaptive large neighborhood search heuristic for the pickup and delivery problem with time windows," _Transportation Science_, vol. 40, no. 4, pp. 455–472, 2006. [Online]. Available: https://consensus.app/papers/details/07cd08e30ccf581187c9d77918d90552/',
+    'schrimpf2000': 'G. Schrimpf, J. Schneider, H. Stamm-Wilbrandt, and G. Dueck, "Record breaking optimization results using the ruin and recreate principle," _Journal of Computational Physics_, vol. 159, no. 2, pp. 139–171, 2000, doi: 10.1006/jcph.1999.6413.',
+    'toth2003': 'P. Toth and D. Vigo, "The granular tabu search and its application to the vehicle-routing problem," _INFORMS Journal on Computing_, vol. 15, no. 4, pp. 333–346, 2003, doi: 10.1287/ijoc.15.4.333.24890.',
+    'ortools': 'L. Perron and V. Furnon, _OR-Tools_, ver. 9.15. Google, 2025. [Online]. Available: https://developers.google.com/optimization/',
     'dantzig1959': 'G. B. Dantzig and J. H. Ramser, "The truck dispatching problem," _Management Science_, vol. 6, no. 1, pp. 80–91, 1959, doi: 10.1287/mnsc.6.1.80.',
     'clarke1964': 'G. Clarke and J. W. Wright, "Scheduling of vehicles from a central depot to a number of delivery points," _Operations Research_, vol. 12, no. 4, pp. 568–581, 1964, doi: 10.1287/opre.12.4.568.',
     'rios2021': 'B. H. O. Rios, E. C. Xavier, F. K. Miyazawa, P. Amorim, E. Curcio, and M. J. Santos, "Recent dynamic vehicle routing problems: A survey," _Computers & Industrial Engineering_, vol. 160, p. 107604, 2021, doi: 10.1016/j.cie.2021.107604.',
