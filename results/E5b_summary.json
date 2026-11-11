@@ -1,7 +1,7 @@
 {
   "breakdown": {
     "n": 30,
-    "compute_s_mean": 0.6684855858484904,
+    "compute_s_mean": 0.6822468360265096,
     "share_improved_fitness": 0.13333333333333333,
     "fitness": {
       "naive": 0.3541967718229386,
@@ -34,7 +34,7 @@
   },
   "kemacetan": {
     "n": 10,
-    "compute_s_mean": 0.21693885326385498,
+    "compute_s_mean": 0.24432454109191895,
     "share_improved_fitness": 0.3,
     "fitness": {
       "naive": 0.2531448755833376,

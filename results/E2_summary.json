@@ -88,7 +88,7 @@
         "min": 0.474530059315945,
         "max": 0.4750811089120137,
         "median": 0.474530059315945,
-        "runtime_mean": 1.6666301965713501,
+        "runtime_mean": 1.9206592798233033,
         "improve_vs_baseline_pct": 5.435400992009815,
         "t_one_sample": -883.6657633468232,
         "p_one_sample": 4.247757302282913e-66,
@@ -97,17 +97,31 @@
       },
       "GA-SA": {
         "n": 30,
-        "mean": 0.4745685338536065,
-        "sd": 0.00010989108314849583,
+        "mean": 0.47454513897928946,
+        "sd": 4.601236212300532e-05,
         "min": 0.474530059315945,
-        "max": 0.4750811089120137,
+        "max": 0.47468085594938814,
         "median": 0.474530059315945,
-        "runtime_mean": 6.043018198013305,
-        "improve_vs_baseline_pct": 5.440717769974976,
-        "t_one_sample": -1360.9718530672253,
-        "p_one_sample": 1.5453195059058508e-71,
+        "runtime_mean": 15.16998139222463,
+        "improve_vs_baseline_pct": 5.4453792727200385,
+        "t_one_sample": -3253.186821227476,
+        "p_one_sample": 1.6359161352509978e-82,
         "wilcoxon": 0.0,
-        "p_wilcoxon": 1.2969325314111303e-07
+        "p_wilcoxon": 7.201480908030244e-08
+      },
+      "GA-SA-ALNS": {
+        "n": 30,
+        "mean": 0.4745501655337376,
+        "sd": 5.2137318295933704e-05,
+        "min": 0.474530059315945,
+        "max": 0.47468085594938814,
+        "median": 0.474530059315945,
+        "runtime_mean": 13.872309652964274,
+        "improve_vs_baseline_pct": 5.444377715838792,
+        "t_one_sample": -2870.482859322701,
+        "p_one_sample": 6.166285547587397e-81,
+        "wilcoxon": 0.0,
+        "p_wilcoxon": 9.80883332166086e-08
       },
       "GA-SA-RL": {
         "n": 30,
@@ -116,7 +130,7 @@
         "min": 0.474530059315945,
         "max": 0.47468085594938814,
         "median": 0.474530059315945,
-        "runtime_mean": 5.81361616452535,
+        "runtime_mean": 13.92829507191976,
         "improve_vs_baseline_pct": 5.443376158957546,
         "t_one_sample": -2617.801547711287,
         "p_one_sample": 8.923766260939905e-80,
@@ -124,64 +138,74 @@
         "p_wilcoxon": 1.2860448184181367e-07
       },
       "anova": {
-        "F": 0.8508700794185328,
-        "p": 0.43056567176529803
+        "F": 1.7146009676781657,
+        "p": 0.16784545990628538
       },
       "kruskal": {
-        "H": 0.03056618585022181,
-        "p": 0.9848331008530197
+        "H": 0.9133526850507018,
+        "p": 0.8222043616014674
       },
-      "tukey": " Multiple Comparison of Means - Tukey HSD, FWER=0.05 \n=====================================================\ngroup1  group2  meandiff p-adj   lower  upper  reject\n-----------------------------------------------------\n    GA    GA-SA     -0.0 0.6706 -0.0001    0.0  False\n    GA GA-SA-RL     -0.0 0.4097 -0.0001    0.0  False\n GA-SA GA-SA-RL     -0.0 0.9045 -0.0001 0.0001  False\n-----------------------------------------------------"
+      "tukey": "    Multiple Comparison of Means - Tukey HSD, FWER=0.05    \n===========================================================\n  group1     group2   meandiff p-adj   lower  upper  reject\n-----------------------------------------------------------\n        GA      GA-SA  -0.0001 0.1848 -0.0001    0.0  False\n        GA GA-SA-ALNS     -0.0 0.2684 -0.0001    0.0  False\n        GA   GA-SA-RL     -0.0 0.3723 -0.0001    0.0  False\n     GA-SA GA-SA-ALNS      0.0  0.997 -0.0001 0.0001  False\n     GA-SA   GA-SA-RL      0.0 0.9772 -0.0001 0.0001  False\nGA-SA-ALNS   GA-SA-RL      0.0  0.997 -0.0001 0.0001  False\n-----------------------------------------------------------"
     },
     "means": {
       "fitness": {
         "GA": 0.4745952173844481,
-        "GA-SA": 0.47456853385360637,
+        "GA-SA": 0.4745451389792893,
+        "GA-SA-ALNS": 0.4745501655337374,
         "GA-SA-RL": 0.47455519208818553
       },
       "dist_km": {
         "GA": 286.0122333333333,
-        "GA-SA": 286.01630000000006,
+        "GA-SA": 286.08060000000006,
+        "GA-SA-ALNS": 286.04946666666666,
         "GA-SA-RL": 286.0183333333334
       },
       "cost_rp": {
         "GA": 3451415.6758446875,
-        "GA-SA": 3451270.814059688,
+        "GA-SA": 3451149.4166353126,
+        "GA-SA-ALNS": 3451173.89990125,
         "GA-SA-RL": 3451198.3831671877
       },
       "co2_kg": {
         "GA": 273.0020694386469,
-        "GA-SA": 272.9683546399969,
+        "GA-SA": 272.9197020485532,
+        "GA-SA-ALNS": 272.9355996446125,
         "GA-SA-RL": 272.9514972406719
       },
       "time_min": {
         "GA": 1079.86835,
-        "GA-SA": 1079.8744499999998,
+        "GA-SA": 1079.9708999999998,
+        "GA-SA-ALNS": 1079.9242,
         "GA-SA-RL": 1079.8774999999998
       },
       "trucks": {
         "GA": 2.0,
         "GA-SA": 2.0,
+        "GA-SA-ALNS": 2.0,
         "GA-SA-RL": 2.0
       },
       "trips": {
         "GA": 4.0,
         "GA-SA": 4.0,
+        "GA-SA-ALNS": 4.0,
         "GA-SA-RL": 4.0
       },
       "late_min": {
         "GA": 0.0,
         "GA-SA": 0.0,
+        "GA-SA-ALNS": 0.0,
         "GA-SA-RL": 0.0
       },
       "overtime_min": {
         "GA": 0.0,
         "GA-SA": 0.0,
+        "GA-SA-ALNS": 0.0,
         "GA-SA-RL": 0.0
       },
       "unassigned": {
         "GA": 0.0,
         "GA-SA": 0.0,
+        "GA-SA-ALNS": 0.0,
         "GA-SA-RL": 0.0
       }
     },
@@ -249,19 +273,19 @@
       }
     ],
     "best_perm": [
-      6,
-      8,
-      11,
-      10,
-      12,
-      13,
       1,
       7,
       9,
       2,
       5,
       3,
-      4
+      4,
+      6,
+      8,
+      11,
+      10,
+      12,
+      13
     ]
   },
   "multiproduk": {
@@ -353,7 +377,7 @@
         "min": 0.47008300377396656,
         "max": 0.47008300377396656,
         "median": 0.47008300377396656,
-        "runtime_mean": 1.740911316871643,
+        "runtime_mean": 1.9387239853541056,
         "improve_vs_baseline_pct": 91.39824207461848,
         "t_one_sample": null,
         "p_one_sample": null,
@@ -366,7 +390,20 @@
         "min": 0.47008300377396656,
         "max": 0.47008300377396656,
         "median": 0.47008300377396656,
-        "runtime_mean": 6.958476487795512,
+        "runtime_mean": 16.842328453063963,
+        "improve_vs_baseline_pct": 91.39824207461848,
+        "t_one_sample": null,
+        "p_one_sample": null,
+        "note": "varian nol (semua replikasi identik)"
+      },
+      "GA-SA-ALNS": {
+        "n": 30,
+        "mean": 0.4700830037739666,
+        "sd": 5.646012854083702e-17,
+        "min": 0.47008300377396656,
+        "max": 0.47008300377396656,
+        "median": 0.47008300377396656,
+        "runtime_mean": 16.551179846127827,
         "improve_vs_baseline_pct": 91.39824207461848,
         "t_one_sample": null,
         "p_one_sample": null,
@@ -379,7 +416,7 @@
         "min": 0.47008300377396656,
         "max": 0.47008300377396656,
         "median": 0.47008300377396656,
-        "runtime_mean": 6.972136727968851,
+        "runtime_mean": 16.94854131539663,
         "improve_vs_baseline_pct": 91.39824207461848,
         "t_one_sample": null,
         "p_one_sample": null,
@@ -393,57 +430,67 @@
         "H": NaN,
         "p": NaN
       },
-      "tukey": "Multiple Comparison of Means - Tukey HSD, FWER=0.05\n=================================================\ngroup1  group2  meandiff p-adj lower upper reject\n-------------------------------------------------\n    GA    GA-SA      0.0   nan   0.0   0.0  False\n    GA GA-SA-RL      0.0   nan   0.0   0.0  False\n GA-SA GA-SA-RL      0.0   nan   0.0   0.0  False\n-------------------------------------------------"
+      "tukey": "  Multiple Comparison of Means - Tukey HSD, FWER=0.05  \n=======================================================\n  group1     group2   meandiff p-adj lower upper reject\n-------------------------------------------------------\n        GA      GA-SA      0.0   nan   0.0   0.0  False\n        GA GA-SA-ALNS      0.0   nan   0.0   0.0  False\n        GA   GA-SA-RL      0.0   nan   0.0   0.0  False\n     GA-SA GA-SA-ALNS      0.0   nan   0.0   0.0  False\n     GA-SA   GA-SA-RL      0.0   nan   0.0   0.0  False\nGA-SA-ALNS   GA-SA-RL      0.0   nan   0.0   0.0  False\n-------------------------------------------------------"
     },
     "means": {
       "fitness": {
         "GA": 0.47008300377396656,
         "GA-SA": 0.47008300377396656,
+        "GA-SA-ALNS": 0.47008300377396656,
         "GA-SA-RL": 0.47008300377396656
       },
       "dist_km": {
         "GA": 283.15400000000005,
         "GA-SA": 283.15400000000005,
+        "GA-SA-ALNS": 283.15400000000005,
         "GA-SA-RL": 283.15400000000005
       },
       "cost_rp": {
         "GA": 3426591.8235,
         "GA-SA": 3426591.8235,
+        "GA-SA-ALNS": 3426591.8235,
         "GA-SA-RL": 3426591.8235
       },
       "co2_kg": {
         "GA": 268.415583915,
         "GA-SA": 268.415583915,
+        "GA-SA-ALNS": 268.415583915,
         "GA-SA-RL": 268.415583915
       },
       "time_min": {
         "GA": 1075.581,
         "GA-SA": 1075.581,
+        "GA-SA-ALNS": 1075.581,
         "GA-SA-RL": 1075.581
       },
       "trucks": {
         "GA": 2.0,
         "GA-SA": 2.0,
+        "GA-SA-ALNS": 2.0,
         "GA-SA-RL": 2.0
       },
       "trips": {
         "GA": 5.0,
         "GA-SA": 5.0,
+        "GA-SA-ALNS": 5.0,
         "GA-SA-RL": 5.0
       },
       "late_min": {
         "GA": 0.0,
         "GA-SA": 0.0,
+        "GA-SA-ALNS": 0.0,
         "GA-SA-RL": 0.0
       },
       "overtime_min": {
         "GA": 0.0,
         "GA-SA": 0.0,
+        "GA-SA-ALNS": 0.0,
         "GA-SA-RL": 0.0
       },
       "unassigned": {
         "GA": 0.0,
         "GA-SA": 0.0,
+        "GA-SA-ALNS": 0.0,
         "GA-SA-RL": 0.0
       }
     },

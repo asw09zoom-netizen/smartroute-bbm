@@ -742,11 +742,11 @@
     {
       "case": "diperluas_agregat",
       "road": "capstone",
-      "fitness": 0.4811036977216449,
-      "dist_km": 225.8,
-      "cost_rp": 3733749.083309375,
-      "co2_kg": 244.56096193909377,
-      "time_min": 989.5499999999997,
+      "fitness": 0.48095504172063597,
+      "dist_km": 225.48,
+      "cost_rp": 3732935.4937437503,
+      "co2_kg": 244.48646026943752,
+      "time_min": 989.0699999999997,
       "trucks": 2.0,
       "trips": 3.0,
       "unassigned": 0.0
@@ -766,11 +766,11 @@
     {
       "case": "diperluas_multiproduk",
       "road": "capstone",
-      "fitness": 0.47046112418528946,
-      "dist_km": 216.31333333333336,
-      "cost_rp": 3678266.9034437495,
-      "co2_kg": 235.34797510243752,
-      "time_min": 975.3199999999999,
+      "fitness": 0.47043750772367743,
+      "dist_km": 216.3,
+      "cost_rp": 3678145.3748749997,
+      "co2_kg": 235.32530038875004,
+      "time_min": 975.3,
       "trucks": 2.0,
       "trips": 4.0,
       "unassigned": 0.0

@@ -56,7 +56,7 @@
         "naive": 0.0,
         "reopt": 0.0
       },
-      "compute_s_mean": 0.5387910207112631,
+      "compute_s_mean": 0.42341273625691733,
       "share_improved_fitness": 0.1
     },
     "kemacetan": {
@@ -93,7 +93,7 @@
         "naive": 0.0,
         "reopt": 0.0
       },
-      "compute_s_mean": 0.17333380381266275,
+      "compute_s_mean": 0.17254245281219482,
       "share_improved_fitness": 0.0
     }
   }
