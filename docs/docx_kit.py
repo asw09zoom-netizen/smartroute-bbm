@@ -271,6 +271,7 @@ class Writer:
     # -- teks ---------------------------------------------------------------
     def p(self, text, indent=True, align="j", keep_next=False, size=None, space_after=0):
         p = self.doc.add_paragraph()
+        text = text.replace("= < ", "< ")
         add_runs(p, text, size=size)
         pf = p.paragraph_format
         pf.first_line_indent = Cm(1.25) if indent else Cm(0)

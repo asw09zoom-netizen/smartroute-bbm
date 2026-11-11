@@ -629,7 +629,7 @@ def e10(W, cite, R):
         "SPBU berasal dari beberapa _seed_ yang belum berhasil menghapus keterlambatan; fitness rata-rata dengan demikian "
         "dipengaruhi penalti, bukan jarak.")
     if os.path.exists(FG("L19_skalabilitas.png")):
-        W.figure(FG("L19_skalabilitas.png"), "Fitness per metode dan waktu komputasi pada instance sulit (E10)", 14.0)
+        W.figure(FG("L19_skalabilitas.png"), "Fitness per metode serta keterlambatan dan lembur pada instance sulit (E10)", 14.0)
 
 
 # ===========================================================================

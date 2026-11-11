@@ -8,7 +8,7 @@
   "trips": 5,
   "late": 0,
   "overtime": 0,
-  "runtime_s": 9.7
+  "runtime_s": 17.5
  },
  "script": {
   "fitness": 0.47008300377396656,
@@ -23,7 +23,7 @@
   "unassigned": 0,
   "penalty": 0.0
  },
- "script_runtime_s": 15.750256061553955,
+ "script_runtime_s": 13.347130298614502,
  "baseline": {
   "fitness": 5.46496434626317,
   "dist_km": 277.41600000000005,

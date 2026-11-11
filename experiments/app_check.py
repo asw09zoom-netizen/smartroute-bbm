@@ -16,7 +16,7 @@ from smartroute.model import Evaluator, evaluate_routes  # noqa: E402
 
 # KPI yang ditampilkan aplikasi (menu Optimasi, pengaturan bawaan, 11 Nov 2026)
 APP = dict(fitness=0.4701, dist_km=283.2, cost_rp=3.43e6, co2_kg=268.4, trucks=2, trips=5, late=0, overtime=0,
-           runtime_s=9.7)
+           runtime_s=17.5)
 
 if __name__ == "__main__":
     t = load_tables()
