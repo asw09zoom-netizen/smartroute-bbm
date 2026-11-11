@@ -365,7 +365,7 @@ with tab_sim:
     if over > 0:
         st.warning(f"Pada simulasi ini armada baru selesai {hhmm(sim_inst, simres['t_end'])}, melewati akhir shift {over:.0f} menit.")
     st.caption("Seret untuk menggeser, klik kanan/Ctrl+seret untuk memutar dan memiringkan peta. Tabel rinci ada di menu "
-               "**📋 Data Simulasi**. Peta © OpenStreetMap contributors © CARTO.")
+               "**📋 Data Simulasi**. Peta dasar © Esri / © OpenStreetMap contributors.")
 
 with tab_tbl:
     if "sim" not in st.session_state:

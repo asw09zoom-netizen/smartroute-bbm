@@ -103,13 +103,13 @@ input[type=range]{width:100%;accent-color:#40a9ff}
 @media (max-width:900px){#fleet{width:220px}#log{display:none}#legend{display:none}#top{width:240px}#clock{font-size:28px}}
 @media (max-width:620px){#fleet{display:none}#kpi{flex-wrap:wrap;right:12px}.k{min-width:70px}}
 </style></head><body>
-<div id="root"><div id="map"></div><div id="err">Peta 3D memerlukan WebGL dan koneksi ke unpkg.com / basemaps.cartocdn.com.</div>
+<div id="root"><div id="map"></div><div id="err">Peta 3D memerlukan WebGL dan koneksi ke unpkg.com / server.arcgisonline.com.</div>
  <div id="top" class="glass"><div class="h" id="ttl"></div><div id="clock">06:00</div>
   <div class="sub" id="tinfo"></div><div id="prog"><i></i></div>
   <input id="slider" type="range" min="0" step="0.5" value="0">
   <div id="ctrl"><button id="play" class="go">▶ Putar</button><button id="reset" title="Ulang">⟲</button>
    <select id="spd"><option value="2">×2 mnt/dtk</option><option value="5" selected>×5 mnt/dtk</option><option value="10">×10 mnt/dtk</option><option value="20">×20 mnt/dtk</option></select>
-   <button id="v3d" class="on">3D</button><button id="rot">⟳ Rotasi</button><button id="fitb" title="Tampilkan seluruh wilayah">⤢</button><select id="follow"><option value="">Kamera bebas</option></select></div>
+   <button id="v3d" class="on">3D</button><button id="rot">⟳ Rotasi</button><button id="fitb" title="Tampilkan seluruh wilayah">⤢</button><select id="follow"><option value="">Kamera bebas</option></select><select id="base"><option value="dark">Peta gelap</option><option value="sat">Satelit</option><option value="osm">OpenStreetMap</option></select></div>
  </div>
  <div id="legend" class="glass"><span class="h">SPBU</span><span class="sw" style="background:#5b6b7c"></span>menunggu
   <span class="sw" style="background:#ffa940"></span>bongkar<span class="sw" style="background:#52c41a"></span>terlayani
@@ -144,8 +144,15 @@ function state(u,t){const fr=u.frames,i=find(fr,t),a=fr[i],b=fr[Math.min(i+1,fr.
  return {lon,lat,load,km,v:moving?b[4]:0,code,txt,west:moving&&b[2]<a[2]-1e-9}}
 let map,is3d=true;try{
  map=new maplibregl.Map({container:'map',attributionControl:{compact:true},
-  style:{version:8,sources:{c:{type:'raster',tiles:['https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png','https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'],
-   tileSize:256,attribution:'© OpenStreetMap contributors © CARTO'}},layers:[{id:'bg',type:'background',paint:{'background-color':'#05080d'}},{id:'c',type:'raster',source:'c'}]},
+  style:{version:8,sources:{
+    dark:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:16,attribution:'Tiles © Esri — Esri, HERE, Garmin, © OpenStreetMap contributors'},
+    darkref:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:16},
+    sat:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:18,attribution:'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics'},
+    osm:{type:'raster',tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,maxzoom:19,attribution:'© OpenStreetMap contributors'}},
+   layers:[{id:'bg',type:'background',paint:{'background-color':'#05080d'}},
+    {id:'dark',type:'raster',source:'dark'},{id:'darkref',type:'raster',source:'darkref'},
+    {id:'sat',type:'raster',source:'sat',layout:{visibility:'none'},paint:{'raster-brightness-max':0.75,'raster-saturation':-0.2}},
+    {id:'osm',type:'raster',source:'osm',layout:{visibility:'none'},paint:{'raster-brightness-max':0.85}}]},
   center:[D.depot.lon,D.depot.lat],zoom:10,pitch:55,bearing:-18,maxPitch:75});
  map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'bottom-right');
  map.addControl(new maplibregl.FullscreenControl({container:document.getElementById('root')}),'bottom-right');
@@ -222,6 +229,8 @@ document.getElementById('reset').onclick=()=>{T=0};
 slider.oninput=()=>{T=parseFloat(slider.value)};
 document.getElementById('rot').onclick=e=>{rot=!rot;e.target.classList.toggle('on',rot)};
 document.getElementById('v3d').onclick=e=>{is3d=!is3d;e.target.classList.toggle('on',is3d);map.easeTo({pitch:is3d?55:0,bearing:is3d?-18:0,duration:900})};
+document.getElementById('base').onchange=e=>{const v=e.target.value;
+ [['dark',v==='dark'],['darkref',v==='dark'||v==='sat'],['sat',v==='sat'],['osm',v==='osm']].forEach(([id,on])=>map.setLayoutProperty(id,'visibility',on?'visible':'none'))};
 document.getElementById('fitb').onclick=()=>{document.getElementById('follow').value='';fit()};
 document.getElementById('follow').onchange=e=>{if(e.target.value)map.easeTo({zoom:13,pitch:60,duration:800})};
 map.on('load',()=>{fit();render();requestAnimationFrame(loop)});
