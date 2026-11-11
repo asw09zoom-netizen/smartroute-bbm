@@ -109,7 +109,7 @@ input[type=range]{width:100%;accent-color:#40a9ff}
   <input id="slider" type="range" min="0" step="0.5" value="0">
   <div id="ctrl"><button id="play" class="go">▶ Putar</button><button id="reset" title="Ulang">⟲</button>
    <select id="spd"><option value="2">×2 mnt/dtk</option><option value="5" selected>×5 mnt/dtk</option><option value="10">×10 mnt/dtk</option><option value="20">×20 mnt/dtk</option></select>
-   <button id="v3d" class="on">3D</button><button id="rot">⟳ Rotasi</button><button id="fitb" title="Tampilkan seluruh wilayah">⤢</button><select id="follow"><option value="">Kamera bebas</option></select><select id="base"><option value="dark">Peta gelap</option><option value="sat">Satelit</option><option value="osm">OpenStreetMap</option></select></div>
+   <button id="v3d" class="on">3D</button><button id="rot">⟳ Rotasi</button><button id="fitb" title="Tampilkan seluruh wilayah">⤢</button><select id="follow"><option value="">Kamera bebas</option></select><select id="base"><option value="street">Peta jalan + kontur</option><option value="topo">Topografi (kontur)</option><option value="otm">OpenTopoMap (garis kontur)</option><option value="sat">Satelit + jalan</option><option value="osm">OpenStreetMap</option><option value="dark">Gelap</option></select><button id="hs" class="on" title="Bayangan relief tanah">⛰ Relief</button></div>
  </div>
  <div id="legend" class="glass"><span class="h">SPBU</span><span class="sw" style="background:#5b6b7c"></span>menunggu
   <span class="sw" style="background:#ffa940"></span>bongkar<span class="sw" style="background:#52c41a"></span>terlayani
@@ -145,14 +145,25 @@ function state(u,t){const fr=u.frames,i=find(fr,t),a=fr[i],b=fr[Math.min(i+1,fr.
 let map,is3d=true;try{
  map=new maplibregl.Map({container:'map',attributionControl:{compact:true},
   style:{version:8,sources:{
-    dark:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:16,attribution:'Tiles © Esri — Esri, HERE, Garmin, © OpenStreetMap contributors'},
-    darkref:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:16},
-    sat:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:18,attribution:'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics'},
-    osm:{type:'raster',tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,maxzoom:19,attribution:'© OpenStreetMap contributors'}},
-   layers:[{id:'bg',type:'background',paint:{'background-color':'#05080d'}},
-    {id:'dark',type:'raster',source:'dark'},{id:'darkref',type:'raster',source:'darkref'},
-    {id:'sat',type:'raster',source:'sat',layout:{visibility:'none'},paint:{'raster-brightness-max':0.75,'raster-saturation':-0.2}},
-    {id:'osm',type:'raster',source:'osm',layout:{visibility:'none'},paint:{'raster-brightness-max':0.85}}]},
+    street:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19,attribution:'Tiles © Esri — Esri, HERE, Garmin, USGS, © OpenStreetMap contributors'},
+    topo:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19,attribution:'Tiles © Esri — Esri, HERE, Garmin, USGS, NGA'},
+    otm:{type:'raster',tiles:['https://a.tile.opentopomap.org/{z}/{x}/{y}.png','https://b.tile.opentopomap.org/{z}/{x}/{y}.png','https://c.tile.opentopomap.org/{z}/{x}/{y}.png'],tileSize:256,maxzoom:17,attribution:'© OpenTopoMap (CC-BY-SA), © OpenStreetMap contributors, SRTM'},
+    sat:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19,attribution:'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics'},
+    satroad:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19},
+    satlbl:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19},
+    dark:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:16,attribution:'Tiles © Esri'},
+    osm:{type:'raster',tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,maxzoom:19,attribution:'© OpenStreetMap contributors'},
+    dem:{type:'raster-dem',tiles:['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],tileSize:256,maxzoom:14,encoding:'terrarium',attribution:'Elevasi: Mapzen Terrain Tiles (SRTM/NASA) via AWS Open Data'}},
+   layers:[{id:'bg',type:'background',paint:{'background-color':'#e8e6e1'}},
+    {id:'street',type:'raster',source:'street'},
+    {id:'topo',type:'raster',source:'topo',layout:{visibility:'none'}},
+    {id:'otm',type:'raster',source:'otm',layout:{visibility:'none'}},
+    {id:'sat',type:'raster',source:'sat',layout:{visibility:'none'}},
+    {id:'satroad',type:'raster',source:'satroad',layout:{visibility:'none'}},
+    {id:'satlbl',type:'raster',source:'satlbl',layout:{visibility:'none'}},
+    {id:'dark',type:'raster',source:'dark',layout:{visibility:'none'}},
+    {id:'osm',type:'raster',source:'osm',layout:{visibility:'none'}},
+    {id:'hill',type:'hillshade',source:'dem',paint:{'hillshade-exaggeration':0.6,'hillshade-shadow-color':'#3d3a33','hillshade-highlight-color':'#ffffff','hillshade-accent-color':'#5a5a4a'}}]},
   center:[D.depot.lon,D.depot.lat],zoom:10,pitch:55,bearing:-18,maxPitch:75});
  map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'bottom-right');
  map.addControl(new maplibregl.FullscreenControl({container:document.getElementById('root')}),'bottom-right');
@@ -174,8 +185,9 @@ function stColor(s,t){if(s.win.some(w=>t>=w[0]&&t<w[1]))return [255,169,64,235];
 let T=0,play=false,last=null,rot=false;
 function layers(t,S){const pulse=0.5+0.5*Math.sin(performance.now()/300);
  return [
-  new deck.PathLayer({id:'routes',data:U,getPath:d=>d.path,getColor:d=>hex(d.color,70),getWidth:3,widthUnits:'pixels',jointRounded:true,capRounded:true}),
-  new deck.TripsLayer({id:'trails',data:U,getPath:d=>d.path,getTimestamps:d=>d.ts,getColor:d=>hex(d.color),widthMinPixels:5,
+  new deck.PathLayer({id:'casing',data:U,getPath:d=>d.path,getColor:[20,24,32,170],getWidth:8,widthUnits:'pixels',jointRounded:true,capRounded:true}),
+  new deck.PathLayer({id:'routes',data:U,getPath:d=>d.path,getColor:d=>hex(d.color,200),getWidth:4,widthUnits:'pixels',jointRounded:true,capRounded:true}),
+  new deck.TripsLayer({id:'trails',data:U,getPath:d=>d.path,getTimestamps:d=>d.ts,getColor:d=>hex(d.color),widthMinPixels:8,
     fadeTrail:true,trailLength:35,currentTime:t,capRounded:true,jointRounded:true}),
   new deck.ColumnLayer({id:'spbu',data:stInfo,diskResolution:24,radius:260,extruded:true,pickable:true,
     getPosition:d=>[d.lon,d.lat],getElevation:d=>400+d.vol*450,getFillColor:d=>stColor(d,t),getLineColor:[255,255,255,80],
@@ -186,11 +198,11 @@ function layers(t,S){const pulse=0.5+0.5*Math.sin(performance.now()/300);
     getText:d=>d.id,getSize:d=>d.id.length>4?14:12,getColor:[230,244,255],fontWeight:700,getPixelOffset:[0,-14],
     billboard:true,outlineWidth:3,outlineColor:[5,8,13,255],fontSettings:{sdf:true}}),
   new deck.ScatterplotLayer({id:'halo',data:S,getPosition:d=>[d.s.lon,d.s.lat],radiusUnits:'pixels',
-    getRadius:d=>d.s.code===2?16+8*pulse:12,getFillColor:d=>hex(ST[d.s.code][1],70),getLineColor:d=>hex(ST[d.s.code][1],220),
+    getRadius:d=>d.s.code===2?22+10*pulse:16,getFillColor:d=>hex(ST[d.s.code][1],70),getLineColor:d=>hex(ST[d.s.code][1],220),
     stroked:true,lineWidthMinPixels:1.5,updateTriggers:{getRadius:[pulse],getFillColor:[t]}}),
   new deck.IconLayer({id:'trucks',data:S,pickable:true,getPosition:d=>[d.s.lon,d.s.lat],sizeUnits:'pixels',
     getIcon:d=>({url:d.s.west?d.u.icon_l:d.u.icon_r,id:d.u.unit+(d.s.west?'L':'R'),width:(d.u.kapasitas>16?104:d.u.kapasitas>8?84:d.u.kapasitas>6?68:60)*2,height:60,anchorY:52}),
-    getSize:d=>d.u.kapasitas>16?34:d.u.kapasitas>8?30:d.u.kapasitas>6?26:23,billboard:true,
+    getSize:d=>d.u.kapasitas>16?46:d.u.kapasitas>8?40:d.u.kapasitas>6?35:31,billboard:true,
     updateTriggers:{getIcon:[t]}})
  ]}
 function gauge(v,max,col){const a=Math.min(1,v/max)*Math.PI;const x=30-24*Math.cos(a),y=30-24*Math.sin(a);
@@ -230,7 +242,8 @@ slider.oninput=()=>{T=parseFloat(slider.value)};
 document.getElementById('rot').onclick=e=>{rot=!rot;e.target.classList.toggle('on',rot)};
 document.getElementById('v3d').onclick=e=>{is3d=!is3d;e.target.classList.toggle('on',is3d);map.easeTo({pitch:is3d?55:0,bearing:is3d?-18:0,duration:900})};
 document.getElementById('base').onchange=e=>{const v=e.target.value;
- [['dark',v==='dark'],['darkref',v==='dark'||v==='sat'],['sat',v==='sat'],['osm',v==='osm']].forEach(([id,on])=>map.setLayoutProperty(id,'visibility',on?'visible':'none'))};
+ [['street',v==='street'],['topo',v==='topo'],['otm',v==='otm'],['sat',v==='sat'],['satroad',v==='sat'],['satlbl',v==='sat'],['osm',v==='osm'],['dark',v==='dark']].forEach(([id,on])=>map.setLayoutProperty(id,'visibility',on?'visible':'none'))};
+document.getElementById('hs').onclick=e=>{const on=!e.target.classList.contains('on');e.target.classList.toggle('on',on);map.setLayoutProperty('hill','visibility',on?'visible':'none')};
 document.getElementById('fitb').onclick=()=>{document.getElementById('follow').value='';fit()};
 document.getElementById('follow').onchange=e=>{if(e.target.value)map.easeTo({zoom:13,pitch:60,duration:800})};
 map.on('load',()=>{fit();render();requestAnimationFrame(loop)});
