@@ -1,0 +1,40 @@
+{
+ "app": {
+  "fitness": 0.4701,
+  "dist_km": 283.2,
+  "cost_rp": 3430000.0,
+  "co2_kg": 268.4,
+  "trucks": 2,
+  "trips": 5,
+  "late": 0,
+  "overtime": 0,
+  "runtime_s": 9.7
+ },
+ "script": {
+  "fitness": 0.47008300377396656,
+  "dist_km": 283.15400000000005,
+  "cost_rp": 3426591.8235,
+  "co2_kg": 268.415583915,
+  "time_min": 1075.581,
+  "trips": 5,
+  "trucks": 2,
+  "late_min": 0.0,
+  "overtime_min": 0.0,
+  "unassigned": 0,
+  "penalty": 0.0
+ },
+ "script_runtime_s": 7.2880260944366455,
+ "baseline": {
+  "fitness": 5.46496434626317,
+  "dist_km": 277.41600000000005,
+  "cost_rp": 3398201.088215625,
+  "co2_kg": 263.9972163681562,
+  "time_min": 1066.974,
+  "trips": 5,
+  "trucks": 2,
+  "late_min": 0.0,
+  "overtime_min": 0.0,
+  "unassigned": 1,
+  "penalty": 5.0
+ }
+}

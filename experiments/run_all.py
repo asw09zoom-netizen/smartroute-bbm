@@ -35,6 +35,8 @@ RES = os.path.join(ROOT, "results")
 os.makedirs(RES, exist_ok=True)
 VARIANTS = ["GA", "GA-SA", "GA-SA-RL"]
 NREP = int(os.environ.get("NREP", 30))
+# Jaringan jalan untuk E2-E6: "osm" (jalan legal-truk, bawaan aplikasi) atau "capstone" (matriks capstone)
+ROAD = os.environ.get("SR_ROAD", "osm")
 
 
 def save_json(name, obj):
@@ -165,7 +167,7 @@ def E2():
     out = {}
     for mp in [False, True]:
         key = "multiproduk" if mp else "agregat"
-        inst = build_instance(multiproduct=mp)
+        inst = build_instance(multiproduct=mp, road=ROAD)
         ev = Evaluator(inst)
         base = evaluate_routes(ev, BASELINE_ROUTES)
         bsum = base.summary()
@@ -204,8 +206,9 @@ def E3c():
     E3(fleet=FLEET_OPT, suffix="c", sens=False, road="osm")
 
 
-def E3(fleet=None, suffix="", sens=True, road="capstone"):
+def E3(fleet=None, suffix="", sens=True, road=None):
     """Analisis trade-off multi-objektif: sapuan bobot -> Pareto front."""
+    road = road or ROAD
     inst0 = build_instance(multiproduct=True, fleet=fleet, road=road)
     rows = []
     for w1 in np.arange(0, 1.01, 0.1):
@@ -240,7 +243,7 @@ def E3(fleet=None, suffix="", sens=True, road="capstone"):
     # sensitivitas biaya tetap truk
     rows = []
     for fc_mult in [0.0, 0.5, 1.0, 1.5, 2.0]:
-        inst = build_instance(multiproduct=True)
+        inst = build_instance(multiproduct=True, road=ROAD)
         for vt in inst.vtypes:
             vt.fixed_cost *= fc_mult
         ev = Evaluator(inst)
@@ -264,7 +267,7 @@ def _hyb(inst, seeds=5, **kw):
 
 def E4():
     """Sepuluh kategori skenario (asumsi parameter dicatat pada results/E4_scenarios.json)."""
-    base = build_instance(multiproduct=True)
+    base = build_instance(multiproduct=True, road=ROAD)
     out = {}
 
     def record(name, inst, assumption, extra=None, base_eval=True):
@@ -340,7 +343,7 @@ def E4b():
         ("9R. Panic buying x1,5 (armada eksisting)", None, lambda b: sc.apply_surge(b, 1.5), "Kontrol: armada 4C + 1B"),
     ]
     for name, fleet, fn, note in cases:
-        inst = fn(build_instance(multiproduct=True, fleet=fleet))
+        inst = fn(build_instance(multiproduct=True, fleet=fleet, road=ROAD))
         ev, best, runs = _hyb(inst)
         out[name] = dict(assumption=note, hybrid=best.summary(), hybrid_trips=sol_rows(inst, best), fitness_runs=runs)
         print(name, {k: round(float(v), 2) for k, v in best.summary().items()})
@@ -350,7 +353,7 @@ def E4b():
 # ---------------------------------------------------------------------------
 def E5():
     """Re-routing dinamis: breakdown & kemacetan mendadak."""
-    inst = build_instance(multiproduct=True)
+    inst = build_instance(multiproduct=True, road=ROAD)
     ev, best, _ = _hyb(inst)
     used = sorted({t.truck for t in best.trips if t.truck >= 0})
     rows = []
@@ -396,7 +399,7 @@ def E5():
 
 def E5b():
     """Re-routing dinamis pada kondisi ketat: tenggat stok SPBU (tank management, skenario 7)."""
-    base = build_instance(multiproduct=True)
+    base = build_instance(multiproduct=True, road=ROAD)
     rows = []
     for st_seed in range(5):
         rng = np.random.default_rng(100 + st_seed)
@@ -444,7 +447,7 @@ def E6():
     """Monte Carlo permintaan stokastik (1000 iterasi)."""
     rows = []
     for mp in [False, True]:
-        inst = build_instance(multiproduct=mp)
+        inst = build_instance(multiproduct=mp, road=ROAD)
         ev = Evaluator(inst)
         base = evaluate_routes(ev, BASELINE_ROUTES)
         _, hyb, _ = _hyb(inst)

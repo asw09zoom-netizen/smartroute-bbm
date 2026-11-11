@@ -442,9 +442,11 @@ with tab3:
 with tab4:
     st.markdown("Ringkasan eksperimen (`python -m experiments.run_all`). Angka dibaca langsung dari folder `results/`.")
     resdir = os.path.join(ROOT, "results")
-    figdir = os.path.join(ROOT, "figures")
+    figdir = os.path.join(ROOT, "figures", "laporan")  # gambar yang sama dengan Laporan Akhir
+    if not os.path.isdir(figdir):
+        figdir = os.path.join(ROOT, "figures")
     if os.path.isdir(figdir):
-        figs = sorted(f for f in os.listdir(figdir) if f.endswith(".png"))
+        figs = sorted(f for f in os.listdir(figdir) if f.endswith(".png") and "_app_" not in f)
         for i in range(0, len(figs), 2):
             cc = st.columns(2)
             for c, f in zip(cc, figs[i:i + 2]):

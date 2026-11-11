@@ -24,7 +24,7 @@
     "S8-S11-S10",
     "S13-S12-S9"
   ],
-  "milp_time_s": 184.65148496627808,
+  "milp_time_s": 172.9009714126587,
   "milp_status": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
   "stats": {
     "GA": {
@@ -34,7 +34,7 @@
       "min": 272.49999999999994,
       "max": 272.5,
       "median": 272.49999999999994,
-      "runtime_mean": 1.200525204340617,
+      "runtime_mean": 1.1655681689580282,
       "improve_vs_baseline_pct": 2.469577666428073,
       "t_one_sample": null,
       "p_one_sample": null,
@@ -49,7 +49,7 @@
       "min": 272.49999999999994,
       "max": 272.5,
       "median": 272.49999999999994,
-      "runtime_mean": 5.227296749750773,
+      "runtime_mean": 4.79198637008667,
       "improve_vs_baseline_pct": 2.469577666428073,
       "t_one_sample": null,
       "p_one_sample": null,
@@ -64,7 +64,7 @@
       "min": 272.49999999999994,
       "max": 272.5,
       "median": 272.49999999999994,
-      "runtime_mean": 5.360215091705323,
+      "runtime_mean": 4.9682361046473185,
       "improve_vs_baseline_pct": 2.469577666428073,
       "t_one_sample": null,
       "p_one_sample": null,
