@@ -53,7 +53,7 @@ def idn(x, d=1):
 # ---------------------------------------------------------------------------
 def fig_alur():
     from matplotlib.patches import FancyBboxPatch
-    fig, ax = plt.subplots(figsize=(W, 4.2)); ax.axis("off"); ax.set_xlim(0, 10); ax.set_ylim(0, 6.4)
+    fig, ax = plt.subplots(figsize=(W, 3.6)); ax.axis("off"); ax.set_xlim(-0.15, 10.15); ax.set_ylim(0.75, 6.3)
 
     def box(x, y, w, h, t, c):
         ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.04", fc=c, ec="k", lw=0.7))
