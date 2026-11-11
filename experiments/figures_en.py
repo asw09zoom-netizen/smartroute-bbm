@@ -122,6 +122,12 @@ def fig_pareto():
         ax[0].scatter(db.cost_rp / 1e6, db.co2_kg, c="#aec7e8", s=12, marker="^")
         pfb = db[db.pareto_cost_co2].sort_values("cost_rp")
         ax[0].plot(pfb.cost_rp / 1e6, pfb.co2_kg, "s-", color="#1f77b4", label="extended fleet (E3b)")
+    pc = os.path.join(RES, "E3c_pareto.csv")
+    if os.path.exists(pc):
+        dc = pd.read_csv(pc); dc = dc[dc.unassigned == 0]
+        ax[0].scatter(dc.cost_rp / 1e6, dc.co2_kg, c="#98df8a", s=12, marker="v")
+        pfc = dc[dc.pareto_cost_co2].sort_values("cost_rp")
+        ax[0].plot(pfc.cost_rp / 1e6, pfc.co2_kg, "D-", color="#2ca02c", label="extended fleet, truck-legal roads (E3c)")
     ax[0].set_xlabel("Cost (million IDR/day)"); ax[0].set_ylabel("CO$_2$ (kg/day)"); ax[0].legend(fontsize=8)
     ax[0].set_title("(a) Cost–emission trade-off")
     s = os.path.join(RES, "E3_sens_fixedcost.csv")
@@ -150,8 +156,13 @@ def fig_cvrplib():
     save(fig, "fig6_cvrplib.png")
 
 
+def fig_osm_en():
+    from experiments.figures import fig_osm
+    fig_osm("en", os.path.join(OUT, "fig7_osm_legal.png"))
+
+
 if __name__ == "__main__":
-    for f in [fig_framework, fig_routes, fig_validation, fig_e2, fig_pareto, fig_cvrplib]:
+    for f in [fig_framework, fig_routes, fig_validation, fig_e2, fig_pareto, fig_cvrplib, fig_osm_en]:
         try:
             f()
         except Exception as e:

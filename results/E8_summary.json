@@ -1,0 +1,839 @@
+{
+  "matriks": {
+    "A": {
+      "pasangan": 91,
+      "spbu_terjangkau": 13,
+      "spbu_tak_terjangkau": [],
+      "rerata_selisih_km": -1.5165934065934066,
+      "rerata_selisih_abs_pct": 4.854697198435578,
+      "korelasi": 0.9976139325654486
+    },
+    "B": {
+      "pasangan": 91,
+      "spbu_terjangkau": 13,
+      "spbu_tak_terjangkau": [],
+      "rerata_selisih_km": -0.6557692307692305,
+      "rerata_selisih_abs_pct": 9.58321365629643,
+      "korelasi": 0.9976990221316286
+    },
+    "C": {
+      "pasangan": 91,
+      "spbu_terjangkau": 13,
+      "spbu_tak_terjangkau": [],
+      "rerata_selisih_km": -0.6557692307692305,
+      "rerata_selisih_abs_pct": 9.58321365629643,
+      "korelasi": 0.9976990221316286
+    },
+    "D": {
+      "pasangan": 66,
+      "spbu_terjangkau": 11,
+      "spbu_tak_terjangkau": [
+        "S8",
+        "S10"
+      ],
+      "rerata_selisih_km": 0.05524242424242468,
+      "rerata_selisih_abs_pct": 8.36846115599107,
+      "korelasi": 0.996378313072489
+    }
+  },
+  "ringkasan_ruas": [
+    {
+      "tipe": "A",
+      "kelas_jalan_min": "III",
+      "km_ruas_total": 3417.5,
+      "km_ruas_legal": 2937.7,
+      "km_ditolak_jenis_ruas": 475.9,
+      "km_ditolak_larangan_akses": 3.9,
+      "simpul_tak_terjangkau": NaN,
+      "snap_maks_m": 53.0,
+      "km_ditolak_kelas_jalan": NaN
+    },
+    {
+      "tipe": "B",
+      "kelas_jalan_min": "II",
+      "km_ruas_total": 3417.5,
+      "km_ruas_legal": 924.2,
+      "km_ditolak_jenis_ruas": 475.9,
+      "km_ditolak_larangan_akses": 3.9,
+      "simpul_tak_terjangkau": NaN,
+      "snap_maks_m": 53.0,
+      "km_ditolak_kelas_jalan": 2013.5
+    },
+    {
+      "tipe": "C",
+      "kelas_jalan_min": "II",
+      "km_ruas_total": 3417.5,
+      "km_ruas_legal": 924.2,
+      "km_ditolak_jenis_ruas": 475.9,
+      "km_ditolak_larangan_akses": 3.9,
+      "simpul_tak_terjangkau": NaN,
+      "snap_maks_m": 53.0,
+      "km_ditolak_kelas_jalan": 2013.5
+    },
+    {
+      "tipe": "D",
+      "kelas_jalan_min": "I",
+      "km_ruas_total": 3417.5,
+      "km_ruas_legal": 346.3,
+      "km_ditolak_jenis_ruas": 475.9,
+      "km_ditolak_larangan_akses": 3.9,
+      "simpul_tak_terjangkau": "S8;S10",
+      "snap_maks_m": 190.0,
+      "km_ditolak_kelas_jalan": 2591.4
+    }
+  ],
+  "eksisting_agregat": {
+    "capstone": {
+      "baseline": {
+        "fitness": 0.49517973916183755,
+        "dist_km": 279.40000000000003,
+        "cost_rp": 4102739.2980625,
+        "co2_kg": 264.34610990062504,
+        "time_min": 1069.9499999999998,
+        "trips": 5,
+        "trucks": 3,
+        "late_min": 0.0,
+        "overtime_min": 0.0,
+        "unassigned": 0,
+        "penalty": 0.0
+      },
+      "best": {
+        "fitness": 0.4609072772424697,
+        "dist_km": 281.09999999999997,
+        "cost_rp": 3426115.84453125,
+        "co2_kg": 268.9973719453125,
+        "time_min": 1072.5,
+        "trips": 4,
+        "trucks": 2,
+        "late_min": 0.0,
+        "overtime_min": 0.0,
+        "unassigned": 0,
+        "penalty": 0.0
+      },
+      "best_trips": [
+        {
+          "rute": "S2-S3-S4-S5",
+          "tipe": "C",
+          "unit": 1,
+          "ritase": 1,
+          "muatan_kl": 13.84,
+          "jarak_km": 76.3,
+          "co2_kg": 72.79,
+          "mulai_menit": 0.0,
+          "selesai_menit": 278.2,
+          "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+        },
+        {
+          "rute": "S10-S12-S13",
+          "tipe": "C",
+          "unit": 1,
+          "ritase": 2,
+          "muatan_kl": 15.48,
+          "jarak_km": 71.6,
+          "co2_kg": 69.14,
+          "mulai_menit": 278.2,
+          "selesai_menit": 546.8,
+          "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+        },
+        {
+          "rute": "S6-S11-S9",
+          "tipe": "C",
+          "unit": 2,
+          "ritase": 1,
+          "muatan_kl": 15.73,
+          "jarak_km": 61.2,
+          "co2_kg": 58.5,
+          "mulai_menit": 0.0,
+          "selesai_menit": 254.8,
+          "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+        },
+        {
+          "rute": "S1-S7-S8",
+          "tipe": "C",
+          "unit": 2,
+          "ritase": 2,
+          "muatan_kl": 15.73,
+          "jarak_km": 72.0,
+          "co2_kg": 68.56,
+          "mulai_menit": 254.8,
+          "selesai_menit": 525.8,
+          "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+        }
+      ]
+    },
+    "osm": {
+      "baseline": {
+        "fitness": 0.501874086458451,
+        "dist_km": 277.41600000000005,
+        "cost_rp": 4087455.6411278127,
+        "co2_kg": 261.5973998518781,
+        "time_min": 1066.974,
+        "trips": 5,
+        "trucks": 3,
+        "late_min": 0.0,
+        "overtime_min": 0.0,
+        "unassigned": 0,
+        "penalty": 0.0
+      },
+      "best": {
+        "fitness": 0.474530059315945,
+        "dist_km": 286.17400000000004,
+        "cost_rp": 3451075.9668375,
+        "co2_kg": 272.872009260375,
+        "time_min": 1080.1109999999999,
+        "trips": 4,
+        "trucks": 2,
+        "late_min": 0.0,
+        "overtime_min": 0.0,
+        "unassigned": 0,
+        "penalty": 0.0
+      },
+      "best_trips": [
+        {
+          "rute": "S2-S5-S3-S4",
+          "tipe": "C",
+          "unit": 1,
+          "ritase": 1,
+          "muatan_kl": 13.84,
+          "jarak_km": 78.55,
+          "co2_kg": 75.2,
+          "mulai_menit": 0.0,
+          "selesai_menit": 281.6,
+          "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+        },
+        {
+          "rute": "S10-S12-S13",
+          "tipe": "C",
+          "unit": 1,
+          "ritase": 2,
+          "muatan_kl": 15.48,
+          "jarak_km": 71.84,
+          "co2_kg": 68.87,
+          "mulai_menit": 281.6,
+          "selesai_menit": 550.5,
+          "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+        },
+        {
+          "rute": "S6-S8-S11",
+          "tipe": "C",
+          "unit": 2,
+          "ritase": 1,
+          "muatan_kl": 15.73,
+          "jarak_km": 63.25,
+          "co2_kg": 59.95,
+          "mulai_menit": 0.0,
+          "selesai_menit": 257.8,
+          "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+        },
+        {
+          "rute": "S1-S7-S9",
+          "tipe": "C",
+          "unit": 2,
+          "ritase": 2,
+          "muatan_kl": 15.73,
+          "jarak_km": 72.53,
+          "co2_kg": 68.85,
+          "mulai_menit": 257.8,
+          "selesai_menit": 529.6,
+          "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+        }
+      ]
+    }
+  },
+  "eksisting_multiproduk": {
+    "capstone": {
+      "baseline": {
+        "fitness": 5.473159508923799,
+        "dist_km": 279.40000000000003,
+        "cost_rp": 3494344.70596875,
+        "co2_kg": 284.80465099968757,
+        "time_min": 1069.95,
+        "trips": 5,
+        "trucks": 2,
+        "late_min": 0.0,
+        "overtime_min": 0.0,
+        "unassigned": 1,
+        "penalty": 5.0
+      },
+      "best": {
+        "fitness": 0.4590311285240708,
+        "dist_km": 281.4,
+        "cost_rp": 3415671.33609375,
+        "co2_kg": 266.5642650609375,
+        "time_min": 1072.95,
+        "trips": 5,
+        "trucks": 2,
+        "late_min": 0.0,
+        "overtime_min": 0.0,
+        "unassigned": 0,
+        "penalty": 0.0
+      },
+      "best_trips": [
+        {
+          "rute": "S2-S3-S4-S5",
+          "tipe": "C",
+          "unit": 1,
+          "ritase": 1,
+          "muatan_kl": 13.84,
+          "jarak_km": 76.3,
+          "co2_kg": 72.79,
+          "mulai_menit": 0.0,
+          "selesai_menit": 278.2,
+          "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+        },
+        {
+          "rute": "S9-S12-S13",
+          "tipe": "C",
+          "unit": 1,
+          "ritase": 2,
+          "muatan_kl": 13.38,
+          "jarak_km": 70.1,
+          "co2_kg": 66.66,
+          "mulai_menit": 278.2,
+          "selesai_menit": 528.8,
+          "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+        },
+        {
+          "rute": "S7-S11-S8",
+          "tipe": "C",
+          "unit": 2,
+          "ritase": 1,
+          "muatan_kl": 13.38,
+          "jarak_km": 60.5,
+          "co2_kg": 57.81,
+          "mulai_menit": 0.0,
+          "selesai_menit": 236.1,
+          "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+        },
+        {
+          "rute": "S6-S10",
+          "tipe": "C",
+          "unit": 2,
+          "ritase": 2,
+          "muatan_kl": 13.37,
+          "jarak_km": 56.7,
+          "co2_kg": 53.13,
+          "mulai_menit": 236.1,
+          "selesai_menit": 451.4,
+          "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+        },
+        {
+          "rute": "S1",
+          "tipe": "C",
+          "unit": 2,
+          "ritase": 3,
+          "muatan_kl": 6.81,
+          "jarak_km": 17.8,
+          "co2_kg": 16.18,
+          "mulai_menit": 451.4,
+          "selesai_menit": 544.2,
+          "kompartemen": "['Pertalite', '-', 'Biosolar', 'Pertamax']"
+        }
+      ]
+    },
+    "osm": {
+      "baseline": {
+        "fitness": 5.46496434626317,
+        "dist_km": 277.41600000000005,
+        "cost_rp": 3398201.088215625,
+        "co2_kg": 263.9972163681562,
+        "time_min": 1066.974,
+        "trips": 5,
+        "trucks": 2,
+        "late_min": 0.0,
+        "overtime_min": 0.0,
+        "unassigned": 1,
+        "penalty": 5.0
+      },
+      "best": {
+        "fitness": 0.47008300377396656,
+        "dist_km": 283.15400000000005,
+        "cost_rp": 3426591.8235,
+        "co2_kg": 268.415583915,
+        "time_min": 1075.581,
+        "trips": 5,
+        "trucks": 2,
+        "late_min": 0.0,
+        "overtime_min": 0.0,
+        "unassigned": 0,
+        "penalty": 0.0
+      },
+      "best_trips": [
+        {
+          "rute": "S2-S5-S3-S4",
+          "tipe": "C",
+          "unit": 1,
+          "ritase": 1,
+          "muatan_kl": 13.84,
+          "jarak_km": 78.55,
+          "co2_kg": 75.2,
+          "mulai_menit": 0.0,
+          "selesai_menit": 281.6,
+          "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+        },
+        {
+          "rute": "S11-S12-S13",
+          "tipe": "C",
+          "unit": 1,
+          "ritase": 2,
+          "muatan_kl": 13.38,
+          "jarak_km": 75.59,
+          "co2_kg": 71.89,
+          "mulai_menit": 281.6,
+          "selesai_menit": 540.4,
+          "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+        },
+        {
+          "rute": "S7-S8-S9",
+          "tipe": "C",
+          "unit": 2,
+          "ritase": 1,
+          "muatan_kl": 13.38,
+          "jarak_km": 57.15,
+          "co2_kg": 54.34,
+          "mulai_menit": 0.0,
+          "selesai_menit": 231.1,
+          "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+        },
+        {
+          "rute": "S6-S10",
+          "tipe": "C",
+          "unit": 2,
+          "ritase": 2,
+          "muatan_kl": 13.37,
+          "jarak_km": 54.49,
+          "co2_kg": 51.2,
+          "mulai_menit": 231.1,
+          "selesai_menit": 443.1,
+          "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+        },
+        {
+          "rute": "S1",
+          "tipe": "C",
+          "unit": 2,
+          "ritase": 3,
+          "muatan_kl": 6.81,
+          "jarak_km": 17.37,
+          "co2_kg": 15.79,
+          "mulai_menit": 443.1,
+          "selesai_menit": 535.2,
+          "kompartemen": "['Pertalite', '-', 'Biosolar', 'Pertamax']"
+        }
+      ]
+    }
+  },
+  "diperluas_agregat": {
+    "capstone": {
+      "baseline": {
+        "fitness": 0.5238656123880662,
+        "dist_km": 279.40000000000003,
+        "cost_rp": 4102739.2980625,
+        "co2_kg": 264.34610990062504,
+        "time_min": 1069.9499999999998,
+        "trips": 5,
+        "trucks": 3,
+        "late_min": 0.0,
+        "overtime_min": 0.0,
+        "unassigned": 0,
+        "penalty": 0.0
+      },
+      "best": {
+        "fitness": 0.4806230112389988,
+        "dist_km": 224.6,
+        "cost_rp": 3731084.2669062503,
+        "co2_kg": 244.3678196090625,
+        "time_min": 987.7499999999998,
+        "trips": 3,
+        "trucks": 2,
+        "late_min": 0.0,
+        "overtime_min": 0.0,
+        "unassigned": 0,
+        "penalty": 0.0
+      },
+      "best_trips": [
+        {
+          "rute": "S6-S11-S9-S12-S13-S10",
+          "tipe": "D",
+          "unit": 8,
+          "ritase": 1,
+          "muatan_kl": 31.21,
+          "jarak_km": 76.3,
+          "co2_kg": 103.02,
+          "mulai_menit": 0.0,
+          "selesai_menit": 438.5,
+          "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM', 'BBM']"
+        },
+        {
+          "rute": "S2-S3-S4-S5",
+          "tipe": "C",
+          "unit": 4,
+          "ritase": 1,
+          "muatan_kl": 13.84,
+          "jarak_km": 76.3,
+          "co2_kg": 72.79,
+          "mulai_menit": 0.0,
+          "selesai_menit": 278.2,
+          "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+        },
+        {
+          "rute": "S1-S7-S8",
+          "tipe": "C",
+          "unit": 4,
+          "ritase": 2,
+          "muatan_kl": 15.73,
+          "jarak_km": 72.0,
+          "co2_kg": 68.56,
+          "mulai_menit": 278.2,
+          "selesai_menit": 549.2,
+          "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+        }
+      ]
+    },
+    "osm": {
+      "baseline": {
+        "fitness": 0.5399166978923067,
+        "dist_km": 277.41600000000005,
+        "cost_rp": 4087455.6411278127,
+        "co2_kg": 261.5973998518781,
+        "time_min": 1066.974,
+        "trips": 5,
+        "trucks": 3,
+        "late_min": 0.0,
+        "overtime_min": 0.0,
+        "unassigned": 0,
+        "penalty": 0.0
+      },
+      "best": {
+        "fitness": 0.5121847823082314,
+        "dist_km": 286.17400000000004,
+        "cost_rp": 3451075.9668375,
+        "co2_kg": 272.872009260375,
+        "time_min": 1080.1109999999999,
+        "trips": 4,
+        "trucks": 2,
+        "late_min": 0.0,
+        "overtime_min": 0.0,
+        "unassigned": 0,
+        "penalty": 0.0
+      },
+      "best_trips": [
+        {
+          "rute": "S2-S5-S3-S4",
+          "tipe": "C",
+          "unit": 4,
+          "ritase": 1,
+          "muatan_kl": 13.84,
+          "jarak_km": 78.55,
+          "co2_kg": 75.2,
+          "mulai_menit": 0.0,
+          "selesai_menit": 281.6,
+          "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+        },
+        {
+          "rute": "S10-S12-S13",
+          "tipe": "C",
+          "unit": 4,
+          "ritase": 2,
+          "muatan_kl": 15.48,
+          "jarak_km": 71.84,
+          "co2_kg": 68.87,
+          "mulai_menit": 281.6,
+          "selesai_menit": 550.5,
+          "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+        },
+        {
+          "rute": "S6-S8-S11",
+          "tipe": "C",
+          "unit": 5,
+          "ritase": 1,
+          "muatan_kl": 15.73,
+          "jarak_km": 63.25,
+          "co2_kg": 59.95,
+          "mulai_menit": 0.0,
+          "selesai_menit": 257.8,
+          "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+        },
+        {
+          "rute": "S1-S7-S9",
+          "tipe": "C",
+          "unit": 5,
+          "ritase": 2,
+          "muatan_kl": 15.73,
+          "jarak_km": 72.53,
+          "co2_kg": 68.85,
+          "mulai_menit": 257.8,
+          "selesai_menit": 529.6,
+          "kompartemen": "['BBM', 'BBM', 'BBM', 'BBM']"
+        }
+      ]
+    }
+  },
+  "diperluas_multiproduk": {
+    "capstone": {
+      "baseline": {
+        "fitness": 0.5818310387536975,
+        "dist_km": 279.40000000000003,
+        "cost_rp": 4894344.705968751,
+        "co2_kg": 284.80465099968757,
+        "time_min": 1069.95,
+        "trips": 5,
+        "trucks": 3,
+        "late_min": 0.0,
+        "overtime_min": 0.0,
+        "unassigned": 0,
+        "penalty": 0.0
+      },
+      "best": {
+        "fitness": 0.47043750772367743,
+        "dist_km": 216.3,
+        "cost_rp": 3678145.3748749997,
+        "co2_kg": 235.32530038875004,
+        "time_min": 975.3,
+        "trips": 4,
+        "trucks": 2,
+        "late_min": 0.0,
+        "overtime_min": 0.0,
+        "unassigned": 0,
+        "penalty": 0.0
+      },
+      "best_trips": [
+        {
+          "rute": "S8-S11-S9-S12-S13-S10",
+          "tipe": "D",
+          "unit": 8,
+          "ritase": 1,
+          "muatan_kl": 28.86,
+          "jarak_km": 77.4,
+          "co2_kg": 104.77,
+          "mulai_menit": 0.0,
+          "selesai_menit": 422.6,
+          "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax', 'Pertamax']"
+        },
+        {
+          "rute": "S2-S3-S4-S5",
+          "tipe": "C",
+          "unit": 4,
+          "ritase": 1,
+          "muatan_kl": 13.84,
+          "jarak_km": 76.3,
+          "co2_kg": 72.79,
+          "mulai_menit": 0.0,
+          "selesai_menit": 278.2,
+          "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+        },
+        {
+          "rute": "S6-S7",
+          "tipe": "C",
+          "unit": 4,
+          "ritase": 2,
+          "muatan_kl": 11.27,
+          "jarak_km": 44.8,
+          "co2_kg": 41.59,
+          "mulai_menit": 278.2,
+          "selesai_menit": 460.0,
+          "kompartemen": "['Pertamax', 'Pertalite', 'Pertalite', 'Biosolar']"
+        },
+        {
+          "rute": "S1",
+          "tipe": "C",
+          "unit": 4,
+          "ritase": 3,
+          "muatan_kl": 6.81,
+          "jarak_km": 17.8,
+          "co2_kg": 16.18,
+          "mulai_menit": 460.0,
+          "selesai_menit": 552.8,
+          "kompartemen": "['Pertalite', '-', 'Biosolar', 'Pertamax']"
+        }
+      ]
+    },
+    "osm": {
+      "baseline": {
+        "fitness": 5.5015820829027735,
+        "dist_km": 277.41600000000005,
+        "cost_rp": 3398201.088215625,
+        "co2_kg": 263.9972163681562,
+        "time_min": 1066.974,
+        "trips": 5,
+        "trucks": 2,
+        "late_min": 0.0,
+        "overtime_min": 0.0,
+        "unassigned": 1,
+        "penalty": 5.0
+      },
+      "best": {
+        "fitness": 0.5072261700854038,
+        "dist_km": 283.15400000000005,
+        "cost_rp": 3426591.8235,
+        "co2_kg": 268.415583915,
+        "time_min": 1075.581,
+        "trips": 5,
+        "trucks": 2,
+        "late_min": 0.0,
+        "overtime_min": 0.0,
+        "unassigned": 0,
+        "penalty": 0.0
+      },
+      "best_trips": [
+        {
+          "rute": "S2-S5-S3-S4",
+          "tipe": "C",
+          "unit": 4,
+          "ritase": 1,
+          "muatan_kl": 13.84,
+          "jarak_km": 78.55,
+          "co2_kg": 75.2,
+          "mulai_menit": 0.0,
+          "selesai_menit": 281.6,
+          "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+        },
+        {
+          "rute": "S11-S12-S13",
+          "tipe": "C",
+          "unit": 4,
+          "ritase": 2,
+          "muatan_kl": 13.38,
+          "jarak_km": 75.59,
+          "co2_kg": 71.89,
+          "mulai_menit": 281.6,
+          "selesai_menit": 540.4,
+          "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+        },
+        {
+          "rute": "S7-S8-S9",
+          "tipe": "C",
+          "unit": 5,
+          "ritase": 1,
+          "muatan_kl": 13.38,
+          "jarak_km": 57.15,
+          "co2_kg": 54.34,
+          "mulai_menit": 0.0,
+          "selesai_menit": 231.1,
+          "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+        },
+        {
+          "rute": "S6-S10",
+          "tipe": "C",
+          "unit": 5,
+          "ritase": 2,
+          "muatan_kl": 13.37,
+          "jarak_km": 54.49,
+          "co2_kg": 51.2,
+          "mulai_menit": 231.1,
+          "selesai_menit": 443.1,
+          "kompartemen": "['Pertalite', 'Biosolar', 'Pertalite', 'Pertamax']"
+        },
+        {
+          "rute": "S1",
+          "tipe": "C",
+          "unit": 5,
+          "ritase": 3,
+          "muatan_kl": 6.81,
+          "jarak_km": 17.37,
+          "co2_kg": 15.79,
+          "mulai_menit": 443.1,
+          "selesai_menit": 535.2,
+          "kompartemen": "['Pertalite', '-', 'Biosolar', 'Pertamax']"
+        }
+      ]
+    }
+  },
+  "means": [
+    {
+      "case": "diperluas_agregat",
+      "road": "capstone",
+      "fitness": 0.4811036977216449,
+      "dist_km": 225.8,
+      "cost_rp": 3733749.083309375,
+      "co2_kg": 244.56096193909377,
+      "time_min": 989.5499999999997,
+      "trucks": 2.0,
+      "trips": 3.0,
+      "unassigned": 0.0
+    },
+    {
+      "case": "diperluas_agregat",
+      "road": "osm",
+      "fitness": 0.512250510728295,
+      "dist_km": 285.8626666666667,
+      "cost_rp": 3451320.799496875,
+      "co2_kg": 273.0309852209688,
+      "time_min": 1079.6439999999998,
+      "trucks": 2.0,
+      "trips": 4.0,
+      "unassigned": 0.0
+    },
+    {
+      "case": "diperluas_multiproduk",
+      "road": "capstone",
+      "fitness": 0.47046112418528946,
+      "dist_km": 216.31333333333336,
+      "cost_rp": 3678266.9034437495,
+      "co2_kg": 235.34797510243752,
+      "time_min": 975.3199999999999,
+      "trucks": 2.0,
+      "trips": 4.0,
+      "unassigned": 0.0
+    },
+    {
+      "case": "diperluas_multiproduk",
+      "road": "osm",
+      "fitness": 0.5072261700854038,
+      "dist_km": 283.15400000000005,
+      "cost_rp": 3426591.8235,
+      "co2_kg": 268.415583915,
+      "time_min": 1075.581,
+      "trucks": 2.0,
+      "trips": 5.0,
+      "unassigned": 0.0
+    },
+    {
+      "case": "eksisting_agregat",
+      "road": "capstone",
+      "fitness": 0.4609072772424697,
+      "dist_km": 281.09999999999997,
+      "cost_rp": 3426115.84453125,
+      "co2_kg": 268.9973719453125,
+      "time_min": 1072.5,
+      "trucks": 2.0,
+      "trips": 4.0,
+      "unassigned": 0.0
+    },
+    {
+      "case": "eksisting_agregat",
+      "road": "osm",
+      "fitness": 0.47455519208818553,
+      "dist_km": 286.0183333333334,
+      "cost_rp": 3451198.3831671877,
+      "co2_kg": 272.9514972406719,
+      "time_min": 1079.8774999999998,
+      "trucks": 2.0,
+      "trips": 4.0,
+      "unassigned": 0.0
+    },
+    {
+      "case": "eksisting_multiproduk",
+      "road": "capstone",
+      "fitness": 0.4590311285240708,
+      "dist_km": 281.4,
+      "cost_rp": 3415671.3360937494,
+      "co2_kg": 266.5642650609375,
+      "time_min": 1072.95,
+      "trucks": 2.0,
+      "trips": 5.0,
+      "unassigned": 0.0
+    },
+    {
+      "case": "eksisting_multiproduk",
+      "road": "osm",
+      "fitness": 0.47008300377396656,
+      "dist_km": 283.15400000000005,
+      "cost_rp": 3426591.8235,
+      "co2_kg": 268.415583915,
+      "time_min": 1075.581,
+      "trucks": 2.0,
+      "trips": 5.0,
+      "unassigned": 0.0
+    }
+  ]
+}

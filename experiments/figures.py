@@ -118,6 +118,12 @@ def fig_e3():
         ax[0].scatter(db.cost_rp / 1e6, db.co2_kg, c="#aec7e8", s=12, marker="^")
         pfb = db[db.pareto_cost_co2].sort_values("cost_rp")
         ax[0].plot(pfb.cost_rp / 1e6, pfb.co2_kg, "s-", color="#1f77b4", label="armada diperluas (E3b)")
+    pc = os.path.join(RES, "E3c_pareto.csv")
+    if os.path.exists(pc):
+        dc = pd.read_csv(pc); dc = dc[dc.unassigned == 0]
+        ax[0].scatter(dc.cost_rp / 1e6, dc.co2_kg, c="#98df8a", s=12, marker="v")
+        pfc = dc[dc.pareto_cost_co2].sort_values("cost_rp")
+        ax[0].plot(pfc.cost_rp / 1e6, pfc.co2_kg, "D-", color="#2ca02c", label="armada diperluas, jalan legal-truk (E3c)")
     ax[0].set_xlabel("Biaya distribusi (juta Rp/hari)"); ax[0].set_ylabel("Emisi CO$_2$ (kg/hari)"); ax[0].legend()
     ax[0].set_title("(a) Trade-off biaya vs emisi")
     s = os.path.join(RES, "E3_sens_fixedcost.csv")
@@ -218,8 +224,67 @@ def fig_e4():
     save(fig, "fig08_skenario.png")
 
 
+def fig_osm(lang="id", out=None):
+    """Jaringan jalan OSM: ruas legal per tipe truk + rute terbaik E8 (jalan nyata)."""
+    EN = lang == "en"
+    import csv as _csv
+    from smartroute import roadnet as R
+    kelas, jalan = R.load_rules()
+    arm = {r["tipe"]: r for r in _csv.DictReader(open(os.path.join(ROOT, "data", "armada.csv")))}
+    idx, ll, ways = R.parse_osm(R.load_osm())
+    inst = build_instance(road="osm")
+    C = inst.coords
+    fig, axes = plt.subplots(1, 2, figsize=(13, 5.6))
+    ax = axes[0]
+    layers = [("not legal for B/C/D" if EN else "tidak legal untuk B/C/D", "#d9d9d9", 0.5),
+              ("legal for B & C (class II)" if EN else "legal B & C (kelas II)", "#1f77b4", 1.2),
+              ("legal for D (class I)" if EN else "legal D (kelas I)", "#d62728", 1.8)]
+    for _, nds, tags in ways:
+        s_ = [idx[n] for n in nds if n in idx]
+        if len(s_) < 2:
+            continue
+        okC = R.edge_allowed(tags, arm["C"], R.truck_class_required(arm["C"], kelas), jalan)[0]
+        okD = R.edge_allowed(tags, arm["D"], R.truck_class_required(arm["D"], kelas), jalan)[0]
+        lay = layers[2] if okD else layers[1] if okC else layers[0]
+        ax.plot(ll[s_, 1], ll[s_, 0], color=lay[1], lw=lay[2], zorder=2 if okC else 1)
+    for name, col, lw in layers:
+        ax.plot([], [], color=col, lw=lw * 2, label=name)
+    ax.scatter(C[1:, 1], C[1:, 0], s=25, c="k", zorder=5, label="station" if EN else "SPBU")
+    ax.scatter(C[0, 1], C[0, 0], s=160, marker="*", c="orange", ec="k", zorder=6, label="FT Gelumbang")
+    for i in range(1, inst.n + 1):
+        ax.annotate(inst.labels[i], (C[i, 1], C[i, 0]), xytext=(3, 3), textcoords="offset points", fontsize=7)
+    ax.set_title("(a) Truck-legal OSM links by truck type" if EN else "(a) Ruas OSM legal per tipe truk")
+    ax.set_xlabel("Longitude" if EN else "Bujur"); ax.set_ylabel("Latitude" if EN else "Lintang")
+    ax.legend(fontsize=7, loc="lower right"); ax.set_aspect("equal")
+    ax = axes[1]
+    e8 = J("E8_summary.json")
+    geom = R.load_geometry()
+    if e8:
+        trips = e8["eksisting_multiproduk"]["osm"]["best_trips"]
+        cols = plt.cm.tab10.colors
+        for k, t in enumerate(trips):
+            seq = ["FT"] + t["rute"].split("-") + ["FT"]
+            poly = R.route_polyline(geom, t["tipe"], seq)
+            if poly:
+                P = np.array(poly)
+                ax.plot(P[:, 1], P[:, 0], color=cols[k % 10], lw=2,
+                        label=f"{t['tipe']}-{t['unit']} R{t['ritase']}: {t['rute']} ({t['jarak_km']:.1f} km)")
+        ax.legend(fontsize=7, loc="lower right")
+    ax.scatter(C[1:, 1], C[1:, 0], s=25, c="k", zorder=5)
+    ax.scatter(C[0, 1], C[0, 0], s=160, marker="*", c="orange", ec="k", zorder=6)
+    for i in range(1, inst.n + 1):
+        ax.annotate(inst.labels[i], (C[i, 1], C[i, 0]), xytext=(3, 3), textcoords="offset points", fontsize=7)
+    ax.set_title("(b) GA-SA-RL routes on truck-legal roads" if EN else "(b) Rute GA-SA-RL pada jalan legal-truk")
+    ax.set_xlabel("Longitude" if EN else "Bujur"); ax.set_aspect("equal")
+    fig.tight_layout()
+    if out:
+        fig.savefig(out, dpi=300); plt.close(fig); print("saved", out)
+    else:
+        save(fig, "fig09_osm_legal.png")
+
+
 if __name__ == "__main__":
-    for f in [fig_alur, fig_e4, fig_map, fig_e1, fig_e2, fig_e3, fig_e5, fig_e6, fig_e7]:
+    for f in [fig_alur, fig_e4, fig_osm, fig_map, fig_e1, fig_e2, fig_e3, fig_e5, fig_e6, fig_e7]:
         try:
             f()
         except Exception as e:  # tetap lanjut

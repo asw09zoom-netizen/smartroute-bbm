@@ -199,9 +199,14 @@ def E3b():
 FLEET_OPT = dict(A=2, B=2, C=4, D=1)
 
 
-def E3(fleet=None, suffix="", sens=True):
+def E3c():
+    """Seperti E3b (armada diperluas) tetapi pada jaringan jalan OSM legal-truk."""
+    E3(fleet=FLEET_OPT, suffix="c", sens=False, road="osm")
+
+
+def E3(fleet=None, suffix="", sens=True, road="capstone"):
     """Analisis trade-off multi-objektif: sapuan bobot -> Pareto front."""
-    inst0 = build_instance(multiproduct=True, fleet=fleet)
+    inst0 = build_instance(multiproduct=True, fleet=fleet, road=road)
     rows = []
     for w1 in np.arange(0, 1.01, 0.1):
         for w2 in np.arange(0, 1.01 - w1, 0.1):

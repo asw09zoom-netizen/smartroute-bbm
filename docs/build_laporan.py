@@ -6,6 +6,7 @@ Jalankan:  python -m docs.build_laporan
 from __future__ import annotations
 
 import json
+import math
 import os
 import sys
 
@@ -292,6 +293,28 @@ def bab3(c: Cursor, cite: Citer, R):
             rows, "Parameter armada (ukuran kompartemen, konsumsi, biaya tetap: asumsi)",
             note="Armada eksisting menurut data capstone: 4 unit tipe C (16 KL) dan 1 unit tipe B (8 KL). "
                  "Proporsi produk diasumsikan Pertalite 62%, Biosolar 26%, Pertamax 12% untuk setiap SPBU.")
+    c.p("Data jaringan jalan nyata diambil dari OpenStreetMap (OSM) " + cite('haklay2008') + " melalui Overpass API untuk "
+        "kotak wilayah yang mencakup FT Gelumbang dan ke-13 SPBU dengan margin ±7,7 km. Ruas yang diunduh adalah jalan "
+        "umum (motorway sampai residential, termasuk service dan living_street untuk keperluan klasifikasi). Data mentah "
+        "beserta cap waktu basis data OSM disimpan di data/osm/roads.json.gz sehingga perhitungan dapat diulang.")
+    ak = pd.read_csv(os.path.join(ROOT, "data", "aturan_kelas_jalan.csv"))
+    rows = [(r.kelas, f(r.lebar_maks_m, 1) if r.lebar_maks_m < 50 else "> 2,5", f(r.panjang_maks_m, 1) if r.panjang_maks_m < 50 else "> 18",
+             f(r.tinggi_maks_m, 1), f(r.mst_maks_ton, 0) if r.mst_maks_ton < 50 else "> 10") for r in ak.itertuples()]
+    c.table(["Kelas jalan", "Lebar maks (m)", "Panjang maks (m)", "Tinggi maks (m)", "MST maks (ton)"], rows,
+            "Batas dimensi kendaraan dan muatan sumbu terberat (MST) per kelas jalan " + cite('uu22_2009', 'pp79_2013'),
+            widths=[2.6, 3.0, 3.0, 3.0, 3.0])
+    rows = [(r.tipe, f(r.lebar_kendaraan_m, 1), f(r.panjang_kendaraan_m, 1), f(r.tinggi_kendaraan_m, 1), f(r.mst_ton, 0),
+             f(r.gvw_ton, 0), f(r.lebar_jalan_min_m, 1)) for r in ar.itertuples()]
+    c.table(["Tipe", "Lebar (m)", "Panjang (m)", "Tinggi (m)", "MST (ton)", "JBB (ton)", "Lebar jalan min (m)"], rows,
+            "Dimensi, MST, dan kebutuhan lebar jalan truk tangki (asumsi spesifikasi tipikal)", widths=[1.4, 2.2, 2.2, 2.2, 2.2, 2.2, 3.0],
+            note="Nilai dimensi dan MST adalah asumsi spesifikasi tipikal truk tangki (engkel 6 KL, 8 KL, tronton 16 KL, "
+                 "semi-trailer 32 KL) dan harus dikalibrasi dengan dokumen kendaraan armada FT Gelumbang.")
+    oj = pd.read_csv(os.path.join(ROOT, "data", "osm_jalan.csv"))
+    oj = oj[~oj.highway.str.endswith("_link")]
+    rows = [(r.highway, r.boleh_truk, r.kelas_asumsi, f(r.lebar_lajur_m, 2), f(r.lebar_bawaan_m, 1)) for r in oj.itertuples()]
+    c.table(["Jenis ruas OSM", "Lintasan truk", "Kelas (asumsi)", "Lebar lajur (m)", "Lebar bawaan (m)"], rows,
+            "Pemetaan jenis ruas OSM ke kelas jalan dan lebar badan jalan bawaan (asumsi)", widths=[3.2, 2.6, 2.6, 3.0, 3.0],
+            note="Ruas _link_ mengikuti induknya. Lebar bawaan dipakai hanya bila OSM tidak memuat tag width atau lanes.")
     c.sub("3.2.2 Perangkat")
     c.p("Model dan algoritma diimplementasikan dalam Python 3 (NumPy, pandas, SciPy). Model eksak diselesaikan dengan "
         f"pemecah MILP HiGHS {cite('huangfu2018')} melalui SciPy. Aplikasi web dibangun dengan Streamlit dan Plotly, "
@@ -365,7 +388,28 @@ def bab3(c: Cursor, cite: Citer, R):
         "selesai ritase berjalannya. Dua kebijakan dibandingkan: (a) **naif**, rencana awal dipertahankan dan SPBU yang "
         "tertahan digabung menjadi satu ritase tambahan; (b) **re-optimasi**, GA-SA-RL (populasi 40, 60 generasi, "
         f"1500 iterasi SA) dijalankan ulang untuk sisa SPBU dengan solusi naif sebagai individu awal {cite('rios2021', 'sze2024')}.")
-    c.sub("3.3.4 Rancangan eksperimen")
+    c.sub("3.3.4 Jaringan jalan nyata yang legal untuk truk")
+    c.p("Matriks jarak capstone bersifat tunggal untuk semua truk sehingga tidak dapat membedakan jalan yang boleh dilalui "
+        "truk kecil dan truk besar. Karena itu, setiap tipe truk k diberi graf jalan berarah G~k~ yang hanya memuat ruas "
+        "OSM yang memenuhi seluruh syarat berikut:")
+    c.bullets([
+        "**Jenis ruas:** jalan umum yang dapat menjadi lintasan truk (Tabel 3.5); service, living_street, track, dan jalan "
+        "setapak tidak dipakai sebagai lintasan.",
+        "**Larangan akses:** tag access, motor_vehicle, hgv, atau goods tidak bernilai no/private.",
+        "**Kelas jalan:** kelas ruas (Tabel 3.5) tidak lebih rendah daripada kelas minimum yang mengizinkan dimensi dan MST truk "
+        "menurut UU 22/2009 Pasal 19 " + cite('uu22_2009', 'pp79_2013') + " (Tabel 3.3–3.4).",
+        "**Rambu batas:** tag maxwidth, maxlength, maxheight, maxweight (terhadap JBB), dan maxaxleload (terhadap MST) tidak dilanggar.",
+        "**Lebar jalan:** lebar badan jalan (tag width; atau lanes × lebar lajur; atau lebar bawaan) ≥ lebar jalan minimum truk "
+        "pada jalan dua arah agar truk dapat berpapasan; pada jalur satu arah cukup lebar truk + 1,0 m ruang bebas.",
+        "**Arah lalu lintas:** ruas oneway hanya dapat dilalui searah.",
+    ])
+    c.p("FT dan setiap SPBU dihubungkan ke simpul terdekat pada komponen terhubung kuat terbesar G~k~ (maksimum 250 m); "
+        "bila tidak ada, SPBU dinyatakan tidak terjangkau oleh tipe k dan tipe tersebut dilarang melayaninya. Jarak "
+        "d~ij~^k^ adalah lintasan terpendek Dijkstra " + cite('dijkstra1959') + " pada G~k~ sehingga matriks bersifat "
+        "asimetris dan berbeda per tipe truk. Model memakai d~ij~^k^ pada evaluasi setiap ritase dan penjadwalan, sedangkan "
+        "geometri lintasan dipakai untuk menggambar rute mengikuti jalan pada peta aplikasi. Pengunduhan dan perhitungan "
+        "dijalankan otomatis oleh GitHub Actions setiap kali aturan atau data berubah.")
+    c.sub("3.3.5 Rancangan eksperimen")
     rows = [
         ("E0", "Audit data: sirkuitas jarak jalan vs garis lurus, pelanggaran ketidaksamaan segitiga, radius 30 km"),
         ("E1", "Validasi pada setting capstone (CVRP 16 KL): baseline, NN, CW, optimum MILP, 3 varian × 30 replikasi"),
@@ -376,6 +420,8 @@ def bab3(c: Cursor, cite: Citer, R):
         ("E5/E5b", "Re-routing dinamis: kerusakan truk dan kemacetan mendadak; E5b dengan tenggat ketat dari manajemen tangki"),
         ("E6", "Simulasi Monte Carlo permintaan stokastik (CV 0,05–0,20) → service level"),
         ("E7", f"Validasi algoritma pada 10 instance CVRPLIB set X (n = 100–142) {cite('uchoa2017')}"),
+        ("E8", "Jaringan jalan nyata OSM legal-truk vs matriks capstone: armada eksisting dan diperluas, agregat dan "
+               "multi-produk, GA-SA-RL × 30 replikasi"),
     ]
     c.table(["Kode", "Eksperimen"], rows, "Rancangan eksperimen", widths=[1.6, 14.0])
     c.p("Perbandingan dengan baseline memakai uji-t satu sampel dan uji peringkat bertanda Wilcoxon (satu sisi), "
@@ -388,8 +434,8 @@ def bab3(c: Cursor, cite: Citer, R):
 def load_results():
     R = dict(e0=J("E0_audit.json"), e1=J("E1_summary.json"), e2=J("E2_summary.json"), e4=J("E4_scenarios.json"),
              e4b=J("E4b_fleet_remedy.json"), e5=J("E5_summary.json"), e5b=J("E5b_summary.json"),
-             e3=C("E3_pareto.csv"), e3b=C("E3b_pareto.csv"), e3s=C("E3_sens_fixedcost.csv"), e6=C("E6_montecarlo.csv"), e7=C("E7_cvrplib.csv"),
-             e2m=C("E2_runs_multiproduk.csv"), e2a=C("E2_runs_agregat.csv"), e1r=C("E1_runs.csv"))
+             e3=C("E3_pareto.csv"), e3b=C("E3b_pareto.csv"), e3c=C("E3c_pareto.csv"), e3s=C("E3_sens_fixedcost.csv"), e6=C("E6_montecarlo.csv"), e7=C("E7_cvrplib.csv"),
+             e8=J("E8_summary.json"), e2m=C("E2_runs_multiproduk.csv"), e2a=C("E2_runs_agregat.csv"), e1r=C("E1_runs.csv"))
     return R
 
 
@@ -432,9 +478,9 @@ def bab4(c: Cursor, cite: Citer, R):
     c.figure(os.path.join(FIG, "fig00_alur.png"), "Arsitektur SMARTROUTE-BBM dan alur Hybrid GA-SA-RL", 15.5)
     c.figure(os.path.join(FIG, "app_optimasi.png"), "Tampilan menu Optimasi GA-SA-RL pada aplikasi web", 15.5)
     c.p("Dibandingkan rencana pada proposal, terdapat beberapa penyesuaian teknologi: kerangka FastAPI + PostgreSQL "
-        "diganti Streamlit + Google Sheets agar aplikasi dapat dioperasikan dan dipelihara tanpa server khusus; jarak "
-        "menggunakan matriks jarak jalan hasil capstone (bukan OSRM) karena matriks tersebut merupakan data primer "
-        "yang tervalidasi lapangan; dan modul Telegram Bot diimplementasikan sebagai fitur opsional tetapi efektivitasnya "
+        "diganti Streamlit + Google Sheets agar aplikasi dapat dioperasikan dan dipelihara tanpa server khusus; "
+        "OSRM diganti graf jalan OpenStreetMap yang disaring per tipe truk menurut kelas jalan, rambu, dan lebar jalan "
+        "(subbab 3.3.4) karena profil OSRM bawaan tidak memuat batasan truk; dan modul Telegram Bot diimplementasikan sebagai fitur opsional tetapi efektivitasnya "
         "bagi pengguna belum dievaluasi (rumusan masalah ke-5 pada proposal belum dijawab secara empiris).")
     c.p("Kebenaran perangkat lunak diperiksa dengan uji unit otomatis (pytest), antara lain: reproduksi jarak baseline "
         "capstone 279,4 km dan _direct delivery_ 728,2 km dari matriks jarak; uji kelayakan kompartemen; dan uji bahwa "
@@ -674,6 +720,78 @@ def bab4(c: Cursor, cite: Citer, R):
             "model kasus yang kaya kendala, bukan sebagai pemecah CVRP murni.")
         c.p(e7_ablation_text(e7))
         c.figure(os.path.join(FIG, "fig07_cvrplib.png"), "Gap terhadap BKS pada CVRPLIB set X", 15.0)
+    e8_section(c, cite, R)
+
+
+def e8_section(c, cite, R):
+    e8 = R.get("e8")
+    if not e8:
+        return
+    c.sub("4.1.10 Rute pada jaringan jalan nyata yang legal untuk truk (E8)")
+    rr = e8.get("ringkasan_ruas", [])
+    if rr:
+        tot = rr[0]["km_ruas_total"]
+        rows = []
+        for r in rr:
+            un = r.get("simpul_tak_terjangkau")
+            un = "–" if (un is None or (isinstance(un, float) and math.isnan(un)) or un == "") else str(un).replace(";", ", ")
+            rows.append((r["tipe"], r["kelas_jalan_min"], f(r["km_ruas_legal"], 0), f(r["km_ruas_legal"] / tot * 100, 1), un))
+        c.table(["Tipe", "Kelas jalan min", "Ruas legal (km)", "Porsi (%)", "SPBU tak terjangkau"], rows,
+                f"Ruas OSM yang legal per tipe truk (total {f(tot, 0)} km ruas di wilayah studi)", widths=[1.6, 3.0, 3.0, 2.4, 5.0])
+    m = e8["matriks"]
+    mc = m.get("C", {})
+    c.p(f"Wilayah studi memuat {f(rr[0]['km_ruas_total'], 0) if rr else '-'} km ruas OSM. Truk B dan C (kelas jalan II) "
+        f"hanya dapat memakai {f(rr[2]['km_ruas_legal'], 0) if len(rr) > 2 else '-'} km di antaranya, dan semi-trailer D "
+        f"(kelas I) {f(rr[3]['km_ruas_legal'], 0) if len(rr) > 3 else '-'} km; sebagian besar ruas yang ditolak adalah "
+        "jalan lokal dan lingkungan yang berkelas III. "
+        + (f"Seluruh SPBU tetap terjangkau oleh truk C, sedangkan truk D tidak dapat mencapai {', '.join(m['D']['spbu_tak_terjangkau'])} "
+           "sehingga tipe D dilarang melayani SPBU tersebut. " if m.get("D", {}).get("spbu_tak_terjangkau") else "")
+        + f"Jarak jalan legal untuk truk C berkorelasi {f(mc.get('korelasi', float('nan')), 3)} dengan matriks capstone "
+        f"(rerata selisih absolut {f(mc.get('rerata_selisih_abs_pct', float('nan')), 1)}%), sehingga matriks capstone "
+        "tervalidasi sebagai pendekatan jarak jalan yang baik, namun matriks OSM menambahkan informasi legalitas per tipe "
+        "truk dan asimetri akibat jalan satu arah.")
+    rows = []
+    lab = {"eksisting_agregat": "Eksisting, agregat", "eksisting_multiproduk": "Eksisting, multi-produk",
+           "diperluas_agregat": "Diperluas, agregat", "diperluas_multiproduk": "Diperluas, multi-produk"}
+    for key, name in lab.items():
+        if key not in e8:
+            continue
+        for road, rn in [("capstone", "Capstone"), ("osm", "OSM legal")]:
+            b, h = e8[key][road]["baseline"], e8[key][road]["best"]
+            types = "".join(sorted(t["tipe"] for t in e8[key][road]["best_trips"]))
+            rows.append((name, rn, f(b["dist_km"]), int(b["unassigned"]), f(h["dist_km"]), rp(h["cost_rp"]), f(h["co2_kg"]),
+                         f"{int(h['trucks'])}/{int(h['trips'])}", types, int(h["unassigned"])))
+    c.table(["Kasus (armada, produk)", "Jaringan", "Baseline (km)", "Baseline tak layak", "GA-SA-RL (km)", "Biaya/hari",
+             "CO~2~ (kg)", "Truk/ritase", "Tipe ritase", "Tak layak"], rows,
+            "Perbandingan solusi terbaik GA-SA-RL (30 replikasi) pada matriks capstone dan jaringan jalan OSM legal-truk", size=7)
+    mean = pd.DataFrame(e8["means"])
+    def mv(case, road, col):
+        x = mean[(mean.case == case) & (mean.road == road)]
+        return float(x[col].iloc[0]) if len(x) else float("nan")
+    txt = []
+    for key, name in [("eksisting_agregat", "armada eksisting kasus agregat"), ("eksisting_multiproduk", "armada eksisting multi-produk")]:
+        if key in e8:
+            hc, ho = e8[key]["capstone"]["best"], e8[key]["osm"]["best"]
+            txt.append(f"Pada {name}, solusi terbaik di jalan legal-truk menempuh {f(ho['dist_km'])} km dengan biaya "
+                       f"{rp(ho['cost_rp'])}/hari ({int(ho['trucks'])} truk, {int(ho['trips'])} ritase), dibanding "
+                       f"{f(hc['dist_km'])} km dan {rp(hc['cost_rp'])} pada matriks capstone; rerata 30 replikasi "
+                       f"{f(mv(key, 'osm', 'dist_km'))} km vs {f(mv(key, 'capstone', 'dist_km'))} km.")
+    if "diperluas_multiproduk" in e8:
+        tc = "".join(sorted(t["tipe"] for t in e8["diperluas_multiproduk"]["capstone"]["best_trips"]))
+        to = "".join(sorted(t["tipe"] for t in e8["diperluas_multiproduk"]["osm"]["best_trips"]))
+        txt.append(f"Dengan armada diperluas (A=2, B=2, C=4, D=1), komposisi tipe ritase solusi terbaik adalah {tc} pada matriks "
+                   f"capstone dan {to} pada jalan legal-truk" + (", yang menunjukkan bahwa larangan kelas jalan mengubah "
+                   "pemilihan armada." if tc != to else "; larangan kelas jalan tidak mengubah komposisi armada terbaik pada kasus ini."))
+        bad = sorted({x for t in e8["diperluas_multiproduk"]["capstone"]["best_trips"] for x in t["rute"].split("-")
+                      if x in m.get(t["tipe"], {}).get("spbu_tak_terjangkau", [])})
+        if bad:
+            txt.append(f"Ritase tipe D pada solusi matriks capstone melayani {', '.join(bad)}, padahal SPBU tersebut tidak dapat "
+                       "dijangkau semi-trailer secara legal. Dengan demikian, opsi armada CCCD beremisi lebih rendah pada "
+                       "analisis trade-off E3b tidak dapat dijalankan pada jalan yang sesuai aturan; analisis ulang pada jalan "
+                       "legal-truk (E3c) dibahas pada subbab Pembahasan.")
+    c.p(" ".join(txt))
+    c.figure(os.path.join(FIG, "fig09_osm_legal.png"),
+             "(a) Ruas OSM yang legal per tipe truk; (b) rute GA-SA-RL multi-produk pada jalan legal-truk", 16.0)
 
 
 def scenario_text(e4, e4b):
@@ -809,7 +927,9 @@ def pembahasan(c: Cursor, cite: Citer, R):
         "audit setiap simulasi, dan notifikasi Telegram opsional. Evaluasi kegunaan (misalnya System Usability Scale) "
         "dan efektivitas laporan Telegram bagi pengambil keputusan belum dilakukan dan menjadi pekerjaan lanjutan.")
     c.p("**Keterbatasan.** (1) Proporsi produk per SPBU, ukuran kompartemen, konsumsi bahan bakar, biaya tetap, dan "
-        "profil kemacetan adalah asumsi; (2) jarak berasal dari matriks capstone, bukan OSRM; (3) pengiriman terpisah "
+        "profil kemacetan adalah asumsi; (2) kelas jalan dan lebar badan jalan pada OSM sebagian besar diturunkan dari jenis ruas "
+        "(asumsi) karena hanya sedikit ruas yang memiliki tag width/lanes, dan dimensi truk masih tipikal, sehingga legalitas "
+        "ruas perlu diverifikasi dengan SK penetapan kelas jalan dan survei lebar jalan; (3) pengiriman terpisah "
         "(_split delivery_) belum dimodelkan; (4) komponen RL adalah pemilih operator adaptif berbasis Q-Learning tabular, "
         "bukan agen RL yang dilatih untuk kebijakan rute; (5) aplikasi belum diuji oleh pengguna industri.")
 
@@ -839,6 +959,18 @@ def tradeoff_text(R):
                      f"{rp((hi.cost_rp - lo.cost_rp) / max(lo.co2_kg - hi.co2_kg, 1e-9))} per hari.")
         else:
             t.append("Bahkan dengan pilihan armada diperluas (2A, 2B, 4C, 1D), hanya diperoleh satu titik non-dominasi.")
+    if R.get("e3c") is not None:
+        _, pf = pareto_pts(R["e3c"])
+        if len(pf) > 1:
+            lo, hi = pf.iloc[0], pf.iloc[-1]
+            t.append(f"Pada jaringan jalan legal-truk (E3c), armada diperluas menghasilkan {len(pf)} titik non-dominasi, dari "
+                     f"{rp(lo.cost_rp)} dengan {f(lo.co2_kg)} kg CO~2~ (ritase {lo.trip_types}) hingga {f(hi.co2_kg)} kg dengan "
+                     f"{rp(hi.cost_rp)} (ritase {hi.trip_types}).")
+        elif len(pf) == 1:
+            r0 = pf.iloc[0]
+            t.append(f"Namun pada jaringan jalan legal-truk (E3c), armada diperluas hanya menghasilkan satu titik non-dominasi "
+                     f"({rp(r0.cost_rp)}, {f(r0.co2_kg)} kg CO~2~, ritase {r0.trip_types}): trade-off biaya–emisi pada E3b "
+                     "hilang karena semi-trailer tidak boleh masuk ke sebagian SPBU.")
     t.append("Karena biaya tetap dan konsumsi bahan bakar masih asumsi, posisi kuantitatif Pareto front perlu dikalibrasi.")
     return " ".join(t)
 
@@ -921,6 +1053,13 @@ def bab5(c: Cursor, cite: Citer, R):
                      f"(p = {pv(p_ga)}), sedangkan pemilihan operator dengan Q-Learning "
                      f"{'signifikan lebih baik' if p_sa < 0.05 else 'belum terbukti lebih baik'} daripada pemilihan acak "
                      f"(p = {pv(p_sa)}).")
+    if R.get("e8"):
+        m = R["e8"]["matriks"]
+        items.append("Rute kini dihitung pada jaringan jalan nyata OpenStreetMap yang disaring per tipe truk menurut kelas jalan "
+                     "(UU 22/2009), rambu batas, lebar jalan, dan arah satu jalur. Jarak legal-truk berkorelasi "
+                     f"{f(m['C']['korelasi'], 3)} dengan matriks capstone"
+                     + (f", sedangkan semi-trailer 32 KL tidak dapat menjangkau {', '.join(m['D']['spbu_tak_terjangkau'])}"
+                        if m.get('D', {}).get('spbu_tak_terjangkau') else "") + ".")
     items.append("Simulasi sepuluh kategori skenario mengidentifikasi kondisi yang tidak dapat dilayani armada eksisting "
                  "(restriksi jalan dan lonjakan permintaan lokal) beserta kebutuhan tambahan armadanya.")
     items.append("Prototipe aplikasi web SMARTROUTE-BBM dengan basis data Google Sheets telah selesai dan "
@@ -932,7 +1071,8 @@ def bab5(c: Cursor, cite: Citer, R):
         "menggantikan asumsi, kemudian mengulang E2–E4.",
         "Menambahkan pengiriman terpisah (_split delivery_) dan armada sewa agar skenario lonjakan permintaan dapat "
         "dilayani tanpa penalti.",
-        "Mengintegrasikan OSRM atau data lalu lintas historis untuk profil kemacetan per ruas.",
+        "Memverifikasi kelas jalan dan lebar jalan pada rute terpilih dengan SK penetapan kelas jalan dan survei lapangan, "
+        "serta menambahkan data lalu lintas historis untuk profil kemacetan per ruas.",
         "Melakukan uji kegunaan aplikasi dan evaluasi notifikasi Telegram bersama pengguna industri.",
         "Mengembangkan komponen RL menjadi kebijakan yang dilatih lintas instance (misalnya _deep_ RL) dan "
         "membandingkannya dengan pemilih operator adaptif lain (roulette ALNS, UCB).",
@@ -969,6 +1109,9 @@ def abstrak(c: Cursor, R, lang="id"):
                   f"daripada GA saja (p = {pv(p_ga)}), tetapi pemilihan operator dengan Q-Learning "
                   f"{'signifikan lebih baik' if p_sa < 0.05 else 'tidak signifikan lebih baik'} daripada pemilihan acak "
                   f"(p = {pv(p_sa)}). ")
+        if R.get("e8"):
+            t += ("Rute dihitung pada jaringan jalan OpenStreetMap yang disaring per tipe truk menurut kelas jalan, rambu, "
+                  f"dan lebar jalan; jaraknya berkorelasi {f(R['e8']['matriks']['C']['korelasi'], 3)} dengan matriks capstone. ")
         t += ("Aplikasi juga menyediakan simulasi sepuluh kategori skenario, re-routing dinamis dalam orde detik, analisis "
               "Pareto biaya–emisi, dan simulasi Monte Carlo. Proporsi produk dan ukuran kompartemen masih berupa asumsi "
               "sehingga perlu dikalibrasi dengan data operator.")
@@ -997,6 +1140,9 @@ def abstrak(c: Cursor, R, lang="id"):
                   f"the GA alone (p = {p_ga:.3f}), whereas Q-learning operator selection "
                   f"{'significantly outperformed' if p_sa < 0.05 else 'did not significantly outperform'} random selection "
                   f"(p = {p_sa:.3f}). ")
+        if R.get("e8"):
+            t += ("Routes are computed on the OpenStreetMap road network filtered per truck type by road class, signed limits "
+                  f"and road width; these distances correlate at {R['e8']['matriks']['C']['korelasi']:.3f} with the capstone matrix. ")
         t += ("The system also provides ten what-if scenario categories, second-scale dynamic re-routing, cost–emission "
               "Pareto analysis and Monte Carlo simulation. Product shares and compartment sizes are still assumptions and "
               "require calibration with operator data.")

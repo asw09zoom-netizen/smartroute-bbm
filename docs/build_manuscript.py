@@ -17,7 +17,7 @@ from docx.enum.section import WD_SECTION  # noqa: E402
 from docx.enum.text import WD_ALIGN_PARAGRAPH  # noqa: E402
 from docx.shared import Cm, Pt  # noqa: E402
 
-from docs.build_laporan import REPO, SHEET, VAR, load_results  # noqa: E402
+from docs.build_laporan import REPO, SHEET, VAR, J, load_results  # noqa: E402
 from docs.docbuild import Cursor  # noqa: E402
 from docs.refs import Citer  # noqa: E402
 
@@ -132,6 +132,11 @@ def build():
                         f" the GA alone (Wilcoxon p = {pv(pg[0])}), while Q-learning move selection " +
                         ("significantly outperformed" if pr[0] < 0.05 else "did not significantly outperform") +
                         f" uniform random selection (p = {pv(pr[0])}). ")
+    e8a = J("E8_summary.json")
+    if e8a:
+        abs_txt += ("Routes are computed on the OpenStreetMap network filtered per truck type by road class, signed limits "
+                    f"and carriageway width; these distances correlate at {e8a['matriks']['C']['korelasi']:.3f} with the "
+                    "capstone matrix. ")
     abs_txt += ("Scenario, Pareto, Monte Carlo and dynamic re-routing experiments illustrate the decision support "
                 "value; product shares and compartment sizes are assumptions to be calibrated with operator data.")
     p = c.para("", align="j")
@@ -252,7 +257,22 @@ def build():
       "load of a broken truck is stranded, and the other trucks become available when their current trip ends. A naive "
       "policy keeps the remaining plan and adds one trip for stranded stations; the re-optimisation policy reruns "
       "GA-SA-RL (population 40, 60 generations, 1,500 SA iterations) warm-started with the naive plan.")
-    H2("4.4 Web DSS")
+    H2("4.4 Truck-legal real road network")
+    P("Instead of a single distance matrix, each truck type k is given its own directed graph built from OpenStreetMap "
+      f"{cite('haklay2008')}. A link is kept for type k only if (i) it is a public road usable as a truck path; (ii) no "
+      "access, motor_vehicle, hgv or goods restriction applies; (iii) its road class admits the truck's width, length, "
+      f"height and maximum axle load under Indonesian Law 22/2009, Art. 19 {cite('uu22_2009', 'pp79_2013')} (class I: "
+      "≤ 2.5 m wide, ≤ 18 m long, 10 t axle load; class II: ≤ 2.5 m, ≤ 12 m, 8 t; class III: ≤ 2.1 m, ≤ 9 m, 8 t); "
+      "(iv) signed maxwidth, maxlength, maxheight, maxweight and maxaxleload limits are respected; (v) the carriageway "
+      "width (width tag, lanes × lane width, or a default per link type) is at least the truck's two-way passing width, "
+      "or the truck width plus 1.0 m on one-way carriageways; and (vi) one-way restrictions hold. Road classes and default "
+      "widths per OSM link type are documented assumptions (trunk/primary class I, secondary/tertiary class II, "
+      "unclassified/residential class III). Terminal and stations are snapped to the largest strongly connected "
+      "component (≤ 250 m); a station that cannot be snapped is inaccessible to that type. Distances d~ij~^k^ are "
+      f"Dijkstra shortest paths {cite('dijkstra1959')}, asymmetric and type-specific, and are used in trip evaluation "
+      "and scheduling; the path geometry is drawn on the DSS map. A GitHub Actions workflow downloads OSM and rebuilds "
+      "the matrices whenever rules or data change.")
+    H2("4.5 Web DSS")
     P("SMARTROUTE-BBM is a Streamlit application with five modules: data and map; optimisation with KPIs relative to the "
       "incumbent plan, route map, convergence and operator statistics, multi-trip Gantt chart and compartment loading "
       "table; dynamic re-routing; research results; and reports with an optional Telegram notification. Master data "
@@ -381,6 +401,20 @@ def build():
                         f"{idr((hi.cost_rp - lo.cost_rp) / max(lo.co2_kg - hi.co2_kg, 1e-9))} per kg CO₂.")
             else:
                 txt += "."
+        e3c = R.get("e3c")
+        if e3c is not None:
+            fec = e3c[e3c.unassigned == 0]
+            pfc = fec[fec.pareto_cost_co2].sort_values("cost_rp").drop_duplicates(["cost_rp", "co2_kg"])
+            if len(pfc) == 1:
+                r0 = pfc.iloc[0]
+                txt += (f" On the truck-legal road network (Section 5.8), however, the extended fleet yields a single "
+                        f"non-dominated point ({idr(r0.cost_rp)}, {r0.co2_kg:.1f} kg CO₂, trip types {r0.trip_types}): the "
+                        "trade-off disappears because the semi-trailer may not enter some stations.")
+            elif len(pfc) > 1:
+                lo, hi = pfc.iloc[0], pfc.iloc[-1]
+                txt += (f" On the truck-legal road network (Section 5.8) the extended fleet yields {len(pfc)} non-dominated "
+                        f"points, from {idr(lo.cost_rp)} ({lo.co2_kg:.1f} kg, {lo.trip_types}) to {idr(hi.cost_rp)} "
+                        f"({hi.co2_kg:.1f} kg, {hi.trip_types}).")
         P(txt)
         c.figure(os.path.join(FIGEN, "fig5_pareto.png"), "(a) Cost–CO₂ Pareto front; (b) sensitivity to truck fixed cost",
                  15.5, label="Fig.")
@@ -438,6 +472,51 @@ def build():
                     ("identical plans." if abs(k["fitness"]["naive"] - k["fitness"]["reopt"]) < 1e-9 else "different plans."))
         P(txt)
 
+    e8 = J("E8_summary.json")
+    if e8:
+        H2("5.8 Routing on the truck-legal real road network")
+        rr = e8.get("ringkasan_ruas", [])
+        m = e8["matriks"]
+        txt = ""
+        if rr:
+            byt = {r["tipe"]: r for r in rr}
+            txt += (f"The study area contains {rr[0]['km_ruas_total']:.0f} km of OSM links; {byt['C']['km_ruas_legal']:.0f} km "
+                    f"are legal for the 8- and 16-kL trucks (class II) and {byt['D']['km_ruas_legal']:.0f} km for the "
+                    "32-kL semi-trailer (class I), most rejected links being local and residential streets. ")
+        if m.get("D", {}).get("spbu_tak_terjangkau"):
+            txt += (f"All stations remain reachable by the 16-kL truck, whereas the semi-trailer cannot legally reach "
+                    f"{', '.join(m['D']['spbu_tak_terjangkau'])}. ")
+        txt += (f"Truck-legal distances for the 16-kL truck correlate at {m['C']['korelasi']:.3f} with the capstone matrix "
+                f"(mean absolute difference {m['C']['rerata_selisih_abs_pct']:.1f}%), which validates the capstone data while "
+                "adding type-specific legality and one-way asymmetry. ")
+        parts = []
+        for key, name in [("eksisting_agregat", "aggregated"), ("eksisting_multiproduk", "multi-product")]:
+            if key in e8:
+                hc, ho = e8[key]["capstone"]["best"], e8[key]["osm"]["best"]
+                bo = e8[key]["osm"]["baseline"]
+                parts.append(f"for the {name} case with the existing fleet the best GA-SA-RL plan on legal roads covers "
+                             f"{ho['dist_km']:.1f} km at IDR {ho['cost_rp']:,.0f}/day with {int(ho['trucks'])} trucks and "
+                             f"{int(ho['trips'])} trips (capstone matrix: {hc['dist_km']:.1f} km; incumbent plan on legal "
+                             f"roads: {bo['dist_km']:.1f} km, {int(bo['unassigned'])} unloadable trip(s))")
+        if parts:
+            txt += "Over 30 runs, " + "; ".join(parts) + ". "
+        if "diperluas_multiproduk" in e8:
+            tc = "".join(sorted(t["tipe"] for t in e8["diperluas_multiproduk"]["capstone"]["best_trips"]))
+            to = "".join(sorted(t["tipe"] for t in e8["diperluas_multiproduk"]["osm"]["best_trips"]))
+            txt += (f"With the extended fleet the trip-type mix of the best plan is {tc} on the capstone matrix and {to} on "
+                    "legal roads" + (", i.e. road-class restrictions change the fleet choice." if tc != to else
+                                     "; road-class restrictions do not change the best fleet mix here."))
+            bad = sorted({x for t in e8["diperluas_multiproduk"]["capstone"]["best_trips"] for x in t["rute"].split("-")
+                          if x in m.get(t["tipe"], {}).get("spbu_tak_terjangkau", [])})
+            if bad:
+                txt += (f" The semi-trailer trip in the capstone-matrix plan serves {', '.join(bad)}, which the semi-trailer "
+                        "cannot legally reach, so the lower-emission CCCD fleet option of Section 5.5 is not executable on "
+                        "legal roads.")
+        P(txt)
+        c.figure(os.path.join(FIGEN, "fig7_osm_legal.png"),
+                 "(a) OSM links legal per truck type; (b) GA-SA-RL multi-product routes on truck-legal roads", 15.5,
+                 label="Fig.")
+
     # 6 ------------------------------------------------------------------------
     H1("6. Discussion")
     P("Three findings matter for practice. First, a plan that is optimal on aggregated volumes may be unloadable once "
@@ -460,7 +539,9 @@ def build():
            "intensification in our implementation.") +
           " On the 13-station case all variants find the optimum, so the case alone cannot demonstrate a benefit of RL.")
     P("Limitations are as follows. Product shares, compartment sizes, consumption, fixed costs and congestion profiles "
-      "are assumptions; distances come from the capstone matrix rather than a routing engine; split delivery is not "
+      "are assumptions; road classes and widths are mostly inferred from OSM link types because few links carry width or "
+      "lanes tags, and truck dimensions are typical values, so link legality should be checked against official road-class "
+      "decrees and field surveys; split delivery is not "
       "modelled; the learning component is a tabular operator-selection policy, not a trained routing policy; and the "
       "DSS has not yet been evaluated with industrial users. Because code, data and scripts are released, these "
       "assumptions can be replaced and every experiment re-run.")
@@ -472,7 +553,7 @@ def build():
       "web DSS with a Google Sheets database. The method reproduces the incumbent plan, reaches the MILP-proven optimum "
       "on the capacitated case, exposes the infeasibility of volume-based plans under compartment constraints, and "
       "supports scenario, Pareto, stochastic and dynamic analyses within seconds. Future work will calibrate the "
-      "assumptions with operator data, add split deliveries and hired trucks, integrate historical traffic data, "
+      "assumptions with operator data, add split deliveries and hired trucks, verify road classes and widths on the selected routes, integrate historical traffic data, "
       "evaluate the DSS with users, and compare learned operator selection with other adaptive schemes.")
     p = c.para("", align="j")
     c._runs(p, "**Data and code availability.** Source code, data, experiment scripts and raw results: " + REPO +
