@@ -6,7 +6,10 @@ GA  : populasi N, inisialisasi 60% greedy (NN + perturbasi) / 40% acak, seleksi
 SA  : penyempurnaan lokal solusi terbaik GA, P = exp(-dE/T), T = T0 * alpha^t.
 RL  : Q-Learning memilih operator ketetanggaan SA secara adaptif
       Q(s,a) <- Q(s,a) + a_rl [R + gamma max Q(s',.) - Q(s,a)].
-Varian untuk uji ablasi: "GA", "GA-SA", "GA-SA-RL".
+Varian untuk uji ablasi: "GA", "GA-SA" (operator acak seragam), "GA-SA-ALNS" (bobot adaptif
+roda roulet, Ropke & Pisinger 2006) dan "GA-SA-RL" (Q-learning berkeadaan).
+Operator SA: lima gerakan lokal acak, dua gerakan granular (k tetangga terdekat) dan dua
+gerakan ruin-and-recreate (hapus klaster/acak lalu sisip ulang termurah).
 """
 from __future__ import annotations
 
@@ -21,14 +24,18 @@ import numpy as np
 from .heuristics import nearest_neighbor_perm
 from .model import Evaluator, Solution
 
-OPERATORS = ["2opt", "relocate", "swap", "oropt", "seg_swap"]
+OPERATORS = ["2opt", "relocate", "swap", "oropt", "seg_swap",
+             "nn_relocate", "nn_2opt", "ruin_cluster", "ruin_random"]
+SA_VARIANTS = ("GA-SA", "GA-SA-ALNS", "GA-SA-RL")
+# skor imbalan gaya ALNS: solusi terbaik baru, perbaikan solusi kini, diterima walau memburuk, ditolak
+SIGMA = (1.0, 0.4, 0.0, -0.02)
 
 
 @dataclass
 class HybridConfig:
     variant: str = "GA-SA-RL"     # "GA", "GA-SA", "GA-SA-RL"
     pop_size: int = 100
-    generations: int = 200
+    generations: int = 50
     pc: float = 0.85
     pm: float = 0.10
     tournament: int = 5
@@ -36,12 +43,16 @@ class HybridConfig:
     elite: int = 2
     diversity_eps: float = 0.05
     sa_T0: float = 1000.0
-    sa_alpha: float = 0.995
-    sa_iters: int = 5000
+    sa_alpha: float = 0.0                # 0 = otomatis: T turun dari T0 ke Tmin tepat di akhir iterasi
+    sa_iters: int = 20000
     sa_Tmin: float = 0.01
     rl_alpha: float = 0.10
-    rl_gamma: float = 0.90
-    rl_eps: float = 0.10
+    rl_gamma: float = 0.50
+    rl_eps: float = 0.15
+    alns_r: float = 0.10                 # laju reaksi bobot ALNS
+    alns_seg: int = 100                  # panjang segmen pembaruan bobot ALNS
+    knn: int = 8                         # ukuran daftar tetangga granular
+    ruin_max: float = 0.15               # porsi maksimum SPBU yang dihapus pada ruin
     seed: Optional[int] = None
     time_limit: Optional[float] = None   # detik (opsional)
     sa_scale: float = 1.0e6              # E = sa_scale * F / F_GA; memburuk 0,1% diterima p=e^-1 pada T0=1000
@@ -65,11 +76,60 @@ class RunResult:
 # ---------------------------------------------------------------------------
 # Operator permutasi
 # ---------------------------------------------------------------------------
-def op_apply(perm: List[int], op: str, rng: random.Random) -> List[int]:
+def _reinsert(p: List[int], removed: List[int], D: np.ndarray, rng: random.Random) -> List[int]:
+    """Sisip ulang termurah (jarak) ke tur raksasa; depot di kedua ujung."""
+    rng.shuffle(removed)
+    for c in removed:
+        best_j, best_d = 0, float("inf")
+        prev = 0
+        for j in range(len(p) + 1):
+            nxt = p[j] if j < len(p) else 0
+            d = D[prev, c] + D[c, nxt] - D[prev, nxt]
+            if d < best_d:
+                best_j, best_d = j, d
+            prev = nxt
+        p.insert(best_j, c)
+    return p
+
+
+def op_apply(perm: List[int], op: str, rng: random.Random, ctx=None) -> List[int]:
     n = len(perm)
     if n < 3:
         return perm[:]
     p = perm[:]
+    if op in ("nn_relocate", "nn_2opt", "ruin_cluster", "ruin_random") and ctx is None:
+        op = "relocate"
+    if op == "nn_relocate":  # pindahkan c ke sebelah salah satu tetangga terdekatnya
+        D, knn = ctx
+        c = rng.choice(p)
+        m = rng.choice(knn[c])
+        p.remove(c)
+        j = p.index(m) + (1 if rng.random() < 0.5 else 0)
+        p.insert(j, c)
+        return p
+    if op == "nn_2opt":  # balik segmen agar c bersebelahan dengan tetangga terdekatnya
+        D, knn = ctx
+        c = rng.choice(p)
+        m = rng.choice(knn[c])
+        i, j = p.index(c), p.index(m)
+        if i < j:
+            p[i + 1:j + 1] = p[i + 1:j + 1][::-1]
+        else:
+            p[j:i] = p[j:i][::-1]
+        return p
+    if op in ("ruin_cluster", "ruin_random"):
+        D, knn = ctx
+        frac = getattr(rng, "ruin_max", 0.15)
+        r = rng.randint(2, max(3, int(round(frac * n))))
+        if op == "ruin_cluster":
+            seed = rng.choice(p)
+            order = np.argsort(D[seed, 1:]) + 1
+            removed = [int(x) for x in order[:r]]
+        else:
+            removed = rng.sample(p, r)
+        rem = set(removed)
+        p = [x for x in p if x not in rem]
+        return _reinsert(p, removed, D, rng)
     if op == "2opt":
         i, j = sorted(rng.sample(range(n), 2))
         p[i:j + 1] = p[i:j + 1][::-1]
@@ -118,6 +178,12 @@ class HybridGASARL:
         self.init_perms = init_perms or []
         self.progress = progress
         self.customers = list(range(1, ev.n + 1))
+        D = ev.D
+        k = max(1, min(cfg.knn, ev.n - 1))
+        knn = {c: [int(x) for x in np.argsort(D[c, 1:] + D[1:, c])[:k + 1] + 1 if int(x) != c][:k]
+               for c in self.customers}
+        self.ctx = (D, knn)
+        self.rng.ruin_max = cfg.ruin_max
 
     def fit(self, perm: Sequence[int]) -> float:
         key = tuple(perm)
@@ -186,65 +252,78 @@ class HybridGASARL:
         return best, best_f
 
     # -- SA (+RL) -------------------------------------------------------------
-    def run_sa(self, start: List[int], start_f: float, use_rl: bool, t_start: float,
+    def run_sa(self, start: List[int], start_f: float, mode: str, t_start: float,
                history: List[float], phase: List[str], op_counts, op_succ):
+        """mode: "uniform" (GA-SA), "alns" (roda roulet adaptif), "rl" (Q-learning berkeadaan)."""
         cfg = self.cfg
         cur, cur_f = start[:], start_f
         best, best_f = start[:], start_f
         scale = cfg.sa_scale / max(abs(start_f), 1e-12)   # energi ternormalisasi E = sa_scale * F / F_GA
         T = cfg.sa_T0
+        alpha = cfg.sa_alpha or (cfg.sa_Tmin / cfg.sa_T0) ** (1.0 / max(1, cfg.sa_iters))
         nA = len(OPERATORS)
-        Q = np.zeros((3 * nA, nA))
-        last_a = 0
+        nS = 9
+        Q = np.zeros((nS, nA))
+        w = np.ones(nA); sc = np.zeros(nA); used = np.zeros(nA)   # ALNS
         stagn = 0
+        tag = {"uniform": "SA", "alns": "SA-ALNS", "rl": "SA-RL"}[mode]
 
-        def state():
-            b = 0 if stagn < 50 else (1 if stagn < 200 else 2)
-            return b * nA + last_a
+        def state(it):
+            b = 0 if stagn < 50 else (1 if stagn < 300 else 2)
+            ph = min(2, 3 * it // max(1, cfg.sa_iters))
+            return 3 * b + ph
 
-        s = state()
+        s = state(0)
         for it in range(cfg.sa_iters):
             if T < cfg.sa_Tmin:
                 T = cfg.sa_Tmin
             if cfg.time_limit and time.time() - t_start > cfg.time_limit:
                 break
-            if use_rl:
-                eps = max(0.02, cfg.rl_eps * (1 - it / cfg.sa_iters))
+            if mode == "rl":
+                eps = cfg.rl_eps
                 a = self.rng.randrange(nA) if self.rng.random() < eps else int(np.argmax(Q[s]))
+            elif mode == "alns":
+                a = self.rng.choices(range(nA), weights=w)[0]
             else:
                 a = self.rng.randrange(nA)
             op = OPERATORS[a]
             op_counts[op] = op_counts.get(op, 0) + 1
-            cand = op_apply(cur, op, self.rng)
+            cand = op_apply(cur, op, self.rng, self.ctx)
             f = self.fit(cand)
             dE = (f - cur_f) * scale
-            reward = -0.05
+            reward = SIGMA[3]
             if dE < 0 or self.rng.random() < math.exp(-dE / T):
                 if f < cur_f - 1e-12:
-                    reward = (cur_f - f) * scale  # perbaikan relatif
+                    reward = SIGMA[1]
                     op_succ[op] = op_succ.get(op, 0) + 1
-                else:
-                    reward = 0.0
+                elif f > cur_f + 1e-12:
+                    reward = SIGMA[2]
                 cur, cur_f = cand, f
             if cur_f < best_f - 1e-12:
                 best, best_f = cur[:], cur_f
-                reward += 1.0
+                reward = SIGMA[0]
                 stagn = 0
             else:
                 stagn += 1
                 if cfg.sa_restart and stagn % cfg.sa_restart == 0:
                     cur, cur_f = best[:], best_f
-            last_a = a
-            s2 = state()
-            if use_rl:
+            s2 = state(it + 1)
+            if mode == "rl":
                 Q[s, a] += cfg.rl_alpha * (reward + cfg.rl_gamma * Q[s2].max() - Q[s, a])
+            elif mode == "alns":
+                sc[a] += reward; used[a] += 1
+                if (it + 1) % cfg.alns_seg == 0:
+                    m = used > 0
+                    w[m] = (1 - cfg.alns_r) * w[m] + cfg.alns_r * sc[m] / used[m]
+                    w = np.maximum(w, 0.01)
+                    sc[:] = 0; used[:] = 0
             s = s2
-            T *= cfg.sa_alpha
+            T *= alpha
             if it % 50 == 0 or it == cfg.sa_iters - 1:
-                history.append(best_f); phase.append("SA-RL" if use_rl else "SA")
+                history.append(best_f); phase.append(tag)
             if self.progress and it % 250 == 0:
-                self.progress("SA-RL" if use_rl else "SA", it, cfg.sa_iters, best_f)
-        return best, best_f, Q
+                self.progress(tag, it, cfg.sa_iters, best_f)
+        return best, best_f, (Q if mode == "rl" else w)
 
     # -- main -------------------------------------------------------------------
     def run(self) -> RunResult:
@@ -261,9 +340,9 @@ class HybridGASARL:
         best, best_f = self.run_ga(gens, t0, history, phase)
         ga_best = best_f
         Q = None
-        if cfg.variant in ("GA-SA", "GA-SA-RL"):
-            best, best_f, Q = self.run_sa(best, best_f, cfg.variant == "GA-SA-RL", t0, history, phase,
-                                          op_counts, op_succ)
+        if cfg.variant in SA_VARIANTS:
+            mode = {"GA-SA": "uniform", "GA-SA-ALNS": "alns", "GA-SA-RL": "rl"}[cfg.variant]
+            best, best_f, Q = self.run_sa(best, best_f, mode, t0, history, phase, op_counts, op_succ)
         sol = self.ev.evaluate(best)
         return RunResult(sol, history, phase, time.time() - t0, self.ev.n_evals, op_counts, op_succ,
                          Q if cfg.variant == "GA-SA-RL" else None, ga_best)

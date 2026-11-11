@@ -7,3 +7,4 @@ gspread>=6.0
 statsmodels>=0.14
 matplotlib>=3.8
 openpyxl>=3.1
+ortools>=9.10

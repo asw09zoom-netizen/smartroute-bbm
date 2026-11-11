@@ -81,11 +81,16 @@ with st.sidebar:
     w3 = round(1 - w1 - w2, 2)
     st.caption(f"w₃ waktu = {w3:.2f}")
     st.markdown("### Algoritma")
-    variant = st.selectbox("Varian", ["GA-SA-RL", "GA-SA", "GA"])
+    variant = st.selectbox("Varian", ["GA-SA-RL", "GA-SA-ALNS", "GA-SA", "GA"],
+                           help="GA-SA-ALNS: pemilihan operator dengan bobot adaptif roda roulet; "
+                                "GA-SA: operator dipilih acak seragam.")
     pop = st.slider("Populasi N", 20, 200, 100, 10)
-    gens = st.slider("Generasi", 20, 500, 200, 10)
-    sa_iters = st.slider("Iterasi SA", 0, 10000, 5000, 500)
+    gens = st.slider("Generasi", 10, 500, 50, 10)
+    sa_iters = st.slider("Iterasi SA", 0, 40000, 20000, 1000)
     seed = st.number_input("Seed", 0, 9999, 1)
+    use_or = st.checkbox("Bandingkan dengan OR-Tools (waktu sama)", value=False,
+                         help="Pembanding Google OR-Tools (Guided Local Search) dengan batas waktu sama dengan "
+                              "waktu komputasi varian terpilih; rute OR-Tools dinilai ulang dengan model yang sama.")
     st.markdown("### Skenario")
     scen = st.multiselect("Aktifkan skenario", [s for s in sc.SCENARIOS if not s.startswith(("3.", "4."))])
     with st.expander("Parameter skenario"):
@@ -252,7 +257,16 @@ with tab2:
         res = HybridGASARL(ev, cfg, progress=cb).run()
         prog.progress(1.0, text=f"Selesai dalam {res.runtime:.1f} s")
         base = evaluate_routes(ev, BASELINE_ROUTES)
-        st.session_state["last"] = dict(inst=inst, res=res, base=base, notes=notes, variant=variant, seed=int(seed))
+        orsol = None
+        if use_or:
+            try:
+                from smartroute.ortools_solver import solve_ortools
+                with st.spinner(f"OR-Tools berjalan {max(5.0, res.runtime):.0f} s…"):
+                    orsol = solve_ortools(ev, time_limit=max(5.0, res.runtime))
+            except Exception as e:
+                st.warning(f"OR-Tools tidak dapat dijalankan: {e}")
+        st.session_state["last"] = dict(inst=inst, res=res, base=base, notes=notes, variant=variant, seed=int(seed),
+                                        orsol=orsol)
         rec = dict(skenario="; ".join(scen) or "normal", algoritma=variant, seed=int(seed), fitness=round(res.best.fitness, 5),
                    jarak_km=round(res.best.dist, 2), biaya_rp=round(res.best.Z1), co2_kg=round(res.best.Z2, 2),
                    waktu_menit=round(res.best.Z3, 1), jumlah_ritase=len(res.best.trips), jumlah_truk=res.best.trucks_used,
@@ -297,7 +311,9 @@ with tab2:
                 op = pd.DataFrame(dict(operator=list(res.op_counts), dipilih=list(res.op_counts.values()),
                                        sukses=[res.op_success.get(k, 0) for k in res.op_counts]))
                 st.plotly_chart(px.bar(op, x="operator", y=["dipilih", "sukses"], barmode="group",
-                                       title="Pemilihan operator SA (Q-Learning)" if L["variant"] == "GA-SA-RL" else "Operator SA"),
+                                       title={"GA-SA-RL": "Pemilihan operator SA (Q-Learning)",
+                                              "GA-SA-ALNS": "Pemilihan operator SA (bobot adaptif ALNS)"}.get(
+                                           L["variant"], "Operator SA (acak seragam)")),
                                 use_container_width=True)
         st.markdown("**Jadwal ritase (multi-trip)**")
         g = gantt(inst, s)
@@ -307,6 +323,12 @@ with tab2:
         with st.expander("Bandingkan: rencana baseline Saving Matrix pada model yang sama"):
             st.dataframe(trips_df(inst, base), hide_index=True, use_container_width=True)
             st.write(pd.DataFrame([base.summary(), s.summary()], index=["Saving Matrix", L["variant"]]).T)
+        if L.get("orsol") is not None:
+            o = L["orsol"]
+            st.markdown("**Pembanding OR-Tools (Guided Local Search, waktu komputasi sama)**")
+            st.write(pd.DataFrame([o.summary(), s.summary()], index=["OR-Tools", L["variant"]]).T)
+            with st.expander("Rincian ritase OR-Tools"):
+                st.dataframe(trips_df(inst, o), hide_index=True, use_container_width=True)
     else:
         st.info("Atur parameter di sidebar lalu klik **JALANKAN OPTIMASI**.")
 

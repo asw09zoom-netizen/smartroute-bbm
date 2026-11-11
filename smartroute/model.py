@@ -406,7 +406,8 @@ class Evaluator:
         dist += d
         return t, arr, dist, fuel, late
 
-    def schedule(self, raw_trips, truck_avail: Optional[List[Tuple[int, float]]] = None) -> Tuple[List[Trip], Dict]:
+    def schedule(self, raw_trips, truck_avail: Optional[List[Tuple[int, float]]] = None,
+                 fixed_units: Optional[List[int]] = None) -> Tuple[List[Trip], Dict]:
         """Tugaskan ritase ke unit truk. truck_avail: daftar (tipe, waktu siap)
         per unit; default seluruh armada siap di t=0."""
         p = self.p
@@ -422,6 +423,8 @@ class Evaluator:
             dur = self._trip_static(seq, k)[2]
             order.append((-pr, -dur, idx))
         order.sort()
+        if fixed_units is not None:   # penugasan unit dan urutan ritase ditetapkan pemanggil
+            order = [(0, 0, idx) for idx in range(len(raw_trips))]
         trips: List[Trip] = []
         unassigned = 0
         late_tot = over_tot = 0.0
@@ -431,6 +434,8 @@ class Evaluator:
             # kandidat unit: tipe sama dulu, lalu tipe lain yang layak
             cands = []
             for u_i, u in enumerate(units):
+                if fixed_units is not None and u_i != fixed_units[idx]:
+                    continue
                 if u["n"] >= maxtrips:
                     continue
                 kk = u["k"]
@@ -521,7 +526,7 @@ class Evaluator:
 
 
 def evaluate_routes(ev: Evaluator, routes: List[List[int]], vtypes: Optional[List[int]] = None,
-                    truck_avail=None) -> Solution:
+                    truck_avail=None, fixed_units: Optional[List[int]] = None) -> Solution:
     """Evaluasi solusi rute yang diberikan langsung (mis. baseline Saving Matrix)
     tanpa melalui split, agar dibandingkan dengan fungsi objektif yang sama."""
     raw = []
@@ -548,7 +553,7 @@ def evaluate_routes(ev: Evaluator, routes: List[List[int]], vtypes: Optional[Lis
                  for s, k, ca in raw]
         dist = sum(t.dist for t in trips)
         return Solution(perm, trips, dist, dist, dist, 0, dist, 0, len(trips), 0, 0, 0)
-    trips, info = ev.schedule(raw, truck_avail)
+    trips, info = ev.schedule(raw, truck_avail, fixed_units)
     dist = sum(t.dist for t in trips)
     fuel = sum(t.fuel for t in trips)
     for t in trips:
