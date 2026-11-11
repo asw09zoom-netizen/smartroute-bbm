@@ -33,7 +33,7 @@ from smartroute.model import Evaluator, Params, evaluate_routes  # noqa: E402
 
 RES = os.path.join(ROOT, "results")
 os.makedirs(RES, exist_ok=True)
-VARIANTS = ["GA", "GA-SA", "GA-SA-RL"]
+VARIANTS = ["GA", "GA-SA", "GA-SA-ALNS", "GA-SA-RL"]
 NREP = int(os.environ.get("NREP", 30))
 # Jaringan jalan untuk E2-E6: "osm" (jalan legal-truk, bawaan aplikasi) atau "capstone" (matriks capstone)
 ROAD = os.environ.get("SR_ROAD", "osm")
@@ -482,7 +482,7 @@ def E7():
         variants = VARIANTS if f in first5 else ["GA-SA-RL"]
         for v in variants:
             for s in range(nrep):
-                r = HybridGASARL(ev, HybridConfig(variant=v, seed=s, generations=1000)).run()
+                r = HybridGASARL(ev, HybridConfig(variant=v, seed=s, generations=250, sa_iters=80000)).run()
                 rows.append(dict(instance=inst.name, n=inst.n, bks=bks, cw=cw, variant=v, seed=s, cost=r.best.dist,
                                  gap_pct=(r.best.dist - bks) / bks * 100, cw_gap_pct=(cw - bks) / bks * 100,
                                  runtime=r.runtime))
