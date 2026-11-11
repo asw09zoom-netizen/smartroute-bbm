@@ -175,15 +175,36 @@ def build(pages=None):
     lampiran(W, R)
     # --- daftar (field Word)
     pg = (lambda t: pages.get(t, "")) if pages else (lambda t: "00")
-    toc_entries = [(t, pg(t), lvl) for t, lvl in W.headings
-                   if t not in ("HALAMAN PENGESAHAN",) or True]
-    K.multi_par_field(doc, a_toc, 'TOC \\o "1-3" \\h \\z \\u', toc_entries, lambda l: f"TOC {l}")
-    K.multi_par_field(doc, a_tab, f'TOC \\h \\z \\t "{K.CAP_TAB},4"', [(t, pg(t), 4) for t in W.tables], lambda l: LIST_STYLE)
-    K.multi_par_field(doc, a_fig, f'TOC \\h \\z \\t "{K.CAP_FIG},4"', [(t, pg(t), 4) for t in W.figures], lambda l: LIST_STYLE)
-    K.multi_par_field(doc, a_app, f'TOC \\h \\z \\t "{K.CAP_APP},4"', [(t, pg(t), 4) for t in W.appendices], lambda l: LIST_STYLE)
+    # bookmark pada judul dan keterangan (urutan dokumen), TC untuk daftar tabel/gambar/lampiran
+    hs = {"Heading 1": 1, "Heading 2": 2, "Heading 3": 3}
+    groups = {"H": [], K.CAP_TAB: [], K.CAP_FIG: [], K.CAP_APP: []}
+    for par in doc.paragraphs:
+        sn = par.style.name
+        if sn in hs:
+            groups["H"].append(par)
+        elif sn in groups:
+            groups[sn].append(par)
+    lists = {"H": W.headings, K.CAP_TAB: W.tables, K.CAP_FIG: W.figures, K.CAP_APP: W.appendices}
+    bms, bid = {}, 100
+    for key, pars in groups.items():
+        items = lists[key]
+        assert len(pars) == len(items), (key, len(pars), len(items))
+        for par, it in zip(pars, items):
+            text = it[0] if isinstance(it, tuple) else it
+            bid += 1
+            name = f"_Toc{bid:08d}"
+            K.add_bookmark(par, name, bid)
+            if key != "H":
+                K.add_tc(par, text, {K.CAP_TAB: "T", K.CAP_FIG: "G", K.CAP_APP: "L"}[key])
+            bms.setdefault(key, []).append((text, name))
+    toc_entries = [(t, pg(t), lvl, bm) for (t, lvl), (_, bm) in zip(W.headings, bms["H"])]
+    K.toc_field(doc, a_toc, 'TOC \\o "1-3" \\h \\z \\u', toc_entries, lambda l: f"TOC {l}")
+    for a, key, ident in ((a_tab, K.CAP_TAB, "T"), (a_fig, K.CAP_FIG, "G"), (a_app, K.CAP_APP, "L")):
+        K.toc_field(doc, a, f"TOC \\h \\z \\f {ident}", [(t, pg(t), 4, bm) for t, bm in bms[key]],
+                    lambda l: LIST_STYLE)
     for a in (a_toc, a_tab, a_fig, a_app):
         a._p.getparent().remove(a._p)
-    K.set_update_fields_on_open(doc)
+    # sengaja TIDAK memaksa pembaruan field saat dibuka: nomor halaman tersimpan sudah hasil paginasi
     unused = [k for k in REFS if k not in cite.order]
     return doc, W, cite, unused
 

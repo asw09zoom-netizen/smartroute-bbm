@@ -417,3 +417,69 @@ class Writer:
         sec = self.doc.add_section(WD_SECTION.NEW_PAGE)
         page_number_footer(sec, fmt, start, show)
         return sec
+
+
+# ---------------------------------------------------------------------------
+# Daftar isi/tabel/gambar yang tahan locale Word (pemisah daftar "," vs ";")
+def _fld_run(kind=None, instr=None, text=None):
+    r = OxmlElement("w:r")
+    if kind:
+        f = OxmlElement("w:fldChar"); f.set(qn("w:fldCharType"), kind); r.append(f)
+    if instr is not None:
+        it = OxmlElement("w:instrText"); it.set(qn("xml:space"), "preserve"); it.text = f" {instr} "; r.append(it)
+    if text is not None:
+        t = OxmlElement("w:t"); t.set(qn("xml:space"), "preserve"); t.text = text; r.append(t)
+    return r
+
+
+def plain(text):
+    """Buang markup ringan add_runs."""
+    t = re.sub(r"\*\*([^*]+)\*\*", r"\1", text)
+    t = re.sub(r"(?<![\w/])_([^_]+)_(?![\w])", r"\1", t)
+    t = re.sub(r"\^([^^]+)\^", r"\1", t)
+    return re.sub(r"~([^~]+)~", r"\1", t)
+
+
+def add_bookmark(p, name, bid):
+    s = OxmlElement("w:bookmarkStart"); s.set(qn("w:id"), str(bid)); s.set(qn("w:name"), name)
+    e = OxmlElement("w:bookmarkEnd"); e.set(qn("w:id"), str(bid))
+    pPr = p._p.find(qn("w:pPr"))
+    if pPr is not None:
+        pPr.addnext(s)
+    else:
+        p._p.insert(0, s)
+    p._p.append(e)
+
+
+def add_tc(p, text, ident):
+    """Field TC tersembunyi: { TC "teks" \\f X \\l 1 } untuk TOC \\f X."""
+    txt = plain(text).replace('"', "”")
+    p._p.append(_fld_run("begin"))
+    p._p.append(_fld_run(instr=f'TC "{txt}" \\f {ident} \\l 1'))
+    p._p.append(_fld_run("end"))
+
+
+def toc_field(doc, anchor_p, instr, entries, style_for):
+    """Field TOC dengan hasil tersimpan seperti buatan Word: tiap entri = hyperlink ke bookmark
+    + PAGEREF. entries: [(teks, halaman, level, bookmark)]."""
+    cur = anchor_p._p
+    paras = []
+    for k, (text, page, lvl, bm) in enumerate(entries):
+        p = doc.add_paragraph(style=style_for(lvl))
+        cur.addnext(p._p); cur = p._p
+        if k == 0:
+            for el in (_fld_run("begin"), _fld_run(instr=instr), _fld_run("separate")):
+                p._p.append(el)
+        hl = OxmlElement("w:hyperlink"); hl.set(qn("w:anchor"), bm); hl.set(qn("w:history"), "1")
+        tmp = doc.add_paragraph(); add_runs(tmp, text)
+        for r in list(tmp._p.findall(qn("w:r"))):
+            hl.append(r)
+        tmp._p.getparent().remove(tmp._p)
+        tab = OxmlElement("w:r"); tab.append(OxmlElement("w:tab")); hl.append(tab)
+        for el in (_fld_run("begin"), _fld_run(instr=f"PAGEREF {bm} \\h"), _fld_run("separate"),
+                   _fld_run(text=str(page)), _fld_run("end")):
+            hl.append(el)
+        p._p.append(hl)
+        paras.append(p)
+    paras[-1]._p.append(_fld_run("end"))
+    return paras[-1]
