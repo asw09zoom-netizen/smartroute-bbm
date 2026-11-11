@@ -76,3 +76,12 @@ Aturan: kelas jalan dan batas dimensi/MST (UU 22/2009 Pasal 19; `data/aturan_kel
 kelas & lebar bawaan (ASUMSI; `data/osm_jalan.csv`), dimensi truk & lebar jalan minimum (ASUMSI; `data/armada.csv`),
 rambu `maxwidth/maxlength/maxheight/maxweight/maxaxleload`, larangan `access/hgv`, dan arah `oneway`.
 Di aplikasi, pilih **Jaringan jalan → Jalan nyata OSM (legal truk)**. Data jalan © kontributor OpenStreetMap (ODbL).
+
+## Simulasi pergerakan truk (control room 3D)
+
+Menu **🚚 Simulasi Pergerakan** menjalankan ulang rencana ritase secara rinci (`smartroute/simulate.py`) di sepanjang
+jalan legal-truk: kecepatan per segmen = min(batas kecepatan jenis jalan, kecepatan maks truk) × kemacetan jam ×
+pengaruh muatan × variasi lalu lintas; waktu bongkar = waktu tetap + volume ÷ laju bongkar tipe truk (asumsi di
+`data/armada.csv` dan `data/osm_jalan.csv`, dapat diubah di aplikasi). Tampilan 3D (`smartroute/anim.py`, MapLibre GL +
+deck.gl) dapat dimiringkan/diputar, menampilkan ikon truk tangki sesuai kapasitas, kolom 3D SPBU, KPI, status armada,
+dan log kejadian. Tabel rinci ada di menu **📋 Data Simulasi**.

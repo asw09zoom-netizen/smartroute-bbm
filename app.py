@@ -25,7 +25,8 @@ from smartroute.dynamic import breakdown_event
 from smartroute.hybrid import HybridConfig, HybridGASARL
 from smartroute.model import Evaluator, Params, evaluate_routes
 from smartroute.sheets import from_streamlit_secrets
-from smartroute import roadnet, telegram_bot
+from smartroute import anim, roadnet, telegram_bot
+from smartroute import simulate as simmod
 
 st.set_page_config(page_title="SMARTROUTE-BBM", page_icon="⛽", layout="wide")
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -182,8 +183,12 @@ def gantt(inst, sol):
 
 
 # ---------------------------------------------------------------------------
+st.markdown("<style>.block-container{padding-top:1.6rem;padding-bottom:1rem;max-width:100%}"
+            "h1{font-size:1.7rem!important;padding-bottom:.2rem!important}</style>", unsafe_allow_html=True)
 st.title("SMARTROUTE-BBM · Simulasi Distribusi BBM FT Gelumbang")
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["📍 Data & Peta", "🧬 Optimasi GA-SA-RL", "🚨 Re-routing Dinamis",
+tab1, tab2, tab_sim, tab_tbl, tab3, tab4, tab5 = st.tabs(["📍 Data & Peta", "🧬 Optimasi GA-SA-RL", "🚚 Simulasi Pergerakan",
+                                                 "📋 Data Simulasi",
+                                                 "🚨 Re-routing Dinamis",
                                         "📊 Hasil Penelitian", "📄 Laporan & Log"])
 
 with tab1:
@@ -304,6 +309,106 @@ with tab2:
             st.write(pd.DataFrame([base.summary(), s.summary()], index=["Saving Matrix", L["variant"]]).T)
     else:
         st.info("Atur parameter di sidebar lalu klik **JALANKAN OPTIMASI**.")
+
+with tab_sim:
+    with st.popover("ℹ️ Cara kerja simulasi"):
+        st.markdown("Rencana ritase dijalankan ulang secara rinci di sepanjang jalan legal-truk. Kecepatan tiap segmen = "
+               "min(batas kecepatan jenis jalan, kecepatan maks truk) × faktor kemacetan jam × pengaruh muatan × variasi "
+               "lalu lintas; waktu bongkar = waktu tetap + volume ÷ laju bongkar tipe truk. Nilai default adalah ASUMSI "
+               "dan dapat diubah di bawah.")
+    srcs = (["Hasil optimasi terakhir"] if "last" in st.session_state else []) + ["Baseline Saving Matrix (capstone)"]
+    c1, c2 = st.columns([1, 2])
+    src = c1.radio("Rencana yang disimulasikan", srcs, horizontal=True)
+    if src.startswith("Hasil"):
+        sim_inst, sim_sol = st.session_state["last"]["inst"], st.session_state["last"]["res"].best
+    else:
+        sim_inst = inst0
+        sim_sol = evaluate_routes(Evaluator(inst0), BASELINE_ROUTES)
+    if sim_inst.Dk is None:
+        c2.info("Mode matriks capstone: truk bergerak lurus antar-titik dengan kecepatan rata-rata model. "
+                "Pilih **Jalan nyata OSM (legal truk)** di panel kiri agar truk mengikuti jalan dan kecepatan per jenis jalan.")
+    dcfg = simmod.default_config()
+    map_slot = st.container()
+    with st.expander("⚙️ Parameter simulasi (kecepatan truk, batas kecepatan jalan, laju bongkar, variasi)", expanded=False):
+        a, b = st.columns(2)
+        types_used = sorted({sim_inst.vtypes[t.vtype].name for t in sim_sol.trips})
+        tdf = pd.DataFrame({"tipe": [v.name for v in sim_inst.vtypes],
+                            "kapasitas (KL)": [v.capacity for v in sim_inst.vtypes],
+                            "kecepatan maks (km/jam)": [dcfg.v_truck.get(v.name, 60.0) for v in sim_inst.vtypes],
+                            "laju bongkar (L/menit)": [dcfg.unload_rate.get(v.name, 400.0) for v in sim_inst.vtypes]})
+        tdf = a.data_editor(tdf, hide_index=True, disabled=["tipe", "kapasitas (KL)"], key="sim_types")
+        a.caption("Tipe yang dipakai rencana ini: " + ", ".join(types_used))
+        rdf = pd.DataFrame({"jenis jalan": list(dcfg.road_speed), "batas kecepatan (km/jam)": list(dcfg.road_speed.values())})
+        rdf = b.data_editor(rdf, hide_index=True, disabled=["jenis jalan"], height=260, key="sim_roads")
+        x1, x2, x3, x4, x5 = st.columns(5)
+        u_fix = x1.number_input("Waktu tetap bongkar (mnt)", 0.0, 60.0, float(sim_inst.params.unload_fixed), 1.0)
+        gamma = x2.slider("Perlambatan saat muatan penuh", 0.0, 0.4, 0.15, 0.05)
+        tcv = x3.slider("Variasi lalu lintas (CV)", 0.0, 0.5, 0.15, 0.05)
+        ucv = x4.slider("Variasi waktu bongkar (CV)", 0.0, 0.5, 0.15, 0.05)
+        sseed = x5.number_input("Seed simulasi", 0, 9999, 1)
+        use_cf = st.toggle("Pakai profil kemacetan per jam (skenario aktif)", value=True)
+    cfg_sim = simmod.SimConfig(
+        v_truck=dict(zip(tdf["tipe"], tdf["kecepatan maks (km/jam)"].astype(float))),
+        unload_rate=dict(zip(tdf["tipe"], tdf["laju bongkar (L/menit)"].astype(float))),
+        road_speed=dict(zip(rdf["jenis jalan"], rdf["batas kecepatan (km/jam)"].astype(float))),
+        unload_fixed=float(u_fix), load_gamma=float(gamma), traffic_cv=float(tcv), unload_cv=float(ucv),
+        seed=int(sseed), use_congestion=use_cf)
+    simres = simmod.simulate(sim_inst, sim_sol, cfg_sim)
+    stations = [dict(id=sim_inst.labels[i], lat=float(sim_inst.coords[i, 0]), lon=float(sim_inst.coords[i, 1]))
+                for i in range(1, sim_inst.n + 1)]
+    depot = dict(lat=float(sim_inst.coords[0, 0]), lon=float(sim_inst.coords[0, 1]))
+    import streamlit.components.v1 as components
+    with map_slot:
+        components.html(anim.build_html(simres, stations, depot, height=820), height=830, scrolling=False)
+    st.session_state["sim"] = dict(res=simres, inst=sim_inst)
+    over = simres["t_end"] - sim_inst.params.shift_len
+    if over > 0:
+        st.warning(f"Pada simulasi ini armada baru selesai {hhmm(sim_inst, simres['t_end'])}, melewati akhir shift {over:.0f} menit.")
+    st.caption("Seret untuk menggeser, klik kanan/Ctrl+seret untuk memutar dan memiringkan peta. Tabel rinci ada di menu "
+               "**📋 Data Simulasi**. Peta © OpenStreetMap contributors © CARTO.")
+
+with tab_tbl:
+    if "sim" not in st.session_state:
+        st.info("Buka menu Simulasi Pergerakan terlebih dahulu.")
+    else:
+        simres, sim_inst = st.session_state["sim"]["res"], st.session_state["sim"]["inst"]
+        k1, k2 = st.columns([1.1, 1])
+        with k1:
+            st.markdown("**Ringkasan per truk (hasil simulasi)**")
+            ud = pd.DataFrame([dict(Unit=u["unit"], Tipe=u["tipe"], **{"Jarak (km)": u["km"], "Mengemudi (mnt)": u["drive_min"],
+                                     "Rerata (km/jam)": round(u["km"] / max(u["drive_min"], 1e-9) * 60, 1),
+                                     "Muat (mnt)": u["load_min"], "Bongkar (mnt)": u["unload_min"], "Siaga (mnt)": u["wait_min"],
+                                     "Kembali terakhir": hhmm(sim_inst, u["selesai"])}) for u in simres["units"]])
+            st.dataframe(ud, hide_index=True)
+        with k2:
+            st.markdown("**Kedatangan di SPBU: rencana model vs simulasi**")
+            sd = pd.DataFrame([dict(Unit=x["unit"], R=x["ritase"], SPBU=x["spbu"], **{"Vol (KL)": x["volume_kl"],
+                                     "Rencana": hhmm(sim_inst, x["tiba_rencana"]), "Simulasi": hhmm(sim_inst, x["tiba_simulasi"]),
+                                     "Selisih (mnt)": round(x["tiba_simulasi"] - x["tiba_rencana"], 0),
+                                     "Bongkar (mnt)": round(x["bongkar_menit"], 0)}) for x in simres["stops"]])
+            st.dataframe(sd, hide_index=True, height=300)
+        rows = []
+        base = datetime(2026, 1, 1)
+        for u in simres["units"]:
+            for a, b, txt in u["spans"]:
+                if b is None or b <= a:
+                    continue
+                kind = ("Muat di FT" if txt.startswith("Muat") else "Bongkar" if txt.startswith("Bongkar") else
+                        "Kembali" if txt.startswith("Kembali") else "Siaga" if txt.startswith("Siaga") else "Menuju SPBU")
+                rows.append(dict(Unit=u["unit"], Aktivitas=kind, Keterangan=txt,
+                                 Mulai=base + pd.Timedelta(minutes=sim_inst.params.shift_start_h * 60 + a),
+                                 Selesai=base + pd.Timedelta(minutes=sim_inst.params.shift_start_h * 60 + b)))
+        if rows:
+            fig = px.timeline(pd.DataFrame(rows), x_start="Mulai", x_end="Selesai", y="Unit", color="Aktivitas",
+                              hover_data=["Keterangan"], title="Lini masa aktivitas truk (hasil simulasi)",
+                              color_discrete_map={"Muat di FT": "#40a9ff", "Menuju SPBU": "#36cfc9", "Bongkar": "#ffa940",
+                                                  "Kembali": "#9254de", "Siaga": "#8c8c8c"})
+            fig.update_layout(height=320, margin=dict(l=0, r=0, t=40, b=0))
+            st.plotly_chart(fig, use_container_width=True)
+        st.markdown("**Log kejadian**")
+        st.dataframe(pd.DataFrame([dict(Jam=hhmm(sim_inst, e["t"]), Unit=e["unit"], Kejadian=e["ev"], Lokasi=e["tempat"])
+                                   for e in simres["events"]]), hide_index=True, height=260)
+
 
 with tab3:
     st.markdown("Simulasikan kerusakan truk di tengah shift, lalu bandingkan **tanpa re-routing** "

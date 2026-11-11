@@ -1,5 +1,5 @@
-tipe,kapasitas_kl,kompartemen_kl,jumlah_unit,fc0_l_per_km,biaya_tetap_rp,produk_kompatibel,lebar_jalan_min_m,lebar_kendaraan_m,panjang_kendaraan_m,tinggi_kendaraan_m,mst_ton,gvw_ton,keterangan
-A,6,4+2,0,0.20,600000,Pertalite|Pertamax|Biosolar,3.5,2.1,6.5,3.2,6,10,ASUMSI ukuran kompartemen; ASUMSI dimensi & MST
-B,8,4+2+2,1,0.24,700000,Pertalite|Pertamax|Biosolar,4.0,2.4,8.5,3.5,8,15,armada eksisting capstone; ASUMSI ukuran kompartemen; ASUMSI dimensi & MST
-C,16,6+4+3+3,4,0.30,900000,Pertalite|Pertamax|Biosolar|Pertamax Turbo,6.0,2.5,10.5,3.7,8,26,armada eksisting capstone; ASUMSI ukuran kompartemen; ASUMSI dimensi & MST
-D,32,12+8+6+3+3,0,0.42,1400000,Pertalite|Pertamax|Biosolar|Pertamax Turbo|Pertamina Dex,7.0,2.5,16.0,3.9,10,43,mother tanker (skenario); ASUMSI ukuran kompartemen; ASUMSI dimensi & MST
+tipe,kapasitas_kl,kompartemen_kl,jumlah_unit,fc0_l_per_km,biaya_tetap_rp,produk_kompatibel,lebar_jalan_min_m,lebar_kendaraan_m,panjang_kendaraan_m,tinggi_kendaraan_m,mst_ton,gvw_ton,v_maks_kmh,laju_bongkar_l_per_menit,keterangan
+A,6,4+2,0,0.20,600000,Pertalite|Pertamax|Biosolar,3.5,2.1,6.5,3.2,6,10,60,350,"ASUMSI ukuran kompartemen; ASUMSI dimensi, MST, kecepatan maks & laju bongkar"
+B,8,4+2+2,1,0.24,700000,Pertalite|Pertamax|Biosolar,4.0,2.4,8.5,3.5,8,15,60,400,"armada eksisting capstone; ASUMSI ukuran kompartemen; ASUMSI dimensi, MST, kecepatan maks & laju bongkar"
+C,16,6+4+3+3,4,0.30,900000,Pertalite|Pertamax|Biosolar|Pertamax Turbo,6.0,2.5,10.5,3.7,8,26,60,400,"armada eksisting capstone; ASUMSI ukuran kompartemen; ASUMSI dimensi, MST, kecepatan maks & laju bongkar"
+D,32,12+8+6+3+3,0,0.42,1400000,Pertalite|Pertamax|Biosolar|Pertamax Turbo|Pertamina Dex,7.0,2.5,16.0,3.9,10,43,50,500,"mother tanker (skenario); ASUMSI ukuran kompartemen; ASUMSI dimensi, MST, kecepatan maks & laju bongkar"

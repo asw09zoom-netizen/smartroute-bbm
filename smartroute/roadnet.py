@@ -181,9 +181,10 @@ def parse_osm(osm: Dict):
     return index, latlon, ways
 
 
-def build_graph(index, latlon, ways, allow_fn):
-    """Graf berarah ruas legal. allow_fn(tags)->(bool, alasan)."""
-    rows, cols, w = [], [], []
+def build_graph(index, latlon, ways, allow_fn, code_fn=None):
+    """Graf berarah ruas legal. allow_fn(tags)->(bool, alasan).
+    code_fn(tags)->int (opsional): kode jenis ruas, dikembalikan sebagai matriks H (kode+1) sejajar G."""
+    rows, cols, w, cd = [], [], [], []
     reasons: Dict[str, float] = {}
     for _, nds, tags in ways:
         seq = [index[n] for n in nds if n in index]
@@ -196,21 +197,26 @@ def build_graph(index, latlon, ways, allow_fn):
         if not ok:
             continue
         ow = _oneway(tags)
+        code = code_fn(tags) if code_fn else 0
         if ow >= 0:
-            rows += a.tolist(); cols += b.tolist(); w += d.tolist()
+            rows += a.tolist(); cols += b.tolist(); w += d.tolist(); cd += [code] * len(a)
         if ow <= 0:
-            rows += b.tolist(); cols += a.tolist(); w += d.tolist()
+            rows += b.tolist(); cols += a.tolist(); w += d.tolist(); cd += [code] * len(a)
     N = len(latlon)
     w = np.maximum(np.array(w, dtype=float), 1e-6)
     G = csr_matrix((w, (rows, cols)), shape=(N, N))
+    H = csr_matrix((N, N))
     # sisakan sisi terpendek bila ada duplikat (csr menjumlahkan duplikat -> tangani)
     if len(rows):
         key = np.array(rows, dtype=np.int64) * N + np.array(cols, dtype=np.int64)
         order = np.lexsort((w, key))
-        key, w2 = key[order], w[order]
+        key, w2, c2 = key[order], w[order], np.array(cd, dtype=float)[order]
         first = np.r_[True, key[1:] != key[:-1]]
         r = (key[first] // N).astype(np.int64); c = (key[first] % N).astype(np.int64)
         G = csr_matrix((w2[first], (r, c)), shape=(N, N))
+        H = csr_matrix((c2[first] + 1.0, (r, c)), shape=(N, N))
+    if code_fn:
+        return G, reasons, H
     return G, reasons
 
 
@@ -268,6 +274,35 @@ def _simplify(coords: List[Tuple[float, float]], tol_deg: float = 0.00008) -> Li
     return [tuple(map(float, x)) for x in pts[keep]]
 
 
+HW_CODES = ["motorway", "motorway_link", "trunk", "trunk_link", "primary", "primary_link", "secondary",
+            "secondary_link", "tertiary", "tertiary_link", "unclassified", "residential", "road", "living_street",
+            "service", "track", "akses"]
+
+
+def hw_code(hw: str) -> int:
+    return HW_CODES.index(hw) if hw in HW_CODES else HW_CODES.index("road")
+
+
+def _coded_path(pa, pb, path, latlon, H) -> Dict:
+    """Geometri lintasan + kode jenis ruas per segmen: {"p": [[lat,lon],..], "h": [kode,..]} (len h = len p - 1).
+    Penyederhanaan dilakukan per rangkaian ruas sejenis agar batas jenis jalan tetap tepat."""
+    akses = HW_CODES.index("akses")
+    codes = [int(H[path[i], path[i + 1]]) - 1 for i in range(len(path) - 1)]
+    pts = [tuple(pa)] + [tuple(latlon[q]) for q in path] + [tuple(pb)]
+    seg = [akses] + codes + [akses]          # segmen penghubung titik SPBU/FT ke jalan = akses
+    P, Hc = [pts[0]], []
+    i = 0
+    while i < len(seg):
+        j = i
+        while j + 1 < len(seg) and seg[j + 1] == seg[i]:
+            j += 1
+        run = _simplify(pts[i:j + 2])
+        P += run[1:]
+        Hc += [seg[i]] * (len(run) - 1)
+        i = j + 1
+    return {"p": [[round(x, 6), round(y, 6)] for x, y in P], "h": Hc}
+
+
 def build_matrices(osm_path: str = OSM_RAW, data_dir: Optional[str] = None, write: bool = True,
                    snap_max_km: float = SNAP_MAX_KM) -> Dict:
     data_dir = data_dir or DATA_DIR
@@ -282,7 +317,8 @@ def build_matrices(osm_path: str = OSM_RAW, data_dir: Optional[str] = None, writ
     for tr in armada:
         t = tr["tipe"]
         tk = truck_class_required(tr, kelas)
-        G, reasons = build_graph(index, latlon, ways, lambda tags: edge_allowed(tags, tr, tk, jalan))
+        G, reasons, H = build_graph(index, latlon, ways, lambda tags: edge_allowed(tags, tr, tk, jalan),
+                                    code_fn=lambda tags: hw_code(tags.get("highway", "")))
         node, sd = snap(pts, latlon, G)
         ok = (node >= 0) & (sd <= snap_max_km)
         Dm = np.full((n, n), np.nan)
@@ -301,8 +337,7 @@ def build_matrices(osm_path: str = OSM_RAW, data_dir: Optional[str] = None, writ
                         continue
                     Dm[a, b] = d + sd[a] + sd[b]
                     path = _path(pred[a_pos], node[a], node[b])
-                    c = [tuple(pts[a])] + [tuple(latlon[p]) for p in path] + [tuple(pts[b])]
-                    geoms[f"{labels[a]}>{labels[b]}"] = [[round(x, 6), round(y, 6)] for x, y in _simplify(c)]
+                    geoms[f"{labels[a]}>{labels[b]}"] = _coded_path(pts[a], pts[b], path, latlon, H)
         out["types"][t] = {"kelas_min": tk, "D": Dm, "snap_km": sd, "reasons": reasons}
         out["geom"][t] = geoms
         tot = sum(reasons.values())
@@ -384,8 +419,19 @@ def route_polyline(geom: Dict, vtype: str, seq_labels: List[str]) -> Optional[Li
         seg = g.get(f"{a}>{b}")
         if seg is None:
             return None
+        seg = seg["p"] if isinstance(seg, dict) else seg
         pts += seg if not pts else seg[1:]
     return pts
+
+
+def leg_geometry(geom: Dict, vtype: str, a: str, b: str) -> Optional[Dict]:
+    """Geometri satu ruas a->b dengan kode jenis jalan per segmen (None bila tidak ada)."""
+    seg = geom.get(vtype, {}).get(f"{a}>{b}")
+    if seg is None:
+        return None
+    if isinstance(seg, list):
+        return {"p": seg, "h": [HW_CODES.index("road")] * (len(seg) - 1)}
+    return seg
 
 
 if __name__ == "__main__":

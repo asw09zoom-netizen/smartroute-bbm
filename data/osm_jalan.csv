@@ -1,17 +1,17 @@
-highway,boleh_truk,kelas_asumsi,lebar_lajur_m,lebar_bawaan_m,keterangan
-motorway,ya,I,3.6,14.4,jalan tol
-motorway_link,ya,I,3.6,7.0,ramp tol
-trunk,ya,I,3.5,7.0,jalan nasional / arteri primer (ASUMSI kelas I)
-trunk_link,ya,I,3.5,7.0,
-primary,ya,I,3.5,7.0,arteri primer (ASUMSI kelas I)
-primary_link,ya,I,3.5,7.0,
-secondary,ya,II,3.5,6.0,kolektor / jalan provinsi (ASUMSI kelas II)
-secondary_link,ya,II,3.5,6.0,
-tertiary,ya,II,3.0,6.0,kolektor / jalan kabupaten-kota (ASUMSI kelas II: UU 22/2009 Ps.19 membolehkan kelas II pada jalan kolektor & lokal)
-tertiary_link,ya,II,3.0,6.0,
-unclassified,ya,III,2.75,4.5,jalan lokal (ASUMSI kelas III)
-residential,ya,III,2.75,4.0,jalan lingkungan (ASUMSI kelas III)
-road,ya,III,2.75,4.0,jenis belum diketahui
-living_street,tidak,III,2.75,3.5,jalan lingkungan prioritas pejalan kaki
-service,tidak,III,2.75,3.5,jalan akses/parkir (tidak untuk lintasan)
-track,tidak,III,2.5,3.0,jalan kebun/tanah
+highway,boleh_truk,kelas_asumsi,lebar_lajur_m,lebar_bawaan_m,kecepatan_maks_kmh,keterangan
+motorway,ya,I,3.6,14.4,100,jalan tol
+motorway_link,ya,I,3.6,7.0,60,ramp tol
+trunk,ya,I,3.5,7.0,80,jalan nasional / arteri primer (ASUMSI kelas I)
+trunk_link,ya,I,3.5,7.0,50,
+primary,ya,I,3.5,7.0,80,arteri primer (ASUMSI kelas I)
+primary_link,ya,I,3.5,7.0,50,
+secondary,ya,II,3.5,6.0,60,kolektor / jalan provinsi (ASUMSI kelas II)
+secondary_link,ya,II,3.5,6.0,50,
+tertiary,ya,II,3.0,6.0,50,kolektor / jalan kabupaten-kota (ASUMSI kelas II: UU 22/2009 Ps.19 membolehkan kelas II pada jalan kolektor & lokal)
+tertiary_link,ya,II,3.0,6.0,40,
+unclassified,ya,III,2.75,4.5,40,jalan lokal (ASUMSI kelas III)
+residential,ya,III,2.75,4.0,30,jalan lingkungan (ASUMSI kelas III)
+road,ya,III,2.75,4.0,30,jenis belum diketahui
+living_street,tidak,III,2.75,3.5,20,jalan lingkungan prioritas pejalan kaki
+service,tidak,III,2.75,3.5,20,jalan akses/parkir (tidak untuk lintasan)
+track,tidak,III,2.5,3.0,20,jalan kebun/tanah
