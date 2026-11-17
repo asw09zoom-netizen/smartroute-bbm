@@ -5,6 +5,21 @@
 Penelitian Terapan PEM Akamigas 2026 (SP3 No. 046/SP3/Penelitian/DIPA2026/PEM Akamigas).
 Studi kasus: **FT Gelumbang** (Kab. Muara Enim, Sumatera Selatan), 13 SPBU, data Capstone Design 2026.
 
+## Menjalankan aplikasi dari GitHub (tanpa Streamlit Cloud)
+
+**Cara 1, GitHub Codespaces (tanpa instalasi).** Buka halaman repositori ini, klik tombol hijau **Code**, tab **Codespaces**, lalu **Create codespace on main**. Setelah lingkungan siap (sekitar 3-5 menit pada pembuatan pertama), aplikasi otomatis berjalan dan terbuka di tab peramban baru. Jika tidak terbuka, buka tab **Ports** dan klik ikon globe pada port 8501. Akun GitHub gratis mendapat kuota Codespaces bulanan; hentikan codespace setelah dipakai.
+
+**Cara 2, komputer sendiri.**
+
+```bash
+git clone https://github.com/asw09zoom-netizen/smartroute-bbm.git
+cd smartroute-bbm
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+Tanpa konfigurasi tambahan, aplikasi memakai data CSV lokal di folder `data/`. Google Sheets dan Telegram bersifat opsional (lihat `.streamlit/secrets.toml.example`).
+
 ## Isi repositori
 
 | Folder/berkas | Isi |
