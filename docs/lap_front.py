@@ -84,12 +84,12 @@ def pengesahan(doc, W):
     kv_table(doc, [("Judul Penelitian", JUDUL)], size=11)
     cpar(doc, "Ketua Peneliti", 11, True, align="l", before=6, after=2)
     kv_table(doc, [("a. Nama Lengkap", TIM[0][1]), ("b. NIP/NIDN", f"{TIM[0][2]} / {NIDN_KETUA}"),
-                   ("c. Jabatan Fungsional", "Lektor Kepala"), ("d. Nomor HP", "……………………………")], size=11)
+                   ("c. Jabatan Fungsional", "Lektor Kepala"), ("d. Nomor HP", "0818381531")], size=11)
     for k, (_, nama, nip) in enumerate(TIM[1:], 1):
         cpar(doc, f"Anggota Peneliti ({k})", 11, True, align="l", before=4, after=2)
         kv_table(doc, [("a. Nama Lengkap", nama), ("b. NIP", nip)], size=11)
     kv_table(doc, [("Nomor SP3", SP3)], size=11)
-    cpar(doc, "Cepu, ….. Desember 2026", 11, align="r", before=12, after=6)
+    cpar(doc, "Cepu, 1 Desember 2026", 11, align="r", before=12, after=6)
     t = doc.add_table(rows=4, cols=2)
     t.alignment = WD_TABLE_ALIGNMENT.CENTER
     _no_borders(t); _widths(t, [7.0, 7.0])
@@ -110,7 +110,7 @@ def pengesahan(doc, W):
     cpar(doc, "Menyetujui,", 11, before=12, after=0)
     cpar(doc, "Direktur Politeknik Energi dan Mineral Akamigas", 11, after=48)
     cpar(doc, f"({DIREKTUR})", 11, after=0)
-    cpar(doc, "NIP ……………………………", 11, after=0)
+    cpar(doc, "NIP 19830614 200604 2 001", 11, after=0)
 
 
 def abstrak(doc, W, R, lang):

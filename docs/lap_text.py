@@ -110,7 +110,7 @@ def bab1(W, cite, R):
     W.p("Truk tangki yang berangkat dari _Fuel Terminal_ (FT) membawa beberapa jenis BBM sekaligus. Setiap jenis "
         "harus menempati kompartemen tersendiri, dan satu truk biasanya kembali ke FT untuk memuat ulang sebelum shift "
         "berakhir. Persoalan perencanaannya dikenal sebagai _Petrol Station Replenishment Problem_ (PSRP), turunan dari "
-        f"_Vehicle Routing Problem_ (VRP) {cite('dantzig1959', 'cornillier2008', 'benantar2016')}. Varian dengan "
+        f"_Vehicle Routing Problem_ (VRP) {cite('dantzig1959', 'cornillier2008')}. Varian dengan "
         f"kompartemen disebut _multi-compartment_ VRP {cite('ostermeier2021', 'coelho2015')}, sedangkan varian dengan "
         f"pemuatan ulang disebut _multi-trip_ VRP {cite('cattaruzza2016')}. Pada kasus nyata keduanya muncul bersamaan "
         f"dengan armada heterogen dan jendela waktu SPBU {cite('wang2020', 'cornillier2009', 'bani2023')}.")
@@ -121,9 +121,9 @@ def bab1(W, cite, R):
         "Rencana yang terlihat pendek di atas kertas dapat gagal dijalankan ketika volume tiap produk tidak muat pada "
         "susunan kompartemen, atau ketika rute melewati jalan yang tidak boleh dilalui truk besar.")
     W.p("Penelitian PSRP di Indonesia umumnya berhenti pada model agregat atau kasus kecil yang diselesaikan dengan "
-        f"pemrograman bilangan bulat {cite('surjandari2011', 'ramadhani2021', 'febriandini2020')}. Literatur "
+        f"pemrograman bilangan bulat {cite('ramadhani2021')}. Literatur "
         "internasional bergerak ke arah metaheuristik hibrida yang operatornya dipilih secara adaptif dengan "
-        f"_reinforcement learning_ (RL) {cite('qi2022', 'zhao2025', 'koc2026', 'lin2025')}, dan ke arah sistem pendukung "
+        f"_reinforcement learning_ (RL) {cite('qi2022', 'koc2026')}, dan ke arah sistem pendukung "
         f"keputusan (DSS) berbasis peta {cite('santos2011', 'cavecchia2024')}. Belum ada perangkat terbuka yang "
         "menggabungkan kompartemen, multi-produk, multi-ritase, legalitas jalan per tipe truk, dan simulasi pergerakan "
         "untuk kasus distribusi BBM di Indonesia.")
@@ -197,56 +197,48 @@ def bab2(W, cite, R):
         "sejumlah pelanggan dengan biaya minimum. Clarke dan Wright kemudian mengusulkan heuristik penghematan "
         f"(_savings_) yang hingga kini dipakai sebagai pembanding {cite('clarke1964')}. Pada PSRP, depot adalah FT, "
         "pelanggan adalah SPBU, dan muatan adalah beberapa jenis BBM. Cornillier dkk. merumuskan PSRP multi-periode, "
-        f"versi eksak, dan versi dengan jendela waktu {cite('cornillier2008', 'cornillier2008b', 'cornillier2009')}. "
-        f"Benantar dkk. menambahkan varian baru dengan kendala kompatibilitas {cite('benantar2016')}, sedangkan Wu dkk. "
+        f"versi eksak, dan versi dengan jendela waktu {cite('cornillier2008', 'cornillier2009')}. "
+        f"Wu dkk. "
         f"memasukkan risiko bahaya beruntun pada truk dan gandengan {cite('wu2024')}. Studi kasus berskala nyata "
         f"dengan banyak depot dan kendala pemuatan rumit dilaporkan oleh Che dkk., Bani dkk., dan Liu dkk. "
-        f"{cite('che2023', 'bani2023', 'liu2025')}. Haseltalab dkk. menggabungkan rute dan persediaan produk minyak "
-        f"dengan armada heterogen {cite('haseltalab2024')}.")
+        f"{cite('che2023', 'bani2023', 'liu2025')}.")
     W.hh("Kendala kompartemen dan multi-produk")
     W.p("Pada _multi-compartment_ VRP, kelayakan muatan tidak cukup diperiksa dengan total volume ≤ kapasitas. Setiap "
         "kompartemen hanya boleh berisi satu produk, sehingga yang diperiksa adalah ada tidaknya penugasan kompartemen "
         "ke produk yang menampung seluruh volume. Ostermeier dkk. dan Coelho serta Laporte menyusun klasifikasi dan "
-        f"model umum persoalan ini {cite('ostermeier2021', 'coelho2015')}. Metaheuristik untuk varian armada homogen "
-        f"dan heterogen dibahas Yahyaoui dkk. dan Efthymiadis dkk. {cite('yahyaoui2018', 'efthymiadis2023')}, "
-        f"sedangkan pendekatan eksak untuk perusahaan distribusi BBM diberikan Baptista dkk. {cite('baptista2024')}. "
-        f"Hajba dkk. memakai MILP yang dipadukan dengan pengelompokan untuk kasus PSRP khusus {cite('hajba2023')}.")
+        f"model umum persoalan ini {cite('ostermeier2021', 'coelho2015')}. Pendekatan eksak untuk "
+        f"perusahaan distribusi BBM diberikan Baptista dkk. {cite('baptista2024')}.")
     W.hh("Multi-ritase dan armada heterogen")
     W.p("Truk tangki yang berangkat pagi biasanya kembali ke FT sebelum siang dan berangkat lagi. Cattaruzza dkk. "
-        f"merangkum varian VRP dengan banyak ritase dan memberikan algoritma memetik untuknya {cite('cattaruzza2016', 'cattaruzza2014')}; "
+        f"merangkum varian VRP dengan banyak ritase {cite('cattaruzza2016')}; "
         f"Azi dkk. memakai _adaptive large neighborhood search_ {cite('azi2014')}. Zhao dkk. memecah _giant tour_ "
         f"menjadi ritase dengan pemrograman dinamis pada kasus waktu tempuh bergantung jam {cite('zhaoj2024')}. Untuk "
-        f"armada heterogen, Prins serta Subramanian dkk. menunjukkan efektivitas algoritma hibrida "
-        f"{cite('prins2009', 'subramanian2012')}, dan Şahin dkk. memberikan metode eksak _branch-and-price_ untuk "
+        f"armada heterogen, Subramanian dkk. menunjukkan efektivitas algoritma hibrida "
+        f"{cite('subramanian2012')}, dan Şahin dkk. memberikan metode eksak _branch-and-price_ untuk "
         f"armada heterogen multi-depot multi-ritase {cite('sahin2022')}. Pada distribusi BBM, Wang dkk. memodelkan "
-        f"truk yang dapat kembali ke depot berkali-kali {cite('wang2019', 'wang2020')}.")
+        f"truk yang dapat kembali ke depot berkali-kali {cite('wang2020')}.")
     W.hh("Algoritma Genetika dan dekoder _Split_")
-    W.p(f"Algoritma Genetika (GA) {cite('holland1975')} mengembangkan populasi solusi melalui seleksi, pindah silang, dan "
+    W.p(f"Algoritma Genetika (GA) mengembangkan populasi solusi melalui seleksi, pindah silang, dan "
         f"mutasi. Prins {cite('prins2004')} merepresentasikan solusi VRP sebagai permutasi pelanggan tanpa pemisah rute "
         "(_giant tour_) dan memotongnya menjadi rute secara optimal dengan prosedur _Split_, yaitu lintasan terpendek "
         "pada graf asiklik. Gagasan ini menjadi dasar _hybrid genetic search_ yang termasuk algoritma terbaik untuk "
-        f"banyak varian VRP {cite('vidal2012', 'vidal2022')}. Ariyani dkk. memadukan GA dan SA untuk VRP multi-ritase "
-        f"dengan jendela waktu {cite('ariyani2018')}.")
+        f"banyak varian VRP {cite('vidal2022')}.")
     W.hh("_Simulated Annealing_")
     W.p(f"_Simulated Annealing_ (SA) {cite('kirkpatrick1983')} menerima solusi tetangga yang lebih buruk dengan peluang "
         "yang menurun seiring turunnya temperatur. Dalam skema hibrida, SA bekerja sebagai pencarian lokal di sekitar "
         "solusi terbaik GA. Keberhasilannya bergantung pada skala energi: bila selisih energi terlalu kecil terhadap "
         "temperatur, SA berubah menjadi jalan acak; bila terlalu besar, SA menjadi _hill climbing_.")
     W.hh("_Reinforcement learning_ untuk pemilihan operator")
-    W.p(f"_Q-learning_ {cite('watkins1992', 'sutton2018')} memperbarui nilai aksi Q(s, a) dari imbalan yang diterima "
+    W.p(f"_Q-learning_ {cite('watkins1992')} memperbarui nilai aksi Q(s, a) dari imbalan yang diterima "
         "setelah aksi a diambil pada keadaan s. Pada metaheuristik, cara ini dipakai sebagai pemilih operator adaptif "
-        f"atau _hyper-heuristic_ {cite('burke2013', 'voigt2024')}. Contohnya antara lain QMOEA untuk VRP hijau "
-        f"bergantung waktu {cite('qi2022')}, GA berbantuan RL untuk CVRP dengan jendela waktu {cite('koc2026')}, "
-        f"_hyper-heuristic_ berbasis _Q-learning_ untuk kendaraan listrik {cite('lin2025')}, VNS berbasis RL "
-        f"{cite('kalatzantonakis2022')}, dan RL untuk armada heterogen {cite('qin2021')}. Kajian lain memakai RL untuk "
-        f"merancang metaheuristik secara otomatis {cite('yi2023', 'tian2023')} atau memadukan _Q-learning_ ke dalam "
-        f"_iterated greedy_ {cite('mohammadi2022')}. Tinjauan terbaru mencatat bahwa klaim keunggulan RL perlu diuji "
-        f"terhadap pemilihan acak dengan anggaran evaluasi yang sama {cite('jaouhari2026', 'zhao2025')}.")
+        f"atau _hyper-heuristic_ {cite('voigt2024')}. Contohnya antara lain QMOEA untuk VRP hijau "
+        f"bergantung waktu {cite('qi2022')} dan GA berbantuan RL untuk CVRP dengan jendela waktu {cite('koc2026')}. "
+        f"Karimi-Mamaghan dkk. memadukan _Q-learning_ ke dalam _iterated greedy_ untuk penjadwalan {cite('mohammadi2022')}. Tinjauan terbaru mencatat bahwa klaim keunggulan RL perlu diuji "
+        f"terhadap pemilihan acak dengan anggaran evaluasi yang sama {cite('jaouhari2026')}.")
     W.hh("Konsumsi bahan bakar dan emisi CO~2~")
-    W.p(f"Logistik hijau memasukkan dampak lingkungan ke dalam keputusan rute {cite('dekker2012', 'bektas2011')}. "
+    W.p(f"Logistik hijau memasukkan dampak lingkungan ke dalam keputusan rute {cite('bektas2011')}. "
         f"Konsumsi bahan bakar truk naik seiring muatan dan menyimpang dari kecepatan efisiennya {cite('xiao2012')}, "
-        f"dan pilihan tipe truk pada armada heterogen ikut menentukan emisi {cite('kopfer2014')}. Emisi bergantung pula "
-        f"pada jam keberangkatan di wilayah padat {cite('ehmke2016')}. Turkensteen {cite('turkensteen2017')} "
+        f"Turkensteen {cite('turkensteen2017')} "
         "menunjukkan bahwa model konsumsi yang terlalu sederhana dapat menyesatkan peringkat rencana. Penelitian ini "
         f"memakai faktor emisi IPCC Tier 2 untuk solar, 2,68 kg CO~2~/L {cite('ipcc2006')}.")
     W.hh("Kelas jalan dan jaringan OpenStreetMap")
@@ -255,21 +247,17 @@ def bab2(W, cite, R):
         f"yang menjadi acuannya {cite('pp79_2013')}. OpenStreetMap (OSM) menyediakan data ruas jalan beserta tag jenis "
         f"ruas, lebar, jumlah lajur, arah, dan rambu batas {cite('haklay2008')}. Jarak antar-titik pada graf jalan "
         f"dihitung dengan algoritma lintasan terpendek Dijkstra {cite('dijkstra1959')}. Şahin dkk. menunjukkan bahwa "
-        f"larangan akses kendaraan mengubah struktur solusi VRP {cite('sahin2024')}, dan Ray membangun DSS rute "
-        f"untuk kendaraan dengan dimensi dan berat berlebih {cite('ray2007')}.")
+        f"larangan akses kendaraan mengubah struktur solusi VRP {cite('sahin2024')}.")
     W.hh("Ketidakpastian, antrean, dan gangguan dinamis")
     W.p("Waktu tempuh dan permintaan di lapangan tidak pasti. Taş dkk. memodelkan waktu tempuh stokastik dengan "
-        f"jendela waktu lunak {cite('tas2012')}; Hu dkk., Munari dkk., dan Zhang dkk. menyusun versi robust "
-        f"{cite('hu2018', 'munari2019', 'zhang2021')}; Xu dkk. menerapkan optimasi robust multi-objektif pada distribusi "
-        f"BBM multi-depot {cite('xu2021')}. Abdullahi dkk. memakai _simheuristic_, yaitu metaheuristik "
+        f"jendela waktu lunak {cite('tas2012')}. Abdullahi dkk. memakai _simheuristic_, yaitu metaheuristik "
         f"yang dievaluasi ulang dengan simulasi {cite('abdullahi2025')}. Antrean truk di _loading rack_ FT dapat "
-        f"dimodelkan sebagai sistem M/M/c {cite('gross2008')}. Untuk gangguan selama operasi, Rios dkk. merangkum "
-        f"VRP dinamis {cite('rios2021')}, dan Sze dkk. memakai VNS adaptif untuk re-optimasi {cite('sze2024')}.")
+        f"dimodelkan sebagai sistem M/M/c. Untuk gangguan selama operasi, Rios dkk. merangkum "
+        f"VRP dinamis {cite('rios2021')}.")
     W.hh("Sistem pendukung keputusan dan prioritas SPBU")
     W.p("DSS rute menggabungkan basis data, model optimasi, dan antarmuka peta. Santos dkk. membangun DSS spasial "
         f"berbasis web dengan Google Maps {cite('santos2011')}, Cavecchia dkk. membuat DSS untuk VRP multi-ritase "
-        f"{cite('cavecchia2024')}, Andersson dkk. mengembangkan RuttOpt untuk truk kayu {cite('andersson2008')}, dan "
-        f"Peng dkk. menyediakan perangkat visualisasi rute {cite('peng2020')}. Prioritas SPBU pada penelitian ini "
+        f"{cite('cavecchia2024')}. Prioritas SPBU pada penelitian ini "
         f"dihitung dengan inferensi fuzzy Mamdani {cite('mamdani1975')} dari sisa waktu sebelum stok habis, jarak, "
         "dan fluktuasi permintaan.")
     W.h("Hasil Penelitian yang Relevan")
@@ -286,7 +274,6 @@ def bab2(W, cite, R):
         (f"Qi dkk. (2022) {cite('qi2022')}", "VRP hijau bergantung waktu", "EA + _Q-learning_", "Bukan multi-kompartemen"),
         (f"Koç dkk. (2026) {cite('koc2026')}", "CVRPTW multi-objektif", "GA + RL", "Bukan distribusi BBM"),
         (f"Cavecchia dkk. (2024) {cite('cavecchia2024')}", "DSS VRP multi-ritase", "Optimasi + antarmuka", "Tanpa kompartemen"),
-        (f"Surjandari dkk. (2011) {cite('surjandari2011')}", "PSRP multi-produk Indonesia", "Heuristik", "Tanpa multi-ritase"),
         (f"Ramadhani dkk. (2021) {cite('ramadhani2021')}", "BBM _split_, kompartemen", "MILP", "8 SPBU, tanpa DSS"),
         ("Penelitian ini", "MC-MP-MT-VRP, jalan legal-truk", "GA-SA-RL, MILP, simulasi",
          "Kompartemen, multi-ritase, kelas jalan, simulasi mikro, aplikasi terbuka"),
@@ -417,7 +404,7 @@ def bab3(W, cite, R):
     W.eqn(r"s^{\mathrm{muat}}_r=W_q+5\sum_{i\in r}\sum_{p\in P}q_{ip}")
     W.eqn(r"s^{\mathrm{bongkar}}_i=15+2{,}5\sum_{p\in P}q_{ip}")
     W.p("dengan v~max~ = 40 km/jam, CF(t) ∈ [0,2; 1] per jam, dan W~q~ rerata waktu tunggu _loading rack_ dari model "
-        f"Erlang-C {cite('gross2008')} (nol pada kondisi normal). Penalti Φ pada (1) adalah:",
+        f"Erlang-C (nol pada kondisi normal). Penalti Φ pada (1) adalah:",
         indent=False, keep_next=True)
     W.eqn(r"\Phi=0{,}02\,T^{\mathrm{late}}+0{,}02\,T^{\mathrm{OT}}+5\,N^{\mathrm{tt}}+1\,V^{\mathrm{kuota}}")
     W.p("dengan T^late^ menit keterlambatan tertimbang prioritas, T^OT^ menit lembur, N^tt^ jumlah ritase yang tidak "
@@ -523,7 +510,7 @@ def bab3(W, cite, R):
         "Pada kemacetan mendadak, CF = 0,3 selama 3 jam sejak t~e~. Dua kebijakan dibandingkan. Kebijakan naif "
         "mempertahankan rencana awal dan menggabungkan SPBU yang tertahan menjadi satu ritase tambahan. Kebijakan "
         "re-optimasi menjalankan ulang GA-SA-RL (populasi 40, 60 generasi, 1500 iterasi SA) untuk sisa SPBU dengan "
-        f"solusi naif sebagai salah satu individu awal {cite('rios2021', 'sze2024')}.")
+        f"solusi naif sebagai salah satu individu awal {cite('rios2021')}.")
     # ---- simulasi mikro
     W.hh("Simulasi mikro pergerakan truk")
     W.p("Model optimasi memakai kecepatan rata-rata v~max~ untuk semua ruas. Untuk memeriksa apakah rencana tetap dapat "

@@ -1,0 +1,626 @@
+TY  - JOUR
+AU  - Dantzig, G. B.
+AU  - Ramser, J. H.
+TI  - The truck dispatching problem
+JO  - Management Science
+PY  - 1959
+VL  - 6
+IS  - 1
+SP  - 80
+EP  - 91
+DO  - 10.1287/mnsc.6.1.80
+UR  - https://doi.org/10.1287/mnsc.6.1.80
+ER  - 
+
+TY  - JOUR
+AU  - Cornillier, F.
+AU  - Boctor, F. F.
+AU  - Laporte, G.
+AU  - Renaud, J.
+TI  - A heuristic for the multi-period petrol station replenishment problem
+JO  - European Journal of Operational Research
+PY  - 2008
+VL  - 191
+IS  - 2
+SP  - 295
+EP  - 305
+DO  - 10.1016/j.ejor.2007.08.030
+UR  - https://doi.org/10.1016/j.ejor.2007.08.030
+ER  - 
+
+TY  - JOUR
+AU  - Ostermeier, M.
+AU  - Henke, T.
+AU  - Hübner, A.
+AU  - Wäscher, G.
+TI  - Multi-compartment vehicle routing problems: State-of-the-art, modeling framework and future directions
+JO  - European Journal of Operational Research
+PY  - 2021
+VL  - 292
+IS  - 3
+SP  - 799
+EP  - 817
+DO  - 10.1016/j.ejor.2020.11.009
+UR  - https://doi.org/10.1016/j.ejor.2020.11.009
+ER  - 
+
+TY  - JOUR
+AU  - Coelho, L. C.
+AU  - Laporte, G.
+TI  - Classification, models and exact algorithms for multi-compartment delivery problems
+JO  - European Journal of Operational Research
+PY  - 2015
+VL  - 242
+IS  - 3
+SP  - 854
+EP  - 864
+DO  - 10.1016/j.ejor.2014.10.059
+UR  - https://doi.org/10.1016/j.ejor.2014.10.059
+ER  - 
+
+TY  - JOUR
+AU  - Cattaruzza, D.
+AU  - Absi, N.
+AU  - Feillet, D.
+TI  - Vehicle routing problems with multiple trips
+JO  - 4OR
+PY  - 2016
+VL  - 14
+IS  - 3
+SP  - 223
+EP  - 259
+DO  - 10.1007/s10288-016-0306-2
+UR  - https://doi.org/10.1007/s10288-016-0306-2
+ER  - 
+
+TY  - JOUR
+AU  - Wang, L.
+AU  - Kinable, J.
+AU  - van Woensel, T.
+TI  - The fuel replenishment problem: A split-delivery multi-compartment vehicle routing problem with multiple trips
+JO  - Computers & Operations Research
+PY  - 2020
+VL  - 118
+SP  - 104904
+DO  - 10.1016/j.cor.2020.104904
+UR  - https://doi.org/10.1016/j.cor.2020.104904
+ER  - 
+
+TY  - JOUR
+AU  - Cornillier, F.
+AU  - Laporte, G.
+AU  - Boctor, F. F.
+AU  - Renaud, J.
+TI  - The petrol station replenishment problem with time windows
+JO  - Computers & Operations Research
+PY  - 2009
+VL  - 36
+IS  - 3
+SP  - 919
+EP  - 935
+DO  - 10.1016/j.cor.2007.11.003
+UR  - https://doi.org/10.1016/j.cor.2007.11.003
+ER  - 
+
+TY  - JOUR
+AU  - Bani, A.
+TI  - Solving a real-world multi-depot multi-period petrol replenishment problem with complex loading constraints
+JO  - European Journal of Operational Research
+PY  - 2023
+UR  - https://consensus.app/papers/details/1b055e24a30855549bfb7cfe542640fd/
+N1  - Volume/halaman belum terverifikasi; lengkapi lewat DOI atau judul di reference manager.
+ER  - 
+
+TY  - JOUR
+AU  - Clarke, G.
+AU  - Wright, J. W.
+TI  - Scheduling of vehicles from a central depot to a number of delivery points
+JO  - Operations Research
+PY  - 1964
+VL  - 12
+IS  - 4
+SP  - 568
+EP  - 581
+DO  - 10.1287/opre.12.4.568
+UR  - https://doi.org/10.1287/opre.12.4.568
+ER  - 
+
+TY  - JOUR
+AU  - Ramadhani, D. S.
+TI  - Model of vehicle routing problem with split delivery, multi trips, multi products and compartments for determining fuel distribution routes
+JO  - ASEAN Journal of Systems Engineering
+PY  - 2021
+UR  - https://consensus.app/papers/details/30b16b8722035dd4b378e0664ec67bda/
+N1  - Volume/halaman belum terverifikasi; lengkapi lewat DOI atau judul di reference manager.
+ER  - 
+
+TY  - JOUR
+AU  - Qi, R.
+TI  - QMOEA: A Q-learning-based multiobjective evolutionary algorithm for solving time-dependent green vehicle routing problems with time windows
+JO  - Information Sciences
+PY  - 2022
+UR  - https://consensus.app/papers/details/5e6b1b01e1fa525f9696e3c0cf3b7030/
+N1  - Volume/halaman belum terverifikasi; lengkapi lewat DOI atau judul di reference manager.
+ER  - 
+
+TY  - JOUR
+AU  - Koç, A.
+AU  - Tezcaner Öztürk, D.
+AU  - Tuncer Şakar, C.
+TI  - A novel reinforcement learning–assisted genetic algorithm for the multi-objective capacitated vehicle routing problem with time windows
+JO  - International Journal of Industrial Engineering Computations
+PY  - 2026
+DO  - 10.5267/j.ijiec.2026.5.004
+UR  - https://doi.org/10.5267/j.ijiec.2026.5.004
+N1  - Volume/halaman belum terverifikasi; lengkapi lewat DOI atau judul di reference manager.
+ER  - 
+
+TY  - JOUR
+AU  - Santos, L.
+AU  - Coutinho-Rodrigues, J.
+AU  - Antunes, C. H.
+TI  - A web spatial decision support system for vehicle routing using Google Maps
+JO  - Decision Support Systems
+PY  - 2011
+VL  - 51
+IS  - 1
+SP  - 1
+EP  - 16
+DO  - 10.1016/j.dss.2010.11.001
+UR  - https://doi.org/10.1016/j.dss.2010.11.001
+ER  - 
+
+TY  - JOUR
+AU  - Cavecchia, M.
+TI  - An optimization-based decision support system for multi-trip vehicle routing problems
+JO  - SN Computer Science
+PY  - 2024
+UR  - https://consensus.app/papers/details/02fc6922cc5d55a5bd018e5f3049432d/
+N1  - Volume/halaman belum terverifikasi; lengkapi lewat DOI atau judul di reference manager.
+ER  - 
+
+TY  - JOUR
+AU  - Wu, W.-T.
+TI  - The multi-compartment truck and trailer petrol station replenishment problem with domino hazard risks
+JO  - Transportation Research Part B: Methodological
+PY  - 2024
+UR  - https://consensus.app/papers/details/93c2ca1ba4ef5871b44f5fcca7607efd/
+N1  - Volume/halaman belum terverifikasi; lengkapi lewat DOI atau judul di reference manager.
+ER  - 
+
+TY  - JOUR
+AU  - Che, A.
+AU  - Wang, W.
+AU  - Mu, X.
+TI  - Tabu-based adaptive large neighborhood search for multi-depot petrol station replenishment with open inter-depot routes
+JO  - IEEE Transactions on Intelligent Transportation Systems
+PY  - 2023
+DO  - 10.1109/TITS.2022.3215084
+UR  - https://doi.org/10.1109/TITS.2022.3215084
+N1  - Volume/halaman belum terverifikasi; lengkapi lewat DOI atau judul di reference manager.
+ER  - 
+
+TY  - JOUR
+AU  - Liu, Z.
+AU  - Cheng, Y. M.
+AU  - Tian, F.
+AU  - Zhou, W.
+TI  - A hybrid variable neighborhood search for a real-world petrol station replenishment problem with multi-compartment vehicles
+JO  - RAIRO – Operations Research
+PY  - 2025
+DO  - 10.1051/ro/2025004
+UR  - https://doi.org/10.1051/ro/2025004
+N1  - Volume/halaman belum terverifikasi; lengkapi lewat DOI atau judul di reference manager.
+ER  - 
+
+TY  - JOUR
+AU  - Baptista, G.
+AU  - Vieira, M.
+AU  - Pinto, T.
+TI  - An exact approach to the multi-compartment vehicle routing problem: The case of a fuel distribution company
+JO  - Mathematics
+PY  - 2024
+VL  - 12
+IS  - 4
+SP  - 527
+DO  - 10.3390/math12040527
+UR  - https://doi.org/10.3390/math12040527
+ER  - 
+
+TY  - JOUR
+AU  - Azi, N.
+AU  - Gendreau, M.
+AU  - Potvin, J.-Y.
+TI  - An adaptive large neighborhood search for a vehicle routing problem with multiple routes
+JO  - Computers & Operations Research
+PY  - 2014
+VL  - 41
+SP  - 167
+EP  - 173
+DO  - 10.1016/j.cor.2013.08.016
+UR  - https://doi.org/10.1016/j.cor.2013.08.016
+ER  - 
+
+TY  - JOUR
+AU  - Zhao, J.-Y.
+TI  - A hybrid genetic search and dynamic programming-based split algorithm for the multi-trip time-dependent vehicle routing problem
+JO  - European Journal of Operational Research
+PY  - 2024
+UR  - https://consensus.app/papers/details/0d7e183e7358563fbada7bc4876cdf8f/
+N1  - Volume/halaman belum terverifikasi; lengkapi lewat DOI atau judul di reference manager.
+ER  - 
+
+TY  - JOUR
+AU  - Subramanian, A.
+AU  - Penna, P. H. V.
+AU  - Uchoa, E.
+AU  - Ochi, L. S.
+TI  - A hybrid algorithm for the heterogeneous fleet vehicle routing problem
+JO  - European Journal of Operational Research
+PY  - 2012
+VL  - 221
+IS  - 2
+SP  - 285
+EP  - 295
+DO  - 10.1016/j.ejor.2012.03.016
+UR  - https://doi.org/10.1016/j.ejor.2012.03.016
+ER  - 
+
+TY  - JOUR
+AU  - Şahin, M. K.
+AU  - Yaman, H.
+TI  - A branch and price algorithm for the heterogeneous fleet multi-depot multi-trip vehicle routing problem with time windows
+JO  - Transportation Science
+PY  - 2022
+DO  - 10.1287/trsc.2022.1146
+UR  - https://doi.org/10.1287/trsc.2022.1146
+N1  - Volume/halaman belum terverifikasi; lengkapi lewat DOI atau judul di reference manager.
+ER  - 
+
+TY  - JOUR
+AU  - Prins, C.
+TI  - A simple and effective evolutionary algorithm for the vehicle routing problem
+JO  - Computers & Operations Research
+PY  - 2004
+VL  - 31
+IS  - 12
+SP  - 1985
+EP  - 2002
+DO  - 10.1016/S0305-0548(03)00158-8
+UR  - https://doi.org/10.1016/S0305-0548(03)00158-8
+ER  - 
+
+TY  - JOUR
+AU  - Vidal, T.
+TI  - Hybrid genetic search for the CVRP: Open-source implementation and SWAP* neighborhood
+JO  - Computers & Operations Research
+PY  - 2022
+VL  - 140
+SP  - 105643
+DO  - 10.1016/j.cor.2021.105643
+UR  - https://doi.org/10.1016/j.cor.2021.105643
+ER  - 
+
+TY  - JOUR
+AU  - Kirkpatrick, S.
+AU  - C. D. Gelatt Jr.
+AU  - Vecchi, M. P.
+TI  - Optimization by simulated annealing
+JO  - Science
+PY  - 1983
+VL  - 220
+IS  - 4598
+SP  - 671
+EP  - 680
+DO  - 10.1126/science.220.4598.671
+UR  - https://doi.org/10.1126/science.220.4598.671
+ER  - 
+
+TY  - JOUR
+AU  - Watkins, C. J. C. H.
+AU  - Dayan, P.
+TI  - Q-learning
+JO  - Machine Learning
+PY  - 1992
+VL  - 8
+IS  - 3–4
+SP  - 279
+EP  - 292
+DO  - 10.1007/BF00992698
+UR  - https://doi.org/10.1007/BF00992698
+ER  - 
+
+TY  - JOUR
+AU  - Voigt, S.
+TI  - A review and ranking of operators in adaptive large neighborhood search for vehicle routing problems
+JO  - European Journal of Operational Research
+PY  - 2024
+DO  - 10.1016/j.ejor.2024.05.033
+UR  - https://doi.org/10.1016/j.ejor.2024.05.033
+N1  - Volume/halaman belum terverifikasi; lengkapi lewat DOI atau judul di reference manager.
+ER  - 
+
+TY  - JOUR
+AU  - Karimi-Mamaghan, M.
+AU  - Mohammadi, M.
+AU  - Pasdeloup, B.
+AU  - Meyer, P.
+TI  - Learning to select operators in meta-heuristics: An integration of Q-learning into the iterated greedy algorithm for the permutation flowshop scheduling problem
+JO  - European Journal of Operational Research
+PY  - 2023
+VL  - 304
+IS  - 3
+SP  - 1296
+EP  - 1330
+DO  - 10.1016/j.ejor.2022.03.054
+UR  - https://doi.org/10.1016/j.ejor.2022.03.054
+ER  - 
+
+TY  - JOUR
+AU  - El Jaouhari, M.
+TI  - Metaheuristic and reinforcement learning techniques for solving the vehicle routing problem: A literature review
+JO  - Journal of Traffic and Transportation Engineering (English Edition)
+PY  - 2026
+DO  - 10.1016/j.jtte.2025.06.005
+UR  - https://doi.org/10.1016/j.jtte.2025.06.005
+N1  - Volume/halaman belum terverifikasi; lengkapi lewat DOI atau judul di reference manager.
+ER  - 
+
+TY  - JOUR
+AU  - Bektaş, T.
+AU  - Laporte, G.
+TI  - The pollution-routing problem
+JO  - Transportation Research Part B: Methodological
+PY  - 2011
+VL  - 45
+IS  - 8
+SP  - 1232
+EP  - 1250
+DO  - 10.1016/j.trb.2011.02.004
+UR  - https://doi.org/10.1016/j.trb.2011.02.004
+ER  - 
+
+TY  - JOUR
+AU  - Xiao, Y.
+AU  - Zhao, Q.
+AU  - Kaku, I.
+AU  - Xu, Y.
+TI  - Development of a fuel consumption optimization model for the capacitated vehicle routing problem
+JO  - Computers & Operations Research
+PY  - 2012
+VL  - 39
+IS  - 7
+SP  - 1419
+EP  - 1431
+DO  - 10.1016/j.cor.2011.08.013
+UR  - https://doi.org/10.1016/j.cor.2011.08.013
+ER  - 
+
+TY  - JOUR
+AU  - Turkensteen, M.
+TI  - The accuracy of carbon emission and fuel consumption computations in green vehicle routing
+JO  - European Journal of Operational Research
+PY  - 2017
+VL  - 262
+IS  - 2
+SP  - 647
+EP  - 659
+DO  - 10.1016/j.ejor.2017.03.054
+UR  - https://doi.org/10.1016/j.ejor.2017.03.054
+ER  - 
+
+TY  - RPRT
+TI  - IPCC, _2006 IPCC Guidelines for National Greenhouse Gas Inventories_, vol. 2 (Energy), ch. 3 (Mobile Combustion). Hayama, Japan: IGES, 2006.
+ER  - 
+
+TY  - STAT
+TI  - Republik Indonesia, _Undang-Undang Nomor 22 Tahun 2009 tentang Lalu Lintas dan Angkutan Jalan_, Lembaran Negara RI Tahun 2009 Nomor 96, 2009.
+ER  - 
+
+TY  - STAT
+TI  - Republik Indonesia, _Peraturan Pemerintah Nomor 79 Tahun 2013 tentang Jaringan Lalu Lintas dan Angkutan Jalan_, Lembaran Negara RI Tahun 2013 Nomor 193, 2013.
+ER  - 
+
+TY  - JOUR
+AU  - Haklay, M.
+AU  - Weber, P.
+TI  - OpenStreetMap: User-generated street maps
+JO  - IEEE Pervasive Computing
+PY  - 2008
+VL  - 7
+IS  - 4
+SP  - 12
+EP  - 18
+DO  - 10.1109/MPRV.2008.80
+UR  - https://doi.org/10.1109/MPRV.2008.80
+ER  - 
+
+TY  - JOUR
+AU  - Dijkstra, E. W.
+TI  - A note on two problems in connexion with graphs
+JO  - Numerische Mathematik
+PY  - 1959
+VL  - 1
+IS  - 1
+SP  - 269
+EP  - 271
+DO  - 10.1007/BF01386390
+UR  - https://doi.org/10.1007/BF01386390
+ER  - 
+
+TY  - JOUR
+AU  - Şahin, M. K.
+AU  - Yaman, H.
+TI  - The vehicle routing problem with access restrictions
+JO  - Transportation Science
+PY  - 2024
+DO  - 10.1287/trsc.2023.0261
+UR  - https://doi.org/10.1287/trsc.2023.0261
+N1  - Volume/halaman belum terverifikasi; lengkapi lewat DOI atau judul di reference manager.
+ER  - 
+
+TY  - JOUR
+AU  - Taş, D.
+AU  - Dellaert, N.
+AU  - van Woensel, T.
+AU  - de Kok, T.
+TI  - Vehicle routing problem with stochastic travel times including soft time windows and service costs
+JO  - Computers & Operations Research
+PY  - 2013
+VL  - 40
+IS  - 1
+SP  - 214
+EP  - 224
+DO  - 10.1016/j.cor.2012.06.008
+UR  - https://doi.org/10.1016/j.cor.2012.06.008
+ER  - 
+
+TY  - JOUR
+AU  - Abdullahi, H.
+TI  - A reliability-extended simheuristic for the sustainable vehicle routing problem with stochastic travel times and demands
+JO  - Journal of Heuristics
+PY  - 2025
+UR  - https://consensus.app/papers/details/d8d5d786e0ae53dfb4d69bb214a894ba/
+N1  - Volume/halaman belum terverifikasi; lengkapi lewat DOI atau judul di reference manager.
+ER  - 
+
+TY  - JOUR
+AU  - Rios, B. H. O.
+AU  - Xavier, E. C.
+AU  - Miyazawa, F. K.
+AU  - Amorim, P.
+AU  - Curcio, E.
+AU  - Santos, M. J.
+TI  - Recent dynamic vehicle routing problems: A survey
+JO  - Computers & Industrial Engineering
+PY  - 2021
+VL  - 160
+SP  - 107604
+DO  - 10.1016/j.cie.2021.107604
+UR  - https://doi.org/10.1016/j.cie.2021.107604
+ER  - 
+
+TY  - JOUR
+AU  - Mamdani, E. H.
+AU  - Assilian, S.
+TI  - An experiment in linguistic synthesis with a fuzzy logic controller
+JO  - International Journal of Man-Machine Studies
+PY  - 1975
+VL  - 7
+IS  - 1
+SP  - 1
+EP  - 13
+DO  - 10.1016/S0020-7373(75)80002-2
+UR  - https://doi.org/10.1016/S0020-7373(75)80002-2
+ER  - 
+
+TY  - JOUR
+AU  - Derrac, J.
+AU  - García, S.
+AU  - Molina, D.
+AU  - Herrera, F.
+TI  - A practical tutorial on the use of nonparametric statistical tests as a methodology for comparing evolutionary and swarm intelligence algorithms
+JO  - Swarm and Evolutionary Computation
+PY  - 2011
+VL  - 1
+IS  - 1
+SP  - 3
+EP  - 18
+DO  - 10.1016/j.swevo.2011.02.002
+UR  - https://doi.org/10.1016/j.swevo.2011.02.002
+ER  - 
+
+TY  - JOUR
+AU  - Huangfu, Q.
+AU  - Hall, J. A. J.
+TI  - Parallelizing the dual revised simplex method
+JO  - Mathematical Programming Computation
+PY  - 2018
+VL  - 10
+IS  - 1
+SP  - 119
+EP  - 142
+DO  - 10.1007/s12532-017-0130-5
+UR  - https://doi.org/10.1007/s12532-017-0130-5
+ER  - 
+
+TY  - JOUR
+AU  - Miller, C. E.
+AU  - Tucker, A. W.
+AU  - Zemlin, R. A.
+TI  - Integer programming formulation of traveling salesman problems
+JO  - Journal of the ACM
+PY  - 1960
+VL  - 7
+IS  - 4
+SP  - 326
+EP  - 329
+DO  - 10.1145/321043.321046
+UR  - https://doi.org/10.1145/321043.321046
+ER  - 
+
+TY  - JOUR
+AU  - Toth, P.
+AU  - Vigo, D.
+TI  - The granular tabu search and its application to the vehicle-routing problem
+JO  - INFORMS Journal on Computing
+PY  - 2003
+VL  - 15
+IS  - 4
+SP  - 333
+EP  - 346
+DO  - 10.1287/ijoc.15.4.333.24890
+UR  - https://doi.org/10.1287/ijoc.15.4.333.24890
+ER  - 
+
+TY  - JOUR
+AU  - Schrimpf, G.
+AU  - Schneider, J.
+AU  - Stamm-Wilbrandt, H.
+AU  - Dueck, G.
+TI  - Record breaking optimization results using the ruin and recreate principle
+JO  - Journal of Computational Physics
+PY  - 2000
+VL  - 159
+IS  - 2
+SP  - 139
+EP  - 171
+DO  - 10.1006/jcph.1999.6413
+UR  - https://doi.org/10.1006/jcph.1999.6413
+ER  - 
+
+TY  - JOUR
+AU  - Ropke, S.
+AU  - Pisinger, D.
+TI  - An adaptive large neighborhood search heuristic for the pickup and delivery problem with time windows
+JO  - Transportation Science
+PY  - 2006
+VL  - 40
+IS  - 4
+SP  - 455
+EP  - 472
+DO  - 10.1287/trsc.1050.0135
+UR  - https://doi.org/10.1287/trsc.1050.0135
+ER  - 
+
+TY  - COMP
+TI  - L. Perron and V. Furnon, _OR-Tools_, ver. 9.15. Mountain View, CA, USA: Google, 2025.
+ER  - 
+
+TY  - JOUR
+AU  - Uchoa, E.
+AU  - Pecin, D.
+AU  - Pessoa, A.
+AU  - Poggi, M.
+AU  - Vidal, T.
+AU  - Subramanian, A.
+TI  - New benchmark instances for the capacitated vehicle routing problem
+JO  - European Journal of Operational Research
+PY  - 2017
+VL  - 257
+IS  - 3
+SP  - 845
+EP  - 858
+DO  - 10.1016/j.ejor.2016.08.012
+UR  - https://doi.org/10.1016/j.ejor.2016.08.012
+ER  - 

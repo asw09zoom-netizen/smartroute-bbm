@@ -10,6 +10,8 @@ Jalankan:  python -m docs.build_laporan
 """
 from __future__ import annotations
 
+OUT_DIR_RIS = "/mnt/project-files/smartroute-bbm"
+
 import os
 import re
 import shutil
@@ -171,6 +173,9 @@ def build(pages=None):
         pf = p.paragraph_format
         pf.left_indent = Cm(1.0); pf.first_line_indent = Cm(-1.0); pf.alignment = WD_ALIGN_PARAGRAPH.LEFT
         pf.line_spacing_rule = WD_LINE_SPACING.SINGLE; pf.space_after = Pt(6)
+    from .refs import write_ris
+    os.makedirs("/mnt/project-files/smartroute-bbm", exist_ok=True)
+    write_ris(cite.order, os.path.join(OUT_DIR_RIS, "Daftar_Pustaka_SMARTROUTE-BBM.ris"))
     W.front_heading("LAMPIRAN")
     lampiran(W, R)
     # --- daftar (field Word)
