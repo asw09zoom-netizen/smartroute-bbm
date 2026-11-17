@@ -379,7 +379,10 @@ def scenario_text(e4, e4b):
     if h and n0:
         s.append(f"Antrean _loading rack_ yang padat menambah waktu tunggu tiap ritase sehingga dibutuhkan "
                  f"{int(h['trucks'])} truk untuk {int(h['trips'])} ritase dan biaya naik {pct(h['cost_rp'], n0['cost_rp'], 0)}. "
-                 "Pada kondisi ini, kapasitas _loading rack_ lebih menentukan daripada pilihan rute.")
+                 "Skenario ini sengaja dibuat jenuh: dengan empat rack, layanan 80 menit, dan kedatangan truk lain 2,5 per jam "
+                 "ditambah ritase studi kasus, intensitas lalu lintas melampaui 1, sehingga antrean tidak stabil dan model Erlang-C "
+                 "tidak memberi nilai hingga. Aplikasi memakai batas atas 240 menit per ritase, jadi angka itu merupakan batas "
+                 "asumsi, bukan hasil hitung. Pada kondisi ini, kapasitas _loading rack_ lebih menentukan daripada pilihan rute.")
     h = H("9. Panic buying / surge demand")
     if h:
         s.append(f"Lonjakan permintaan 1,5 kali masih dapat dilayani armada eksisting dengan {int(h['trucks'])} truk "
@@ -846,7 +849,8 @@ def lampiran(W, R):
             ("Simulasi mikro", "γ = 0,15; CV kecepatan 0,1–0,3; CV bongkar 0,15; v ≥ 5 km/jam")]
     W.table(["Parameter", "Nilai"], rows, None, widths=[5.5, 8.5], align=["l", "l"])
     e4 = R["e4"] or {}
-    rows = [(SCN.get(k, k), v.get("assumption", "")) for k, v in list(e4.items()) + list((R["e4b"] or {}).items())]
+    rows = [(SCN.get(k, k), v.get("assumption", "").replace("Wq = 240.0 menit/ritase", "Wq = 240 menit/ritase (batas atas, antrean jenuh)"))
+            for k, v in list(e4.items()) + list((R["e4b"] or {}).items())]
     W.p("Asumsi skenario E4 dan E4b:", indent=False, keep_next=True)
     W.table(["Skenario", "Asumsi"], rows, None, widths=[4.0, 10.0], align=["l", "l"])
     W.appendix("Lampiran 2. Repositori, basis data, dan cara menjalankan")
@@ -856,7 +860,9 @@ def lampiran(W, R):
                "python -m experiments.run_e11 run; python -m experiments.run_e11 ortools; python -m experiments.run_e11 summary; "
                "python -m experiments.app_check",
                "Membuat gambar dan laporan: python -m experiments.figures_report; python -m docs.build_laporan",
-               "Memasang daring: Streamlit Community Cloud, pilih repositori smartroute-bbm dan berkas app.py"], left=True)
+               "Memasang daring: Streamlit Community Cloud, pilih repositori smartroute-bbm dan berkas app.py",
+               "Aplikasi daring: https://smartroute-bbm-ejol3m9pn5oun7old8tevn.streamlit.app/ (dapat tertidur bila lama tidak dibuka; "
+               "klik tombol untuk menghidupkan kembali)"], left=True)
     W.appendix("Lampiran 3. Rute terbaik GA-SA-RL pada jalan legal-truk")
     e2 = R["e2"]
     if e2 and "multiproduk" in e2:
